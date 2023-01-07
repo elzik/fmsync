@@ -2,7 +2,7 @@
   "profiles": {
     "Elzik.FmSync.Console": {
       "commandName": "Project",
-      "commandLineArgs": "./../../../../../tests/TestFiles"
+      "commandLineArgs": ".\\..\\..\\..\\..\\..\\tests\\TestFiles"
     },
     "WSL": {
       "commandName": "WSL2",
