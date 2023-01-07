@@ -1,9 +1,15 @@
 using Elzik.FmSync.Worker;
+using Microsoft.Extensions.Configuration;
 
 IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
+    .ConfigureServices((hostContext, services) =>
     {
-        services.AddHostedService<Worker>();
+        var configuration = hostContext.Configuration;
+
+        var options = configuration.GetSection("FmSyncOptions").Get<FmSyncOptions>();
+
+        services.AddSingleton(options);
+        services.AddHostedService<FmSyncWorker>();
     })
     .Build();
 
