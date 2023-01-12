@@ -30,34 +30,48 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 
         foreach (var markDownFilePath in markdownFiles)
         {
-            var markdownFileInfo = new FileInfo(markDownFilePath);
+            var markdownCreatedDate = GetFileCreatedDate(markDownFilePath);
+            var createdDateFrontMatter = GetFrontMatterCreatedDate(createdDateYamlMarkdown, markDownFilePath);
 
-            var fileCreatedDate = markdownFileInfo.CreationTimeUtc;
+            var comparisonResult = markdownCreatedDate.CompareTo(createdDateFrontMatter);
 
-            _logger.LogInformation("{FileName} file created date: {FileCreatedDate}.",
-                markdownFileInfo.Name, fileCreatedDate);
-
-            var localCreatedDateFrontMatter = createdDateYamlMarkdown.Parse(markDownFilePath).CreatedDate;
-            var createdDateFrontMatter =
-                TimeZoneInfo.ConvertTimeToUtc(localCreatedDateFrontMatter, TimeZoneInfo.FindSystemTimeZoneById("GB"));
-
-            _logger.LogInformation("{FileName} Front Matter created date: {FrontMatterCreatedDate}.",
-                markdownFileInfo.Name, createdDateFrontMatter);
-
-            if (fileCreatedDate.Equals(createdDateFrontMatter))
+            if (comparisonResult == 0)
             {
-                _logger.LogInformation("Dates equal.");
+                _logger.LogInformation("{FilePath} has a file created date ({FileCreatedDate}) the same as the created " +
+                                       "date specified in its Front Matter.", markDownFilePath, markdownCreatedDate);
             }
             else
             {
-                _logger.LogInformation("Dates not equal.");
+                var relativeDescription = comparisonResult < 0 ? "earlier" : "later";
+                _logger.LogInformation("{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
+                                       "than the created date specified in its Front Matter ({FrontMatterCreatedDate})",
+                    markDownFilePath, markdownCreatedDate, relativeDescription, createdDateFrontMatter);
+
                 File.SetCreationTimeUtc(markDownFilePath, createdDateFrontMatter);
                 editCount++;
+
+                _logger.LogInformation("{FilePath} file created date updated to match that of its Front Matter.", markDownFilePath);
             }
         }
 
         var elapsedTime = Stopwatch.GetElapsedTime(startTime);
         _logger.LogInformation("Synchronised {EditedFileCount} files out of a total {TotalFileCount} in {TimeTaken}.", 
             editCount, markdownFiles.Count, elapsedTime);
+    }
+
+    private static DateTime GetFrontMatterCreatedDate(YamlMarkdown<CreatedDateFrontMatter> createdDateYamlMarkdown, string markDownFilePath)
+    {
+        var localCreatedDateFrontMatter = createdDateYamlMarkdown.Parse(markDownFilePath).CreatedDate;
+        var createdDateFrontMatter =
+            TimeZoneInfo.ConvertTimeToUtc(localCreatedDateFrontMatter, TimeZoneInfo.FindSystemTimeZoneById("GB"));
+
+        return createdDateFrontMatter;
+    }
+
+    private static DateTime GetFileCreatedDate(string markDownFilePath)
+    {
+        var markdownFileInfo = new FileInfo(markDownFilePath);
+
+        return markdownFileInfo.CreationTimeUtc;
     }
 }
