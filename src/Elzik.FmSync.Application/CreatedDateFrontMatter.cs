@@ -2,7 +2,7 @@
 
 namespace Elzik.FmSync;
 
-internal class CreatedDateFrontMatter
+public class CreatedDateFrontMatter
 {
     [YamlMember(Alias = "created")]
     public DateTime CreatedDate { get; set; }

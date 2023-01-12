@@ -5,7 +5,9 @@ VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Console", "src\Elzik.FmSync.Console\Elzik.FmSync.Console.csproj", "{8313B3C5-6FF8-449E-B3DE-6304BAACD62C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elzik.FmSync.Application", "src\Elzik.FmSync.Application\Elzik.FmSync.Application.csproj", "{FF4D804A-C032-4E93-92A0-14580AA7D0CE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Application", "src\Elzik.FmSync.Application\Elzik.FmSync.Application.csproj", "{FF4D804A-C032-4E93-92A0-14580AA7D0CE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CF17A395-4536-42A5-B10B-D2D8EC602BC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

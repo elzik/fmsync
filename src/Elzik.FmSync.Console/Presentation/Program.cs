@@ -5,6 +5,7 @@ using Microsoft.Extensions.Hosting;
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
+        services.AddTransient<IMarkdownFrontMatter, MarkdownFrontMatter>();
         services.AddTransient<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
     })
     .Build();

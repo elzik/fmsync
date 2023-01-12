@@ -7,10 +7,12 @@ namespace Elzik.FmSync;
 public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 {
     private readonly ILogger<FrontMatterFileSynchroniser> _logger;
+    private readonly IMarkdownFrontMatter _markdownFrontMatter;
 
-    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger)
+    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger, IMarkdownFrontMatter markdownFrontMatter)
     {
-        _logger = logger;
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _markdownFrontMatter = markdownFrontMatter ?? throw new ArgumentNullException(nameof(markdownFrontMatter));
     }
 
     public void SyncCreationDates(string directoryPath)
@@ -26,12 +28,10 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
             RecurseSubdirectories = true
         }).ToList();
 
-        var createdDateYamlMarkdown = new YamlMarkdown<CreatedDateFrontMatter>();
-
         foreach (var markDownFilePath in markdownFiles)
         {
             var markdownCreatedDate = GetFileCreatedDate(markDownFilePath);
-            var createdDateFrontMatter = GetFrontMatterCreatedDate(createdDateYamlMarkdown, markDownFilePath);
+            var createdDateFrontMatter = _markdownFrontMatter.GetCreatedDate(markDownFilePath);
 
             var comparisonResult = markdownCreatedDate.CompareTo(createdDateFrontMatter);
 
@@ -57,15 +57,6 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         var elapsedTime = Stopwatch.GetElapsedTime(startTime);
         _logger.LogInformation("Synchronised {EditedFileCount} files out of a total {TotalFileCount} in {TimeTaken}.", 
             editCount, markdownFiles.Count, elapsedTime);
-    }
-
-    private static DateTime GetFrontMatterCreatedDate(YamlMarkdown<CreatedDateFrontMatter> createdDateYamlMarkdown, string markDownFilePath)
-    {
-        var localCreatedDateFrontMatter = createdDateYamlMarkdown.Parse(markDownFilePath).CreatedDate;
-        var createdDateFrontMatter =
-            TimeZoneInfo.ConvertTimeToUtc(localCreatedDateFrontMatter, TimeZoneInfo.FindSystemTimeZoneById("GB"));
-
-        return createdDateFrontMatter;
     }
 
     private static DateTime GetFileCreatedDate(string markDownFilePath)
