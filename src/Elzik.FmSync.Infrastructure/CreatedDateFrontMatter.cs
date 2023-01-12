@@ -1,6 +1,6 @@
 ﻿using YamlDotNet.Serialization;
 
-namespace Elzik.FmSync;
+namespace Elzik.FmSync.Infrastructure;
 
 public class CreatedDateFrontMatter
 {

@@ -9,6 +9,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Application", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CF17A395-4536-42A5-B10B-D2D8EC602BC3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elzik.FmSync.Infrastructure", "src\Elzik.FmSync.Infrastructure\Elzik.FmSync.Infrastructure.csproj", "{7A787CA3-E960-4FC2-8703-D0E0031EED46}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elzik.FmSync.Domain", "src\Elzik.FmSync.Domain\Elzik.FmSync.Domain.csproj", "{5DB426BF-24B5-4E04-A593-A803FE5DC304}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,6 +27,14 @@ Global
 		{FF4D804A-C032-4E93-92A0-14580AA7D0CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FF4D804A-C032-4E93-92A0-14580AA7D0CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FF4D804A-C032-4E93-92A0-14580AA7D0CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A787CA3-E960-4FC2-8703-D0E0031EED46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A787CA3-E960-4FC2-8703-D0E0031EED46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A787CA3-E960-4FC2-8703-D0E0031EED46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A787CA3-E960-4FC2-8703-D0E0031EED46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DB426BF-24B5-4E04-A593-A803FE5DC304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DB426BF-24B5-4E04-A593-A803FE5DC304}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DB426BF-24B5-4E04-A593-A803FE5DC304}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DB426BF-24B5-4E04-A593-A803FE5DC304}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,6 @@
 ﻿using EPS.Extensions.YamlMarkdown;
 
-namespace Elzik.FmSync;
+namespace Elzik.FmSync.Infrastructure;
 
 public class MarkdownFrontMatter : IMarkdownFrontMatter
 {

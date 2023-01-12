@@ -1,4 +1,5 @@
 ﻿using Elzik.FmSync;
+using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
