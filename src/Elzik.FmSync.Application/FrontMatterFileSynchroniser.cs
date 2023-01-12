@@ -30,7 +30,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         foreach (var markDownFilePath in markdownFiles)
         {
             var markdownCreatedDate = GetFileCreatedDate(markDownFilePath);
-            var createdDateFrontMatter = _markdownFrontMatter.GetCreatedDate(markDownFilePath);
+            var createdDateFrontMatter = _markdownFrontMatter.GetCreatedDateUtc(markDownFilePath);
 
             var comparisonResult = markdownCreatedDate.CompareTo(createdDateFrontMatter);
 

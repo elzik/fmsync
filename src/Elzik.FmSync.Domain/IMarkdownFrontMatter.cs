@@ -2,5 +2,5 @@
 
 public interface IMarkdownFrontMatter
 {
-    DateTime GetCreatedDate(string markDownFilePath);
+    DateTime? GetCreatedDateUtc(string markDownFilePath);
 }

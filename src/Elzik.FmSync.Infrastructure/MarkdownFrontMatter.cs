@@ -11,11 +11,17 @@ public class MarkdownFrontMatter : IMarkdownFrontMatter
         _createdDateYamlMarkdown = new YamlMarkdown<CreatedDateFrontMatter>();
     }
 
-    public DateTime GetCreatedDate(string markDownFilePath)
+    public DateTime? GetCreatedDateUtc(string markDownFilePath)
     {
-        var localCreatedDateFrontMatter = _createdDateYamlMarkdown.Parse(markDownFilePath).CreatedDate;
+        var frontMatter = _createdDateYamlMarkdown.Parse(markDownFilePath);
+
+        if (frontMatter == null)
+        {
+            return null;
+        }
+
         var createdDateFrontMatter =
-            TimeZoneInfo.ConvertTimeToUtc(localCreatedDateFrontMatter, TimeZoneInfo.FindSystemTimeZoneById("GB"));
+            TimeZoneInfo.ConvertTimeToUtc(frontMatter.CreatedDate, TimeZoneInfo.FindSystemTimeZoneById("GB"));
 
         return createdDateFrontMatter;
     }
