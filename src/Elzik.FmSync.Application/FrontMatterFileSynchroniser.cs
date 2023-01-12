@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using EPS.Extensions.YamlMarkdown;
 using Microsoft.Extensions.Logging;
 
 namespace Elzik.FmSync;
