@@ -1,4 +1,5 @@
-﻿using EPS.Extensions.YamlMarkdown;
+﻿using Elzik.FmSync.Domain;
+using EPS.Extensions.YamlMarkdown;
 using YamlDotNet.Serialization;
 
 namespace Elzik.FmSync.Infrastructure;
