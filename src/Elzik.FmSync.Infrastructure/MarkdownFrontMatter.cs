@@ -1,4 +1,5 @@
 ﻿using EPS.Extensions.YamlMarkdown;
+using YamlDotNet.Serialization;
 
 namespace Elzik.FmSync.Infrastructure;
 
@@ -8,20 +9,23 @@ public class MarkdownFrontMatter : IMarkdownFrontMatter
 
     public MarkdownFrontMatter()
     {
-        _createdDateYamlMarkdown = new YamlMarkdown<CreatedDateFrontMatter>();
+        var deserializerBuilder = new DeserializerBuilder();
+        deserializerBuilder.IgnoreUnmatchedProperties();
+
+        _createdDateYamlMarkdown = new YamlMarkdown<CreatedDateFrontMatter>(deserializerBuilder.Build());
     }
 
     public DateTime? GetCreatedDateUtc(string markDownFilePath)
     {
         var frontMatter = _createdDateYamlMarkdown.Parse(markDownFilePath);
 
-        if (frontMatter == null)
+        if (frontMatter?.CreatedDate == null)
         {
             return null;
         }
 
         var createdDateFrontMatter =
-            TimeZoneInfo.ConvertTimeToUtc(frontMatter.CreatedDate, TimeZoneInfo.FindSystemTimeZoneById("GB"));
+            TimeZoneInfo.ConvertTimeToUtc(frontMatter.CreatedDate.Value, TimeZoneInfo.FindSystemTimeZoneById("GB"));
 
         return createdDateFrontMatter;
     }
