@@ -53,7 +53,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
                                            "than the created date specified in its Front Matter ({FrontMatterCreatedDate})",
                         markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
 
-                    File.SetCreationTimeUtc(markDownFilePath, frontMatterCreatedDate.Value);
+                    _file.SetCreationTimeUtc(markDownFilePath, frontMatterCreatedDate.Value);
                     editCount++;
 
                     _logger.LogInformation("{FilePath} file created date updated to match that of its Front Matter.", markDownFilePath);
