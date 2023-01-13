@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Elzik.FmSync.Domain;
 using Microsoft.Extensions.Logging;
+using Thinktecture.IO;
 
 namespace Elzik.FmSync;
 
@@ -8,11 +9,13 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 {
     private readonly ILogger<FrontMatterFileSynchroniser> _logger;
     private readonly IMarkdownFrontMatter _markdownFrontMatter;
+    private readonly IFile _file;
 
-    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger, IMarkdownFrontMatter markdownFrontMatter)
+    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger, IMarkdownFrontMatter markdownFrontMatter, IFile file)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _markdownFrontMatter = markdownFrontMatter ?? throw new ArgumentNullException(nameof(markdownFrontMatter));
+        _file = file ?? throw new ArgumentNullException(nameof(file));
     }
 
     public void SyncCreationDates(string directoryPath)
@@ -34,7 +37,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 
             if (frontMatterCreatedDate.HasValue)
             {
-                var fileCreatedDate = GetFileCreatedDate(markDownFilePath);
+                var fileCreatedDate = _file.GetCreationTimeUtc(markDownFilePath);
 
                 var comparisonResult = fileCreatedDate.CompareTo(frontMatterCreatedDate);
 
@@ -65,12 +68,5 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         var elapsedTime = Stopwatch.GetElapsedTime(startTime);
         _logger.LogInformation("Synchronised {EditedFileCount} files out of a total {TotalFileCount} in {TimeTaken}.", 
             editCount, markdownFiles.Count, elapsedTime);
-    }
-
-    private static DateTime GetFileCreatedDate(string markDownFilePath)
-    {
-        var markdownFileInfo = new FileInfo(markDownFilePath);
-
-        return markdownFileInfo.CreationTimeUtc;
     }
 }
