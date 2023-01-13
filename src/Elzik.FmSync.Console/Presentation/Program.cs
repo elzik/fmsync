@@ -3,11 +3,14 @@ using Elzik.FmSync.Domain;
 using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Thinktecture.IO;
+using Thinktecture.IO.Adapters;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
         services.AddTransient<IMarkdownFrontMatter, MarkdownFrontMatter>();
+        services.AddTransient<IFile, FileAdapter>();
         services.AddTransient<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
     })
     .Build();
