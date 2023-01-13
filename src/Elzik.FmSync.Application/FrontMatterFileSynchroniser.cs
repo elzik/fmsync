@@ -10,12 +10,14 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
     private readonly ILogger<FrontMatterFileSynchroniser> _logger;
     private readonly IMarkdownFrontMatter _markdownFrontMatter;
     private readonly IFile _file;
+    private readonly IDirectory _directory;
 
-    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger, IMarkdownFrontMatter markdownFrontMatter, IFile file)
+    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger, IMarkdownFrontMatter markdownFrontMatter, IFile file, IDirectory directory)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _markdownFrontMatter = markdownFrontMatter ?? throw new ArgumentNullException(nameof(markdownFrontMatter));
         _file = file ?? throw new ArgumentNullException(nameof(file));
+        _directory = directory ?? throw new ArgumentNullException(nameof(directory));
     }
 
     public void SyncCreationDates(string directoryPath)
@@ -25,7 +27,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 
         _logger.LogInformation("Synchronising files in {directoryPath}", directoryPath);
 
-        var markdownFiles = Directory.EnumerateFiles(directoryPath, "*.md", new EnumerationOptions()
+        var markdownFiles = _directory.EnumerateFiles(directoryPath, "*.md", new EnumerationOptions()
         {
             MatchCasing = MatchCasing.CaseInsensitive,
             RecurseSubdirectories = true
