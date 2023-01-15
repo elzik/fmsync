@@ -13,7 +13,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Infrastructure
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Domain", "src\Elzik.FmSync.Domain\Elzik.FmSync.Domain.csproj", "{5DB426BF-24B5-4E04-A593-A803FE5DC304}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elzik.FmSync.Infrastructure.Tests.Integration", "tests\Elzik.FmSync.Infrastructure.Tests.Integration\Elzik.FmSync.Infrastructure.Tests.Integration.csproj", "{1367919E-184E-4550-B8BB-ECB37C056594}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Infrastructure.Tests.Integration", "tests\Elzik.FmSync.Infrastructure.Tests.Integration\Elzik.FmSync.Infrastructure.Tests.Integration.csproj", "{1367919E-184E-4550-B8BB-ECB37C056594}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elzik.FmSync.Application.Tests.Unit", "tests\Elzik.FmSync.Application.Tests.Unit\Elzik.FmSync.Application.Tests.Unit.csproj", "{A3BB6C79-4D8F-4515-92B5-F169F929AF94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,12 +43,17 @@ Global
 		{1367919E-184E-4550-B8BB-ECB37C056594}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1367919E-184E-4550-B8BB-ECB37C056594}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1367919E-184E-4550-B8BB-ECB37C056594}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3BB6C79-4D8F-4515-92B5-F169F929AF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3BB6C79-4D8F-4515-92B5-F169F929AF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3BB6C79-4D8F-4515-92B5-F169F929AF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3BB6C79-4D8F-4515-92B5-F169F929AF94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{1367919E-184E-4550-B8BB-ECB37C056594} = {CF17A395-4536-42A5-B10B-D2D8EC602BC3}
+		{A3BB6C79-4D8F-4515-92B5-F169F929AF94} = {CF17A395-4536-42A5-B10B-D2D8EC602BC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87997352-098C-46F7-8BDC-29A370A780DB}

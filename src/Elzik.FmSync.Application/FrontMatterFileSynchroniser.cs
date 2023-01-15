@@ -25,7 +25,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         var startTime = Stopwatch.GetTimestamp();
         var editCount = 0;
 
-        _logger.LogInformation("Synchronising files in {directoryPath}", directoryPath);
+        _logger.LogInformation("Synchronising files in {DirectoryPath}", directoryPath);
 
         var markdownFiles = _directory.EnumerateFiles(directoryPath, "*.md", new EnumerationOptions()
         {

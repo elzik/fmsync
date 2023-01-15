@@ -3,6 +3,7 @@
     "Elzik.FmSync.Console": {
       "commandName": "Project",
       "commandLineArgs": ".\\..\\..\\..\\..\\..\\tests\\TestFiles"
+      //"commandLineArgs": "C:\\TempObsidian"
     },
     "WSL": {
       "commandName": "WSL2",
