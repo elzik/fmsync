@@ -2,6 +2,7 @@
 using Elzik.FmSync.Domain;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.ReturnsExtensions;
 using Thinktecture.IO;
 using Xunit;
 
@@ -14,6 +15,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
         private readonly IMarkdownFrontMatter _mockMarkDownFrontMatter;
         private readonly IFile _mockFile;
         private readonly IDirectory _mockDirectory;
+        private readonly FrontMatterFileSynchroniser _frontMatterFileSynchroniser;
 
         public FrontMatterFileSynchroniserTests()
         {
@@ -27,6 +29,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _fixture.Register(() => _mockMarkDownFrontMatter);
             _fixture.Register(() => _mockFile);
             _fixture.Register(() => _mockDirectory);
+            _frontMatterFileSynchroniser = _fixture.Create<FrontMatterFileSynchroniser>();
         }
 
         [Fact]
@@ -36,8 +39,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             var testDirectoryPath = _fixture.Create<string>();
             
             // Act
-            var frontMatterFileSynchroniser = _fixture.Create<FrontMatterFileSynchroniser>();
-            frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
             _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), Arg.Is($"Synchronising files in {testDirectoryPath}"));
@@ -48,15 +50,33 @@ namespace Elzik.FmSync.Application.Tests.Unit
         {
             // Arrange
             var testDirectoryPath = _fixture.Create<string>();
-            //_mockDirectory.EnumerateFiles(Arg.Is(testDirectoryPath)).Returns(Array.Empty<string>());
 
             // Act
-            var frontMatterFileSynchroniser = _fixture.Create<FrontMatterFileSynchroniser>();
-            frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
             _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), Arg.Is<string>(s =>
                 s.StartsWith("Synchronised 0 files out of a total 0 in")));
+        }
+
+        [Fact]
+        public void SyncCreationDates_NoMarkDownCreationDate_Logs()
+        {
+            // Arrange
+            var testDirectoryPath = _fixture.Create<string>();
+            var testFilePath = _fixture.Create<string>();
+            _mockDirectory.EnumerateFiles(Arg.Is(testDirectoryPath), Arg.Is("*.md"), 
+                Arg.Is<EnumerationOptions>(options => options.MatchCasing == MatchCasing.CaseInsensitive 
+                                                      && options.RecurseSubdirectories))
+                .Returns(new[] { testFilePath });
+            _mockMarkDownFrontMatter.GetCreatedDateUtc(testFilePath).ReturnsNull();
+
+            // Act
+            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+
+            // Assert
+            _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), 
+                Arg.Is($"{testFilePath} has no Front Matter created date."));
         }
     }
 }
