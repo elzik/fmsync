@@ -33,7 +33,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
         }
 
         [Fact]
-        public void SyncCreationDates_DirectoryPathSupplied_LogsDirectoryPath()
+        public void SyncCreationDates_DirectoryPathSupplied_OnlyLogs()
         {
             // Arrange
             var testDirectoryPath = _fixture.Create<string>();
@@ -43,10 +43,11 @@ namespace Elzik.FmSync.Application.Tests.Unit
 
             // Assert
             _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), Arg.Is($"Synchronising files in {testDirectoryPath}"));
+            _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
         }
 
         [Fact]
-        public void SyncCreationDates_NoMarkDownFiles_LogsExpectedSummary()
+        public void SyncCreationDates_NoMarkDownFiles_OnlyLogs()
         {
             // Arrange
             var testDirectoryPath = _fixture.Create<string>();
@@ -57,10 +58,11 @@ namespace Elzik.FmSync.Application.Tests.Unit
             // Assert
             _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), Arg.Is<string>(s =>
                 s.StartsWith("Synchronised 0 files out of a total 0 in")));
+            _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
         }
 
         [Fact]
-        public void SyncCreationDates_NoMarkDownCreationDate_Logs()
+        public void SyncCreationDates_NoMarkDownCreationDate_Only()
         {
             // Arrange
             var testDirectoryPath = _fixture.Create<string>();
@@ -77,6 +79,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             // Assert
             _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), 
                 Arg.Is($"{testFilePath} has no Front Matter created date."));
+            _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
         }
     }
 }
