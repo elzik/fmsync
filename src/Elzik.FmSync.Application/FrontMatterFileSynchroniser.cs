@@ -22,8 +22,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 
     public void SyncCreationDates(string directoryPath)
     {
-        var startTime = Stopwatch.GetTimestamp();
-        var editCount = 0;
+        var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, TotalCount: 0);
 
         _logger.LogInformation("Synchronising files in {DirectoryPath}", directoryPath);
 
@@ -31,10 +30,12 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         {
             MatchCasing = MatchCasing.CaseInsensitive,
             RecurseSubdirectories = true
-        }).ToList();
+        });
 
         foreach (var markDownFilePath in markdownFiles)
         {
+            loggingInfo.TotalCount++;
+
             var frontMatterCreatedDate = _markdownFrontMatter.GetCreatedDateUtc(markDownFilePath);
 
             if (frontMatterCreatedDate.HasValue)
@@ -56,7 +57,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
                         markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
 
                     _file.SetCreationTimeUtc(markDownFilePath, frontMatterCreatedDate.Value);
-                    editCount++;
+                    loggingInfo.EditedCount++;
 
                     _logger.LogInformation("{FilePath} file created date updated to match that of its Front Matter.", markDownFilePath);
                 }
@@ -67,8 +68,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
             }
         }
 
-        var elapsedTime = Stopwatch.GetElapsedTime(startTime);
         _logger.LogInformation("Synchronised {EditedFileCount} files out of a total {TotalFileCount} in {TimeTaken}.", 
-            editCount, markdownFiles.Count, elapsedTime);
+            loggingInfo.EditedCount, loggingInfo.TotalCount, Stopwatch.GetElapsedTime(loggingInfo.StartTime));
     }
 }
