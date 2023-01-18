@@ -42,7 +42,8 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
-            _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), Arg.Is($"Synchronising files in {testDirectoryPath}"));
+            _mockLogger.Received(1).Log(LogLevel.Information, $"Synchronising files in {testDirectoryPath}");
+
             _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
         }
 
@@ -56,30 +57,64 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
-            _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), Arg.Is<string>(s =>
+            _mockLogger.Received(1).Log(LogLevel.Information, Arg.Is<string>(s =>
                 s.StartsWith("Synchronised 0 files out of a total 0 in")));
             _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
         }
 
         [Fact]
-        public void SyncCreationDates_NoMarkDownCreationDate_Only()
+        public void SyncCreationDates_NoMarkDownCreationDate_OnlyLogs()
         {
             // Arrange
             var testDirectoryPath = _fixture.Create<string>();
             var testFilePath = _fixture.Create<string>();
-            _mockDirectory.EnumerateFiles(Arg.Is(testDirectoryPath), Arg.Is("*.md"), 
-                Arg.Is<EnumerationOptions>(options => options.MatchCasing == MatchCasing.CaseInsensitive 
-                                                      && options.RecurseSubdirectories))
-                .Returns(new[] { testFilePath });
+            SetMockDirectoryFilePaths(testDirectoryPath, testFilePath);
             _mockMarkDownFrontMatter.GetCreatedDateUtc(testFilePath).ReturnsNull();
 
             // Act
             _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
-            _mockLogger.Received(1).Log(Arg.Is(LogLevel.Information), 
-                Arg.Is($"{testFilePath} has no Front Matter created date."));
+            _mockLogger.Received(1).Log(LogLevel.Information, 
+                $"{testFilePath} has no Front Matter created date.");
             _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
+        }
+
+        [Fact]
+        public void SyncCreationDates_MarkDownAndFileDateEqual_OnlyLogs()
+        {
+            // Arrange
+            var testDirectoryPath = _fixture.Create<string>();
+            var testFilePath = _fixture.Create<string>();
+            SetMockDirectoryFilePaths(testDirectoryPath, testFilePath);
+            var testDate = _fixture.Create<DateTime>();
+            _mockFile.GetCreationTimeUtc(testFilePath).Returns(testDate);
+            _mockMarkDownFrontMatter.GetCreatedDateUtc(testFilePath).Returns(testDate);
+
+            // Act
+            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+
+            // Assert
+            _mockLogger.Received(1).Log(
+                LogLevel.Information,
+                Arg.Is<IDictionary<string, object>>(
+                    dict =>
+                        dict.Any(kv => kv.Key == "{OriginalFormat}" 
+                                       && (string)kv.Value == "{FilePath} has a file created date ({FileCreatedDate}) " +
+                                       "the same as the created date specified in its Front Matter.") &&
+                        dict.Any(kv => kv.Key == "FilePath" 
+                                       && (string)kv.Value == testFilePath) &&
+                        dict.Any(kv => kv.Key == "FileCreatedDate" 
+                                       && (DateTime)kv.Value == testDate)));
+            _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
+        }
+
+        private void SetMockDirectoryFilePaths(string testDirectoryPath, params string[] testFilePath)
+        {
+            _mockDirectory.EnumerateFiles(testDirectoryPath, "*.md",
+                    Arg.Is<EnumerationOptions>(options =>
+                        options.MatchCasing == MatchCasing.CaseInsensitive && options.RecurseSubdirectories))
+                .Returns(testFilePath);
         }
     }
 }
