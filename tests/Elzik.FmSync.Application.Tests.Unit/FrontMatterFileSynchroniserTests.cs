@@ -11,25 +11,32 @@ namespace Elzik.FmSync.Application.Tests.Unit
     public class FrontMatterFileSynchroniserTests
     {
         private readonly Fixture _fixture;
-        private readonly MockLogger<FrontMatterFileSynchroniser> _mockLogger;
+        private readonly MockLogger<FrontMatterFolderSynchroniser> _mockLogger;
         private readonly IMarkdownFrontMatter _mockMarkDownFrontMatter;
         private readonly IFile _mockFile;
         private readonly IDirectory _mockDirectory;
-        private readonly FrontMatterFileSynchroniser _frontMatterFileSynchroniser;
+        private readonly MockLogger<FrontMatterFileSynchroniser> _mockFileLogger;
+        private readonly IFrontMatterFileSynchroniser _realFileSynchroniser;
+        private readonly FrontMatterFolderSynchroniser _frontMatterFolderSynchroniser;
+
 
         public FrontMatterFileSynchroniserTests()
         {
-            _mockLogger = Substitute.For<MockLogger<FrontMatterFileSynchroniser>>();
+            _mockLogger = Substitute.For<MockLogger<FrontMatterFolderSynchroniser>>();
             _mockMarkDownFrontMatter = Substitute.For<IMarkdownFrontMatter>();
             _mockFile = Substitute.For<IFile>();
             _mockDirectory = Substitute.For<IDirectory>();
 
+            _mockFileLogger = Substitute.For<MockLogger<FrontMatterFileSynchroniser>>();
+            _realFileSynchroniser = new FrontMatterFileSynchroniser(_mockFileLogger, _mockMarkDownFrontMatter, _mockFile);
+
             _fixture = new Fixture();
-            _fixture.Register<ILogger<FrontMatterFileSynchroniser>>(() => _mockLogger);
+            _fixture.Register<ILogger<FrontMatterFolderSynchroniser>>(() => _mockLogger);
             _fixture.Register(() => _mockMarkDownFrontMatter);
             _fixture.Register(() => _mockFile);
             _fixture.Register(() => _mockDirectory);
-            _frontMatterFileSynchroniser = _fixture.Create<FrontMatterFileSynchroniser>();
+            _fixture.Register(() => _realFileSynchroniser);
+            _frontMatterFolderSynchroniser = _fixture.Create<FrontMatterFolderSynchroniser>();
         }
 
         [Fact]
@@ -39,7 +46,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             var testDirectoryPath = _fixture.Create<string>();
             
             // Act
-            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
             _mockLogger.Received(1).Log(LogLevel.Information, $"Synchronising files in {testDirectoryPath}");
@@ -54,7 +61,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             var testDirectoryPath = _fixture.Create<string>();
 
             // Act
-            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
             _mockLogger.Received(1).Log(LogLevel.Information, Arg.Is<string>(s =>
@@ -72,10 +79,10 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _mockMarkDownFrontMatter.GetCreatedDateUtc(testFilePath).ReturnsNull();
 
             // Act
-            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
-            _mockLogger.Received(1).Log(LogLevel.Information, 
+            _mockFileLogger.Received(1).Log(LogLevel.Information, 
                 $"{testFilePath} has no Front Matter created date.");
             _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
         }
@@ -92,10 +99,10 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _mockMarkDownFrontMatter.GetCreatedDateUtc(testFilePath).Returns(testDate);
 
             // Act
-            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
-            _mockLogger.Received(1).Log(
+            _mockFileLogger.Received(1).Log(
                 LogLevel.Information,
                 Arg.Is<IDictionary<string, object>>(
                     dict =>
@@ -122,10 +129,10 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _mockMarkDownFrontMatter.GetCreatedDateUtc(testFilePath).Returns(testMarkDownDate);
 
             // Act
-            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
-            _mockLogger.Received(1).Log(
+            _mockFileLogger.Received(1).Log(
                 LogLevel.Information,
                 Arg.Is<IDictionary<string, object>>(
                     dict =>
@@ -156,10 +163,10 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _mockMarkDownFrontMatter.GetCreatedDateUtc(testFilePath).Returns(testMarkDownDate);
 
             // Act
-            _frontMatterFileSynchroniser.SyncCreationDates(testDirectoryPath);
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
-            _mockLogger.Received(1).Log(
+            _mockFileLogger.Received(1).Log(
                 LogLevel.Information,
                 Arg.Is<IDictionary<string, object>>(
                     dict =>

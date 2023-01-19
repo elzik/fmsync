@@ -2,5 +2,5 @@
 
 public interface IFrontMatterFileSynchroniser
 {
-    void SyncCreationDates(string directoryPath);
+    SyncResult SyncCreationDate(string markDownFilePath);
 }

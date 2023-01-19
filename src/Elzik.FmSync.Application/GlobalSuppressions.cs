@@ -10,4 +10,4 @@ using System.Diagnostics.CodeAnalysis;
     "IDE0042:Deconstruct variable declaration", 
     Justification = "I want to keep all variables concerned with logging together without needing to create a separate class to do so.", 
     Scope = "member", 
-    Target = "~M:Elzik.FmSync.FrontMatterFileSynchroniser.SyncCreationDates(System.String)")]
+    Target = "~M:Elzik.FmSync.FrontMatterFolderSynchroniser.SyncCreationDates(System.String)")]

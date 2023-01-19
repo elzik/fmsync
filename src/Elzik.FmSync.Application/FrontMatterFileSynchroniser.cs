@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Elzik.FmSync.Domain;
+﻿using Elzik.FmSync.Domain;
 using Microsoft.Extensions.Logging;
 using Thinktecture.IO;
 
@@ -10,65 +9,53 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
     private readonly ILogger<FrontMatterFileSynchroniser> _logger;
     private readonly IMarkdownFrontMatter _markdownFrontMatter;
     private readonly IFile _file;
-    private readonly IDirectory _directory;
 
-    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger, IMarkdownFrontMatter markdownFrontMatter, IFile file, IDirectory directory)
+    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger,
+        IMarkdownFrontMatter markdownFrontMatter, IFile file)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _markdownFrontMatter = markdownFrontMatter ?? throw new ArgumentNullException(nameof(markdownFrontMatter));
         _file = file ?? throw new ArgumentNullException(nameof(file));
-        _directory = directory ?? throw new ArgumentNullException(nameof(directory));
     }
 
-    public void SyncCreationDates(string directoryPath)
+    public SyncResult SyncCreationDate(string markDownFilePath)
     {
-        var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, TotalCount: 0);
+        var fileCreatedDateUpdated = false;
+        var frontMatterCreatedDate = _markdownFrontMatter.GetCreatedDateUtc(markDownFilePath);
 
-        _logger.LogInformation("Synchronising files in {DirectoryPath}", directoryPath);
-
-        var markdownFiles = _directory.EnumerateFiles(directoryPath, "*.md", new EnumerationOptions()
+        if (frontMatterCreatedDate.HasValue)
         {
-            MatchCasing = MatchCasing.CaseInsensitive,
-            RecurseSubdirectories = true
-        });
+            var fileCreatedDate = _file.GetCreationTimeUtc(markDownFilePath);
 
-        foreach (var markDownFilePath in markdownFiles)
-        {
-            loggingInfo.TotalCount++;
+            var comparisonResult = fileCreatedDate.CompareTo(frontMatterCreatedDate);
 
-            var frontMatterCreatedDate = _markdownFrontMatter.GetCreatedDateUtc(markDownFilePath);
-
-            if (frontMatterCreatedDate.HasValue)
+            if (comparisonResult == 0)
             {
-                var fileCreatedDate = _file.GetCreationTimeUtc(markDownFilePath);
-
-                var comparisonResult = fileCreatedDate.CompareTo(frontMatterCreatedDate);
-
-                if (comparisonResult == 0)
-                {
-                    _logger.LogInformation("{FilePath} has a file created date ({FileCreatedDate}) the same as the created " +
-                                           "date specified in its Front Matter.", markDownFilePath, fileCreatedDate);
-                }
-                else
-                {
-                    var relativeDescription = comparisonResult < 0 ? "earlier" : "later";
-                    _logger.LogInformation("{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
-                                           "than the created date specified in its Front Matter ({FrontMatterCreatedDate})",
-                        markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
-
-                    _file.SetCreationTimeUtc(markDownFilePath, frontMatterCreatedDate.Value);
-                    loggingInfo.EditedCount++;
-
-                    _logger.LogInformation("{FilePath} file created date updated to match that of its Front Matter.", markDownFilePath);
-                }
+                _logger.LogInformation("{FilePath} has a file created date ({FileCreatedDate}) the same as the created " +
+                                       "date specified in its Front Matter.", markDownFilePath, fileCreatedDate);
             }
             else
             {
-                _logger.LogInformation("{FilePath} has no Front Matter created date.", markDownFilePath);
+                var relativeDescription = comparisonResult < 0 ? "earlier" : "later";
+                _logger.LogInformation("{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
+                                       "than the created date specified in its Front Matter ({FrontMatterCreatedDate})",
+                    markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
+
+                _file.SetCreationTimeUtc(markDownFilePath, frontMatterCreatedDate.Value);
+                fileCreatedDateUpdated = true;
+
+                _logger.LogInformation("{FilePath} file created date updated to match that of its Front Matter.",
+                    markDownFilePath);
             }
         }
+        else
+        {
+            _logger.LogInformation("{FilePath} has no Front Matter created date.", markDownFilePath);
+        }
 
-        _logger.LogInformation("Synchronised {EditedFileCount} files out of a total {TotalFileCount} in {TimeTaken}.",
-            loggingInfo.EditedCount, loggingInfo.TotalCount, Stopwatch.GetElapsedTime(loggingInfo.StartTime));
+        return new SyncResult()
+        {
+            FileCreatedDateUpdated = fileCreatedDateUpdated
+        };
     }
 }
