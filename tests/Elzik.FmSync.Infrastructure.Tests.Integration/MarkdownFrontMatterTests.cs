@@ -34,5 +34,35 @@ namespace Elzik.FmSync.Infrastructure.Tests.Integration
             // Assert
             createdDate.Should().BeNull();
         }
+
+        [Theory]
+        [InlineData("./TestFiles/YamlContainsOnlyMinCreatedDate.md")]
+        public void GetCreatedDate_YamlContainsMinDate_ReturnsCreatedDate(string testFilePath)
+        {
+            // Arrange
+            var expectedDateUtc = DateTime.MinValue;
+
+            // Act
+            var markdownFrontMatter = new MarkdownFrontMatter();
+            var createdDate = markdownFrontMatter.GetCreatedDateUtc(testFilePath);
+
+            // Assert
+            createdDate.Should().Be(expectedDateUtc);
+        }
+
+        [Theory]
+        [InlineData("./TestFiles/YamlContainsOnlyMaxCreatedDate.md")]
+        public void GetCreatedDate_YamlContainsMaxDate_ReturnsCreatedDate(string testFilePath)
+        {
+            // Arrange
+            var expectedDateUtc = DateTime.MaxValue;
+
+            // Act
+            var markdownFrontMatter = new MarkdownFrontMatter();
+            var createdDate = markdownFrontMatter.GetCreatedDateUtc(testFilePath);
+
+            // Assert
+            createdDate.Should().Be(expectedDateUtc);
+        }
     }
 }

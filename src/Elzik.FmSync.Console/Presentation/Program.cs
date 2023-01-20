@@ -12,6 +12,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient<IMarkdownFrontMatter, MarkdownFrontMatter>();
         services.AddTransient<IFile, FileAdapter>();
         services.AddTransient<IDirectory, DirectoryAdapter>();
+        services.AddTransient<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
         services.AddTransient<IFrontMatterFolderSynchroniser, FrontMatterFolderSynchroniser>();
     })
     .Build();
