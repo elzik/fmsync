@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using AutoFixture;
+﻿using AutoFixture;
 using Elzik.FmSync.Domain;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
