@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Domain", "src\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Infrastructure.Tests.Integration", "tests\Elzik.FmSync.Infrastructure.Tests.Integration\Elzik.FmSync.Infrastructure.Tests.Integration.csproj", "{1367919E-184E-4550-B8BB-ECB37C056594}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elzik.FmSync.Application.Tests.Unit", "tests\Elzik.FmSync.Application.Tests.Unit\Elzik.FmSync.Application.Tests.Unit.csproj", "{A3BB6C79-4D8F-4515-92B5-F169F929AF94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Application.Tests.Unit", "tests\Elzik.FmSync.Application.Tests.Unit\Elzik.FmSync.Application.Tests.Unit.csproj", "{A3BB6C79-4D8F-4515-92B5-F169F929AF94}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

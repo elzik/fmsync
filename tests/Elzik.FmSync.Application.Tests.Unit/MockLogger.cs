@@ -2,7 +2,7 @@
 {
     using Microsoft.Extensions.Logging;
 
-    // This class is necessary because mocking an ILogger will not work; Further explanation here:
+    // This class is necessary because mocking an ILogger will not work; further explanation here:
     // https://github.com/nsubstitute/NSubstitute/issues/597#issuecomment-1081422618
 
     public abstract class MockLogger<T> : ILogger<T>
@@ -25,10 +25,8 @@
 
         public abstract void Log(LogLevel logLevel, IDictionary<string, object> state, Exception? exception = null);
 
-        public virtual bool IsEnabled(LogLevel logLevel)
-        {
-            return true;
-        }
+        public virtual bool IsEnabled(LogLevel logLevel) => true;
+
         public abstract IDisposable? BeginScope<TState>(TState state) where TState : notnull;
     }
 }
