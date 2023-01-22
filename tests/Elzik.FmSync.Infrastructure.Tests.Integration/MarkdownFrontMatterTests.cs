@@ -8,6 +8,7 @@ namespace Elzik.FmSync.Infrastructure.Tests.Integration
         [Theory]
         [InlineData("./TestFiles/YamlContainsOnlyGBCreatedDate.md")]
         [InlineData("./TestFiles/YamlContainsGBCreatedDateAndOtherValue.md")]
+        [InlineData("./TestFiles/YamlContainsOnlyGBCreatedDateWithPrecedingNewLines.md")]
         public void GetCreatedDate_YamlContainsCreatedDate_ReturnsCreatedDate(string testFilePath)
         {
             // Arrange
@@ -25,7 +26,14 @@ namespace Elzik.FmSync.Infrastructure.Tests.Integration
         [InlineData("./TestFiles/YamlIsEmpty.md")]
         [InlineData("./TestFiles/YamlContainsOnlyWhitespace.md")]
         [InlineData("./TestFiles/YamlContainsOnlyNonCreatedDate.md")]
-        public void GetCreatedDate_YamlContainsNoCreatedDate_ReturnsNullDate(string testFilePath)
+        [InlineData("./TestFiles/YamlIsMissingBodyIsPresent.md")]
+        [InlineData("./TestFiles/YamlSectionNeverClosed.md")]
+        [InlineData("./TestFiles/YamlSectionNeverOpened.md")]
+        [InlineData("./TestFiles/TextPrecedesYamlSection.md")]
+        [InlineData("./TestFiles/WhitespacePrecedesYamlSection.md")]
+        [InlineData("./TestFiles/YamlSectionOpenedWithExtraCharacters.md")]
+        [InlineData("./TestFiles/YamlSectionClosedWithExtraCharacters.md")]
+        public void GetCreatedDate_YamlContainsNoCreatedDateOrNoValidYaml_ReturnsNullDate(string testFilePath)
         {
             // Act
             var markdownFrontMatter = new MarkdownFrontMatter();
