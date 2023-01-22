@@ -1,8 +1,10 @@
 ﻿using Elzik.FmSync;
 using Elzik.FmSync.Domain;
 using Elzik.FmSync.Infrastructure;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Thinktecture.IO;
 using Thinktecture.IO.Adapters;
 
@@ -15,6 +17,12 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
         services.AddTransient<IFrontMatterFolderSynchroniser, FrontMatterFolderSynchroniser>();
     })
+    .ConfigureAppConfiguration((_, config) =>
+    {
+        config.AddJsonFile("appSettings.json", true, true);
+    })
+    .ConfigureLogging((context, config) => 
+        config.AddConfiguration(context.Configuration.GetSection("Logging")))
     .Build();
 
 var searchPath = args.Length == 0
