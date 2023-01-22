@@ -20,7 +20,7 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
 
     public void SyncCreationDates(string directoryPath)
     {
-        var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, TotalCount: 0);
+        var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, ErrorCount: 0,TotalCount: 0);
 
         _logger.LogInformation("Synchronising files in {DirectoryPath}", directoryPath);
 
@@ -34,13 +34,32 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
         {
             loggingInfo.TotalCount++;
 
-            if (_frontMatterFileSynchroniser.SyncCreationDate(markDownFilePath).FileCreatedDateUpdated)
+            try
             {
-                loggingInfo.EditedCount++;
+                if (_frontMatterFileSynchroniser.SyncCreationDate(markDownFilePath).FileCreatedDateUpdated)
+                {
+                    loggingInfo.EditedCount++;
+                }
+            }
+            catch (Exception e)
+            {
+                loggingInfo.ErrorCount++;
+                var additionalMessage = string.Empty;
+                if (e.InnerException != null)
+                {
+                    additionalMessage = $" {e.InnerException.Message}";
+                }
+                _logger.LogError(markDownFilePath + " - " + e.Message + additionalMessage);
             }
         }
 
-        _logger.LogInformation("Synchronised {EditedFileCount} files out of a total {TotalFileCount} in {TimeTaken}.",
-            loggingInfo.EditedCount, loggingInfo.TotalCount, Stopwatch.GetElapsedTime(loggingInfo.StartTime));
+        var errorsMessage = string.Empty;
+        if (loggingInfo.ErrorCount > 0)
+        {
+            errorsMessage = $" and failed {loggingInfo.ErrorCount}";
+        }
+
+        _logger.LogInformation("Synchronised {EditedFileCount}{ErrorsMessage} files out of a total {TotalFileCount} in {TimeTaken}.",
+            loggingInfo.EditedCount, errorsMessage, loggingInfo.TotalCount, Stopwatch.GetElapsedTime(loggingInfo.StartTime));
     }
 }
