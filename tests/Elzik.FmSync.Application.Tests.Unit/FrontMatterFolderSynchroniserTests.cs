@@ -1,6 +1,8 @@
 ﻿using AutoFixture;
+using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
+using NSubstitute.ExceptionExtensions;
 using Thinktecture.IO;
 using Xunit;
 
@@ -91,6 +93,68 @@ namespace Elzik.FmSync.Application.Tests.Unit
             // Assert
             _mockLogger.Received(1).Log(LogLevel.Information, Arg.Is<string>(s =>
                 s.StartsWith($"Synchronised {testFiles.Count(pair => pair.Value)} files out of a total {testFiles.Count} in")));
+        }
+
+        [Fact]
+        public void SyncCreationDates_SyncFailsWithInnerException_LogsError()
+        {
+            // Arrange
+            var testDirectoryPath = _fixture.Create<string>();
+            var testFile = _fixture.Create<KeyValuePair<string, bool>>();
+            var testFiles = new List<KeyValuePair<string, bool>>() { testFile };
+            SetMockDirectoryFilePaths(testDirectoryPath, testFiles);
+            var testException = new Exception(_fixture.Create<string>(), _fixture.Create<Exception>());
+            _mockFileSynchroniser.SyncCreationDate(testFile.Key).Throws(testException);
+
+            // Act
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
+
+            // Assert
+            _mockLogger.Received(1).Log( LogLevel.Error, 
+                testFile.Key + " - " + testException.Message + " " + testException.InnerException?.Message);
+        }
+
+        [Fact]
+        public void SyncCreationDates_SyncFailsWithoutInnerException_LogsError()
+        {
+            // Arrange
+            var testDirectoryPath = _fixture.Create<string>();
+            var testFile = _fixture.Create<KeyValuePair<string, bool>>();
+            var testFiles = new List<KeyValuePair<string, bool>>() { testFile };
+            SetMockDirectoryFilePaths(testDirectoryPath, testFiles);
+            var testException = new Exception(_fixture.Create<string>());
+            _mockFileSynchroniser.SyncCreationDate(testFile.Key).Throws(testException);
+
+            // Act
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
+
+            // Assert
+            _mockLogger.Received(1).Log(LogLevel.Error,
+                testFile.Key + " - " + testException.Message);
+        }
+
+        [Fact]
+        public void SyncCreationDates_SyncFails_LogsSummary()
+        {
+            // Arrange
+            var testDirectoryPath = _fixture.Create<string>();
+            var testFailingFile = new KeyValuePair<string, bool>(_fixture.Create<string>(), false);
+            var testFiles = new []
+            {
+                testFailingFile,
+                new (_fixture.Create<string>(), false),
+                new (_fixture.Create<string>(), true)
+            };
+            SetMockDirectoryFilePaths(testDirectoryPath, testFiles);
+            var testException = new Exception(_fixture.Create<string>(), _fixture.Create<Exception>());
+            _mockFileSynchroniser.SyncCreationDate(testFailingFile.Key).Throws(testException);
+
+            // Act
+            _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
+
+            // Assert
+            _mockLogger.Received(1).Log(LogLevel.Information, Arg.Is<string>(s =>
+                s.StartsWith("Synchronised 1 and failed 1 files out of a total 3 in")));
         }
 
         private void SetMockDirectoryFilePaths(string testDirectoryPath, IEnumerable<KeyValuePair<string, bool>> testFiles)
