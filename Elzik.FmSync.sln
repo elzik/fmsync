@@ -17,6 +17,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Infrastructure
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Application.Tests.Unit", "tests\Elzik.FmSync.Application.Tests.Unit\Elzik.FmSync.Application.Tests.Unit.csproj", "{A3BB6C79-4D8F-4515-92B5-F169F929AF94}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6839B032-FEC5-4978-A064-BD18FB683118}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
