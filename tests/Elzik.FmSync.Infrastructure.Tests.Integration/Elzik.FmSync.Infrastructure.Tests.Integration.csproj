@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Elzik.FmSync.Infrastructure\Elzik.FmSync.Infrastructure.csproj" />
+  </ItemGroup>
+	
+	<ItemGroup>
+		<None Include="..\TestFiles\**" CopyToOutputDirectory="PreserveNewest" LinkBase="TestFiles\" />
+	</ItemGroup>
+	
+	<ItemGroup>
+	  <PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
+	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
+	  <PackageReference Include="SonarAnalyzer.CSharp" Version="8.51.0.59060">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="xunit.analyzers" Version="1.1.0" />
+	  <PackageReference Include="xunit.core" Version="2.4.2" />
+	</ItemGroup>
+
+</Project>
