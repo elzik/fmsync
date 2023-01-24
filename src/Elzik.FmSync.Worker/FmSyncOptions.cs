@@ -2,6 +2,6 @@
 {
     public class FmSyncOptions
     {
-        public IEnumerable<string> WatchedFolderPaths { get; set; }
+        public IEnumerable<string> WatchedDirectoryPaths { get; set; }
     }
 }

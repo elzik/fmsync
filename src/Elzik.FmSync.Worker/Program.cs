@@ -1,5 +1,9 @@
+using Elzik.FmSync;
+using Elzik.FmSync.Domain;
+using Elzik.FmSync.Infrastructure;
 using Elzik.FmSync.Worker;
-using Microsoft.Extensions.Configuration;
+using Thinktecture.IO.Adapters;
+using Thinktecture.IO;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
@@ -15,6 +19,9 @@ IHost host = Host.CreateDefaultBuilder(args)
         }
 
         services.AddSingleton(options);
+        services.AddSingleton<IMarkdownFrontMatter, MarkdownFrontMatter>();
+        services.AddSingleton<IFile, FileAdapter>();
+        services.AddSingleton<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
         services.AddHostedService<FmSyncWorker>();
     })
     .Build();
