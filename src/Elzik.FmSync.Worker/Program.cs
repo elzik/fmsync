@@ -6,7 +6,13 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         var configuration = hostContext.Configuration;
 
-        var options = configuration.GetSection("FmSyncOptions").Get<FmSyncOptions>();
+        const string optionsKey = "FmSyncOptions";
+        var options = configuration.GetSection(optionsKey).Get<FmSyncOptions>();
+        if (options == null)
+        {
+            throw new InvalidOperationException(
+                $"{optionsKey} configuration could not be found.");
+        }
 
         services.AddSingleton(options);
         services.AddHostedService<FmSyncWorker>();
