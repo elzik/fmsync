@@ -5,6 +5,7 @@ namespace Elzik.FmSync.Worker
         private readonly ILogger<FmSyncWorker> _logger;
         private readonly FmSyncOptions _fmSyncOptions;
         private readonly IFrontMatterFileSynchroniser _fileSynchroniser;
+        private readonly List<FileSystemWatcher> _folderWatchers;
 
         public FmSyncWorker(ILogger<FmSyncWorker> logger, 
             FmSyncOptions fmSyncOptions, IFrontMatterFileSynchroniser fileSynchroniser)
@@ -12,6 +13,7 @@ namespace Elzik.FmSync.Worker
             _logger = logger;
             _fmSyncOptions = fmSyncOptions;
             _fileSynchroniser = fileSynchroniser;
+            _folderWatchers = new List<FileSystemWatcher>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,6 +32,8 @@ namespace Elzik.FmSync.Worker
                     NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime
                 };
 
+                _folderWatchers.Add(folderWatcher);
+
                 folderWatcher.Changed += OnChanged;
                 folderWatcher.Created += OnCreated;
                 folderWatcher.Error += OnError;
@@ -38,6 +42,8 @@ namespace Elzik.FmSync.Worker
 
                 _logger.LogInformation("Watcher on {DirectoryPath} has started.", directoryPaths);
             }
+
+            _logger.LogInformation("A total of {WatcherCount} folder watchers are running.", _folderWatchers.Count);
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
