@@ -1,5 +1,4 @@
 ﻿using AutoFixture;
-using Castle.Core.Logging;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -40,7 +39,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
             // Assert
-            _mockLogger.Received(1).Log(LogLevel.Information, $"Synchronising files in {testDirectoryPath}");
+            _mockLogger.Received(1).Log(LogLevel.Debug, $"Synchronising files in {testDirectoryPath}");
 
             _mockFileSynchroniser.DidNotReceiveWithAnyArgs().SyncCreationDate(default!);
         }

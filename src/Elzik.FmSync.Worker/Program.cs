@@ -24,6 +24,12 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
         services.AddHostedService<FmSyncWorker>();
     })
+    .ConfigureAppConfiguration((_, config) =>
+    {
+        config.AddJsonFile("appSettings.json", true, true);
+    })
+    .ConfigureLogging((context, config) => 
+        config.AddConfiguration(context.Configuration.GetSection("Logging")))
     .Build();
 
 host.Run();

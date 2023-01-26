@@ -22,7 +22,7 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
     {
         var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, ErrorCount: 0,TotalCount: 0);
 
-        _logger.LogInformation("Synchronising files in {DirectoryPath}", directoryPath);
+        _logger.LogDebug("Synchronising files in {DirectoryPath}", directoryPath);
 
         var markdownFiles = _directory.EnumerateFiles(directoryPath, "*.md", new EnumerationOptions()
         {

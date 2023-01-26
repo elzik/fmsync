@@ -40,7 +40,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             _frontMatterFileSynchroniser.SyncCreationDate(testFilePath);
 
             // Assert
-            _mockLogger.Received(1).Log(LogLevel.Information, 
+            _mockLogger.Received(1).Log(LogLevel.Debug, 
                 $"{testFilePath} has no Front Matter created date.");
             _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
         }
@@ -59,7 +59,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
 
             // Assert
             _mockLogger.Received(1).Log(
-                LogLevel.Information,
+                LogLevel.Debug,
                 Arg.Is<IDictionary<string, object>>(
                     dict =>
                         dict.Any(kv => kv.Key == "{OriginalFormat}" 
@@ -87,7 +87,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
 
             // Assert
             _mockLogger.Received(1).Log(
-                LogLevel.Information,
+                LogLevel.Debug,
                 Arg.Is<IDictionary<string, object>>(
                     dict =>
                         dict.Any(kv => kv.Key == "{OriginalFormat}"
@@ -119,7 +119,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
 
             // Assert
             _mockLogger.Received(1).Log(
-                LogLevel.Information,
+                LogLevel.Debug,
                 Arg.Is<IDictionary<string, object>>(
                     dict =>
                         dict.Any(kv => kv.Key == "{OriginalFormat}"
