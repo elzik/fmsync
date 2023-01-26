@@ -8,8 +8,8 @@
       "dotnetRunMessages": true
     },
     "Docker": {
-      "commandName": "Docker",
-      "DockerfileRunArguments": "-v C:\\TempObsidian:/Obsidian"
+      "commandName": "Docker"/*,
+      "DockerfileRunArguments": "-v ???:???"*/
     }
   }
 }
