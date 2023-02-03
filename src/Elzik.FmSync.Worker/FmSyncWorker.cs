@@ -1,3 +1,7 @@
+using System.Diagnostics;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Primitives;
+
 namespace Elzik.FmSync.Worker
 {
     public class FmSyncWorker : BackgroundService
@@ -5,7 +9,7 @@ namespace Elzik.FmSync.Worker
         private readonly ILogger<FmSyncWorker> _logger;
         private readonly FmSyncOptions _fmSyncOptions;
         private readonly IFrontMatterFileSynchroniser _fileSynchroniser;
-        private readonly List<FileSystemWatcher> _folderWatchers;
+        private readonly List<PhysicalFileProvider> _folderWatchers;
 
         public FmSyncWorker(ILogger<FmSyncWorker> logger, 
             FmSyncOptions fmSyncOptions, IFrontMatterFileSynchroniser fileSynchroniser)
@@ -13,7 +17,7 @@ namespace Elzik.FmSync.Worker
             _logger = logger;
             _fmSyncOptions = fmSyncOptions;
             _fileSynchroniser = fileSynchroniser;
-            _folderWatchers = new List<FileSystemWatcher>();
+            _folderWatchers = new List<PhysicalFileProvider>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -25,20 +29,14 @@ namespace Elzik.FmSync.Worker
                 _logger.LogInformation("Configuring watcher on {DirectoryPath} for new and changed " +
                                        "MarkDown files.", directoryPaths);
                 
-                var folderWatcher = new FileSystemWatcher(directoryPaths, "*.md")
+                var folderWatcher = new PhysicalFileProvider(directoryPaths)
                 {
-                    EnableRaisingEvents = true,
-                    IncludeSubdirectories = true,
-                    NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime
+                    UsePollingFileWatcher = true
                 };
 
                 _folderWatchers.Add(folderWatcher);
 
-                folderWatcher.Changed += OnChanged;
-                folderWatcher.Created += OnCreated;
-                folderWatcher.Error += OnError;
-
-                folderWatcher.EnableRaisingEvents = true;
+                Watch(folderWatcher, directoryPaths);
 
                 _logger.LogInformation("Watcher on {DirectoryPath} has started.", directoryPaths);
             }
@@ -46,41 +44,54 @@ namespace Elzik.FmSync.Worker
             _logger.LogInformation("A total of {WatcherCount} folder watchers are running.", _folderWatchers.Count);
         }
 
-        private void OnCreated(object sender, FileSystemEventArgs e)
+        private void Watch(PhysicalFileProvider folderWatcher, string directoryPaths)
         {
-            ProcessFile(sender, e);
+            var changeToken = folderWatcher.Watch("*.md");
+
+            changeToken.RegisterChangeCallback(Callback, new LastChange()
+            {
+                Watcher = folderWatcher,
+                Path = directoryPaths,
+                Filter = "*.md",
+                LastChangeTime = DateTime.UtcNow
+            });
         }
 
-        private void OnChanged(object sender, FileSystemEventArgs e)
+        private class LastChange
         {
-            if (e.ChangeType != WatcherChangeTypes.Changed)
-            {
-                return;
-            }
-
-            ProcessFile(sender, e);
+            public PhysicalFileProvider Watcher { get; set; }
+            public DateTime LastChangeTime { get; set; }
+            public string Path { get; set; }
+            public string Filter { get; set; }
         }
 
-        private void ProcessFile(object sender, FileSystemEventArgs e)
+        private void Callback(object? obj)
         {
-            try
+            if (obj == null)
             {
-                _fileSynchroniser.SyncCreationDate(e.FullPath);
+                throw new InvalidOperationException($"Can't watch for files any longer for some unknown path. " +
+                                                    "This has got to be fatal!");
             }
-            catch (Exception exception)
+            var lastChange = (LastChange)obj;
+
+            Watch(lastChange.Watcher, lastChange.Path);
+
+            var directoryInfo = new DirectoryInfo(lastChange.Path);
+            var files = directoryInfo.EnumerateFiles(lastChange.Filter)
+                .Where(info => info.LastWriteTime > lastChange.LastChangeTime).ToList();
+
+            foreach (var file in files)
             {
-                _logger.LogError(exception, "An error occurred whilst processing {FilePath}.", 
-                    e.FullPath);
+                try
+                {
+                    _fileSynchroniser.SyncCreationDate(file.FullName);
+                }
+                catch (Exception exception)
+                {
+                    _logger.LogError(exception, "An error occurred whilst processing {FilePath}.",
+                        file.FullName);
+                }
             }
-        }
-
-        private void OnError(object sender, ErrorEventArgs e)
-        {
-            var sourceDirectoryPath = ((FileSystemWatcher)sender).Path;
-
-            _logger.LogError(e.GetException(), 
-                "FmSync is unable to continue monitoring changes in {FolderPath}.", 
-                sourceDirectoryPath);
         }
     }
 }
