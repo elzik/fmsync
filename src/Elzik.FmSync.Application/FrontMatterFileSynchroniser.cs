@@ -53,7 +53,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
             _logger.LogInformation("{FilePath} has no Front Matter created date.", markDownFilePath);
         }
 
-        return new SyncResult()
+        return new SyncResult
         {
             FileCreatedDateUpdated = fileCreatedDateUpdated
         };

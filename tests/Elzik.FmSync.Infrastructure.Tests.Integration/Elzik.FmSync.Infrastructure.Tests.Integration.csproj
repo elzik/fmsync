@@ -15,6 +15,12 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+	  <Compile Remove="TestResults\**" />
+	  <EmbeddedResource Remove="TestResults\**" />
+	  <None Remove="TestResults\**" />
+	</ItemGroup>
+	
+	<ItemGroup>
 	  <PackageReference Include="coverlet.collector" Version="3.2.0">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -25,7 +31,7 @@
 	  </PackageReference>
 	  <PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
 	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.4.1" />
-	  <PackageReference Include="SonarAnalyzer.CSharp" Version="8.51.0.59060">
+	  <PackageReference Include="SonarAnalyzer.CSharp" Version="8.52.0.60960">
 	    <PrivateAssets>all</PrivateAssets>
 	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 	  </PackageReference>

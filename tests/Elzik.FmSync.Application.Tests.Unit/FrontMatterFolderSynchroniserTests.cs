@@ -101,7 +101,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             // Arrange
             var testDirectoryPath = _fixture.Create<string>();
             var testFile = _fixture.Create<KeyValuePair<string, bool>>();
-            var testFiles = new List<KeyValuePair<string, bool>>() { testFile };
+            var testFiles = new List<KeyValuePair<string, bool>> { testFile };
             SetMockDirectoryFilePaths(testDirectoryPath, testFiles);
             var testException = new Exception(_fixture.Create<string>(), _fixture.Create<Exception>());
             _mockFileSynchroniser.SyncCreationDate(testFile.Key).Throws(testException);
@@ -120,7 +120,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             // Arrange
             var testDirectoryPath = _fixture.Create<string>();
             var testFile = _fixture.Create<KeyValuePair<string, bool>>();
-            var testFiles = new List<KeyValuePair<string, bool>>() { testFile };
+            var testFiles = new List<KeyValuePair<string, bool>> { testFile };
             SetMockDirectoryFilePaths(testDirectoryPath, testFiles);
             var testException = new Exception(_fixture.Create<string>());
             _mockFileSynchroniser.SyncCreationDate(testFile.Key).Throws(testException);
@@ -168,7 +168,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
 
             foreach (var testFilePath in testFileList)
             {
-                _mockFileSynchroniser.SyncCreationDate(testFilePath.Key).Returns(new SyncResult()
+                _mockFileSynchroniser.SyncCreationDate(testFilePath.Key).Returns(new SyncResult
                 {
                     FileCreatedDateUpdated = testFilePath.Value
                 });
