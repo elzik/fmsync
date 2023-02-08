@@ -7,7 +7,7 @@
 
     public abstract class MockLogger<T> : ILogger<T>
     {
-        void ILogger.Log<TState>(LogLevel logLevel, EventId eventId, TState state, 
+        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, 
             Exception? exception, Func<TState, Exception?, string> formatter)
         {
             var unboxed = (IReadOnlyList<KeyValuePair<string, object>>)state!;
