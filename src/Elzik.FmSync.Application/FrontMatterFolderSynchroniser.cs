@@ -49,7 +49,8 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
                 {
                     additionalMessage = $" {e.InnerException.Message}";
                 }
-                _logger.LogError(markDownFilePath + " - " + e.Message + additionalMessage);
+                _logger.LogError( "{MarkdownFilePath} - {ExceptionMessage}{AdditionalMessage}", 
+                    markDownFilePath, e.Message, additionalMessage);
             }
         }
 
