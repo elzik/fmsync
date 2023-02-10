@@ -44,11 +44,13 @@ namespace Elzik.FmSync.Worker
             }
 
             _logger.LogInformation("A total of {WatcherCount} folder watchers are running.", _folderWatchers.Count);
+
+            await Task.Yield();
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
         {
-            ProcessFile(sender, e);
+            ProcessFile(e.FullPath);
         }
 
         private void OnChanged(object sender, FileSystemEventArgs e)
@@ -58,19 +60,19 @@ namespace Elzik.FmSync.Worker
                 return;
             }
 
-            ProcessFile(sender, e);
+            ProcessFile(e.FullPath);
         }
 
-        private void ProcessFile(object sender, FileSystemEventArgs e)
+        private void ProcessFile(string markDownFilePath)
         {
             try
             {
-                _fileSynchroniser.SyncCreationDate(e.FullPath);
+                _fileSynchroniser.SyncCreationDate(markDownFilePath);
             }
             catch (Exception exception)
             {
                 _logger.LogError(exception, "An error occurred whilst processing {FilePath}.", 
-                    e.FullPath);
+                    markDownFilePath);
             }
         }
 
