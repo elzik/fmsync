@@ -24,7 +24,7 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
 
         _logger.LogDebug("Synchronising files in {DirectoryPath}", directoryPath);
 
-        var markdownFiles = _directory.EnumerateFiles(directoryPath, "*.md", new EnumerationOptions()
+        var markdownFiles = _directory.EnumerateFiles(directoryPath, "*.md", new EnumerationOptions
         {
             MatchCasing = MatchCasing.CaseInsensitive,
             RecurseSubdirectories = true
@@ -49,7 +49,8 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
                 {
                     additionalMessage = $" {e.InnerException.Message}";
                 }
-                _logger.LogError(markDownFilePath + " - " + e.Message + additionalMessage);
+                _logger.LogError( "{MarkdownFilePath} - {ExceptionMessage}{AdditionalMessage}", 
+                    markDownFilePath, e.Message, additionalMessage);
             }
         }
 
