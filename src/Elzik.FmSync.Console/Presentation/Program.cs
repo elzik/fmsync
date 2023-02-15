@@ -17,13 +17,16 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
         services.AddTransient<IFrontMatterFolderSynchroniser, FrontMatterFolderSynchroniser>();
         services.Configure<FrontMatterOptions>(context.Configuration.GetSection("FrontMatterOptions"));
+        services.AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));
+            loggingBuilder.AddConsole();
+        });
     })
     .ConfigureAppConfiguration(config =>
     {
         config.AddJsonFile("appSettings.json", true, true);
     })
-    .ConfigureLogging((context, config) => 
-        config.AddConfiguration(context.Configuration.GetSection("Logging")))
     .Build();
 
 var searchPath = args.Length == 0
