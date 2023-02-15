@@ -37,7 +37,7 @@ namespace Elzik.FmSync.Infrastructure.Tests.Integration
         {
             // Arrange
             SetTimeZone(localTimeZone);
-            var testOptions = Options.Create(new FrontMatterOptions()
+            var testOptions = Options.Create(new FrontMatterOptions
             {
                 TimeZoneId = configuredTimeZone
             });
