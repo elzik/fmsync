@@ -25,9 +25,10 @@ FmSync is configured through its appSettings.json file which contains the follow
 By default, logging is implemented using a single-line simple console logger with a log level of `Information`. This can be reconfigured in many ways. However, this configuration is not in the scope of this documentation; instead, refer to [Microsoft's documentation for Console logging and its various options](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging?tabs=command-line). 
 
 ### FrontMatterOptions
-This contains a single setting, `TimeZoneId`, which by default is empty. When this setting is empty are not present all `created` dates found in Front Matter sections at the beginning of a file will be considered as if they were in the current time zone settings for the machine the application is running on.
 
-Alternatively, `TimeZoneId` can be set to any time zone as specified in the `Timezone` column of [this documentation](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-time-zones). FmSync will then use this timezone when setting the created date on a file.
+#### TimeZoneId
 
-If the date given in a file's Front Matter contains a time offset, the TimeZoneId given here will be ignored and the offset given will be taken into account when setting the created date on a file.
+ - This contains a single setting, `TimeZoneId`, which by default is empty. When this setting is empty are not present all `created` dates found in Front Matter sections at the beginning of a file will be considered as if they were in the current time zone settings for the machine the application is running on.
+ - Alternatively, `TimeZoneId` can be set to any time zone as specified in the `Timezone` column of [this documentation](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-time-zones). FmSync will then use this timezone when setting the created date on a file.
+ - If the date given in a file's Front Matter contains a time offset, the TimeZoneId given here will be ignored and the offset given will be taken into account when setting the created date on a file.
 
