@@ -29,7 +29,8 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
 
         _logger.LogDebug("Synchronising {FilenamePattern} files in {DirectoryPath}", _options.FilenamePattern, directoryPath);
 
-        var markdownFiles = _directory.EnumerateFiles(directoryPath, _options.FilenamePattern, new EnumerationOptions
+        var markdownFiles = _directory.EnumerateFiles(directoryPath, _options.FilenamePattern ?? string.Empty,
+            new EnumerationOptions
         {
             MatchCasing = MatchCasing.CaseInsensitive,
             RecurseSubdirectories = true
