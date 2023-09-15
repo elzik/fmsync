@@ -1,18 +1,31 @@
+using Elzik.FmSync.Infrastructure;
+using Microsoft.Extensions.Options;
+
 namespace Elzik.FmSync.Worker
 {
     public class FmSyncWorker : BackgroundService
     {
         private readonly ILogger<FmSyncWorker> _logger;
         private readonly FmSyncOptions _fmSyncOptions;
+        private readonly FileSystemOptions _fileSystemOptions;
         private readonly IFrontMatterFileSynchroniser _fileSynchroniser;
         private readonly List<FileSystemWatcher> _folderWatchers;
 
-        public FmSyncWorker(ILogger<FmSyncWorker> logger, 
-            FmSyncOptions fmSyncOptions, IFrontMatterFileSynchroniser fileSynchroniser)
+        public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<FmSyncOptions> fmSyncOptions, 
+            IFrontMatterFileSynchroniser fileSynchroniser, IOptions<FileSystemOptions> fileSystemOptions)
         {
-            _logger = logger;
-            _fmSyncOptions = fmSyncOptions;
-            _fileSynchroniser = fileSynchroniser;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            if (fmSyncOptions == null)
+            {
+                throw new ArgumentNullException(nameof(fmSyncOptions));
+            }
+            if (fileSystemOptions == null)
+            {
+                throw new ArgumentNullException(nameof(fileSystemOptions));
+            }
+            _fileSystemOptions = fileSystemOptions.Value;
+            _fmSyncOptions = fmSyncOptions.Value;
+            _fileSynchroniser = fileSynchroniser ?? throw new ArgumentNullException(nameof(fileSynchroniser));
             _folderWatchers = new List<FileSystemWatcher>();
         }
 
@@ -23,9 +36,10 @@ namespace Elzik.FmSync.Worker
             foreach (var directoryPaths in _fmSyncOptions.WatchedDirectoryPaths)
             {
                 _logger.LogInformation("Configuring watcher on {DirectoryPath} for new and changed " +
-                                       "MarkDown files.", directoryPaths);
+                                       "{FilenamePattern} files.", directoryPaths, _fileSystemOptions.FilenamePattern);
                 
-                var folderWatcher = new FileSystemWatcher(directoryPaths, "*.md")
+                var folderWatcher = new FileSystemWatcher(directoryPaths, 
+                    _fileSystemOptions.FilenamePattern ?? string.Empty)
                 {
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,

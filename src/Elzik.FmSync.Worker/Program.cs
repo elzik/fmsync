@@ -8,15 +8,12 @@ using Thinktecture.IO;
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((hostContext, services) =>
     {
-        var configuration = hostContext.Configuration;
-
-        const string optionsKey = "FmSyncOptions";
-        var options = configuration.GetSection(optionsKey).Get<FmSyncOptions>() ?? throw new InvalidOperationException(
-                $"{optionsKey} configuration could not be found.");
-        services.AddSingleton(options);
         services.AddSingleton<IMarkdownFrontMatter, MarkdownFrontMatter>();
         services.AddSingleton<IFile, FileAdapter>();
         services.AddSingleton<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
+        services.Configure<FmSyncOptions>(hostContext.Configuration.GetSection("FmSyncOptions"));
+        services.Configure<FileSystemOptions>(hostContext.Configuration.GetSection("FileSystemOptions"));
+        services.Configure<FrontMatterOptions>(hostContext.Configuration.GetSection("FrontMatterOptions"));
         services.AddHostedService<FmSyncWorker>();
     })
     .ConfigureAppConfiguration((_, config) =>
