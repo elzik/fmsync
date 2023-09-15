@@ -11,7 +11,7 @@ Ensure that a Markdown file's created date is synchronised with the created-at d
 
 ## Usage
 
-Execute FmSync passing a path to a directory which contains files you wish to recursively scan. For any Markdown (*.md) files found, the file's created date will be updated to match that of the `created` date found in the file's Front Matter where one exists.
+Execute FmSync passing a path to a directory which contains files you wish to recursively scan. For any Markdown files found, the file's created date will be updated to match that of the `created` date found in the file's Front Matter where one exists.
 
 ```powershell
 fmsync c:\my-markdownfiles
@@ -30,4 +30,8 @@ This contains a single setting, `TimeZoneId`, which by default is empty. When th
 Alternatively, `TimeZoneId` can be set to any time zone as specified in the `Timezone` column of [this documentation](https://learn.microsoft.com/en-us/windows-hardware/manufacture/desktop/default-time-zones). FmSync will then use this timezone when setting the created date on a file.
 
 If the date given in a file's Front Matter contains a time offset, the TimeZoneId given here will be ignored and the offset given will be taken into account when setting the created date on a file.
+
+### FileSystemOptions
+
+This contains a single setting, `FilenamePattern`, which by default is `*.md`. Only files matching this filter will be acted upon by FmSync.
 

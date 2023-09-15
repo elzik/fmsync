@@ -17,6 +17,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddTransient<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
         services.AddTransient<IFrontMatterFolderSynchroniser, FrontMatterFolderSynchroniser>();
         services.Configure<FrontMatterOptions>(context.Configuration.GetSection("FrontMatterOptions"));
+        services.Configure<FileSystemOptions>(context.Configuration.GetSection("FileSystemOptions"));
         services.AddLogging(loggingBuilder =>
         {
             loggingBuilder.AddConfiguration(context.Configuration.GetSection("Logging"));

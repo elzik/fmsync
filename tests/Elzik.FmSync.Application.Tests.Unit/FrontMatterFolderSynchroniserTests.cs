@@ -1,6 +1,7 @@
 ﻿using AutoFixture;
-using Castle.Core.Logging;
+using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
 using Thinktecture.IO;
@@ -14,19 +15,27 @@ public class FrontMatterFolderSynchroniserTests
     private readonly MockLogger<FrontMatterFolderSynchroniser> _mockLogger;
     private readonly IDirectory _mockDirectory;
     private readonly IFrontMatterFileSynchroniser _mockFileSynchroniser;
+    private readonly FileSystemOptions _testFileSystemOptions;
     private readonly FrontMatterFolderSynchroniser _frontMatterFolderSynchroniser;
 
 
     public FrontMatterFolderSynchroniserTests()
     {
+        _fixture = new Fixture();
+
         _mockLogger = Substitute.For<MockLogger<FrontMatterFolderSynchroniser>>();
         _mockDirectory = Substitute.For<IDirectory>();
         _mockFileSynchroniser = Substitute.For<IFrontMatterFileSynchroniser>();
-
-        _fixture = new Fixture();
+        var fileSystemOptions = Options.Create(new FileSystemOptions()
+        {
+            FilenamePattern = _fixture.Create<string>()
+        });
+        _testFileSystemOptions = fileSystemOptions.Value;
         _fixture.Register<ILogger<FrontMatterFolderSynchroniser>>(() => _mockLogger);
         _fixture.Register(() => _mockDirectory);
         _fixture.Register(() => _mockFileSynchroniser);
+        _fixture.Register(() => fileSystemOptions);
+
         _frontMatterFolderSynchroniser = _fixture.Create<FrontMatterFolderSynchroniser>();
     }
 
@@ -40,7 +49,7 @@ public class FrontMatterFolderSynchroniserTests
         _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
         // Assert
-        _mockLogger.Received(1).Log(LogLevel.Information, $"Synchronising files in {testDirectoryPath}");
+        _mockLogger.Received(1).Log(LogLevel.Information, $"Synchronising {_testFileSystemOptions.FilenamePattern} files in {testDirectoryPath}");
 
         _mockFileSynchroniser.DidNotReceiveWithAnyArgs().SyncCreationDate(default!);
     }
@@ -161,7 +170,7 @@ public class FrontMatterFolderSynchroniserTests
     {
         var testFileList = testFiles.ToList();
 
-        _mockDirectory.EnumerateFiles(testDirectoryPath, "*.md",
+        _mockDirectory.EnumerateFiles(testDirectoryPath, _testFileSystemOptions.FilenamePattern,
                 Arg.Is<EnumerationOptions>(options =>
                     options.MatchCasing == MatchCasing.CaseInsensitive && options.RecurseSubdirectories))
             .Returns(testFileList.Select(pair => pair.Key));

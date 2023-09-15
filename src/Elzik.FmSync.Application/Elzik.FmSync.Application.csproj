@@ -13,6 +13,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="8.52.0.60960">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -22,6 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Elzik.FmSync.Domain\Elzik.FmSync.Domain.csproj" />
+    <ProjectReference Include="..\Elzik.FmSync.Infrastructure\Elzik.FmSync.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
