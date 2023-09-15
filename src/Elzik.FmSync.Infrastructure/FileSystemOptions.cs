@@ -2,5 +2,5 @@
 
 public class FileSystemOptions
 {
-    public string FilenamePattern { get; set; }
+    public string? FilenamePattern { get; set; }
 }

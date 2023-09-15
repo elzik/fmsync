@@ -109,7 +109,7 @@ public sealed class MarkdownFrontMatterTests : IDisposable
         createdDate.Should().Be(expectedDateUtc);
     }
 
-    private void SetTimeZone(string mockTimeZoneId)
+    private static void SetTimeZone(string mockTimeZoneId)
     {
         var timeZone = TimeZoneInfo.FindSystemTimeZoneById(mockTimeZoneId);
         var info = typeof(TimeZoneInfo).GetField("s_cachedData", BindingFlags.NonPublic | BindingFlags.Static);

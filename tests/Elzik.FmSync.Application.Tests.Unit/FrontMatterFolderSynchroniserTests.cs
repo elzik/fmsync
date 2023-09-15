@@ -26,7 +26,7 @@ public class FrontMatterFolderSynchroniserTests
         _mockLogger = Substitute.For<MockLogger<FrontMatterFolderSynchroniser>>();
         _mockDirectory = Substitute.For<IDirectory>();
         _mockFileSynchroniser = Substitute.For<IFrontMatterFileSynchroniser>();
-        var fileSystemOptions = Options.Create(new FileSystemOptions()
+        var fileSystemOptions = Options.Create(new FileSystemOptions
         {
             FilenamePattern = _fixture.Create<string>()
         });
@@ -170,7 +170,7 @@ public class FrontMatterFolderSynchroniserTests
     {
         var testFileList = testFiles.ToList();
 
-        _mockDirectory.EnumerateFiles(testDirectoryPath, _testFileSystemOptions.FilenamePattern,
+        _mockDirectory.EnumerateFiles(testDirectoryPath, _testFileSystemOptions.FilenamePattern!,
                 Arg.Is<EnumerationOptions>(options =>
                     options.MatchCasing == MatchCasing.CaseInsensitive && options.RecurseSubdirectories))
             .Returns(testFileList.Select(pair => pair.Key));
