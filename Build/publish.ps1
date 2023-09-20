@@ -4,7 +4,7 @@ foreach ($runtime in $runtimes)
 {
 	dotnet publish $PSScriptRoot\..\src\Elzik.FmSync.Worker\Elzik.FmSync.Worker.csproj `
 		-r $runtime `
-		--no-self-contained `
+		--self-contained true `
 		-c Release `
 		-o $PSScriptRoot\output\$runtime `
 		-p:PublishSingleFile=true
