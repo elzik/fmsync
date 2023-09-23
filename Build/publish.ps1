@@ -6,10 +6,13 @@ foreach ($runtime in $runtimes)
 		-r $runtime `
 		--self-contained true `
 		-c Release `
-		-o $PSScriptRoot\output\$runtime `
+		-o $PSScriptRoot\output\Elzik.FmSync.Worker\$runtime `
+		-p:PublishSingleFile=true
+
+	dotnet publish $PSScriptRoot\..\src\Elzik.FmSync.Console\Elzik.FmSync.Console.csproj `
+		-r $runtime `
+		--self-contained true `
+		-c Release `
+		-o $PSScriptRoot\output\Elzik.FmSync.Console\$runtime `
 		-p:PublishSingleFile=true
 }
-
-robocopy $PSScriptRoot\output\win-x64 "c:\program files\fmsync" /e
-robocopy $PSScriptRoot\output\win-x64 "\\TOWER\Applications\fmsync\win-x64" /e
-robocopy $PSScriptRoot\output\osx-x64 "\\TOWER\Applications\fmsync\osx-x64" /e
