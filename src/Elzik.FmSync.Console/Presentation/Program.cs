@@ -5,10 +5,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Serilog;
 using Thinktecture.IO;
 using Thinktecture.IO.Adapters;
 
 var host = Host.CreateDefaultBuilder(args)
+    .UseSerilog((context, config) => config
+        .ReadFrom.Configuration(context.Configuration))
     .ConfigureServices((context,services) =>
     {
         services.AddTransient<IMarkdownFrontMatter, MarkdownFrontMatter>();

@@ -7,8 +7,8 @@ using Thinktecture.IO.Adapters;
 using Thinktecture.IO;
 
 var host = Host.CreateDefaultBuilder(args)
-    .UseSerilog((ctx, lc) => lc
-        .ReadFrom.Configuration(ctx.Configuration))
+    .UseSerilog((context, config) => config
+        .ReadFrom.Configuration(context.Configuration))
     .ConfigureServices((hostContext, services) =>
     {
         services.AddSingleton<IMarkdownFrontMatter, MarkdownFrontMatter>();
