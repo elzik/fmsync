@@ -27,6 +27,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{0FE56BA0-BDDF-4291-9BDD-A6D512610FAE}"
 	ProjectSection(SolutionItems) = preProject
 		Build\continuous-integration.ps1 = Build\continuous-integration.ps1
+		Build\local-install.ps1 = Build\local-install.ps1
 		Build\publish.ps1 = Build\publish.ps1
 	EndProjectSection
 EndProject
