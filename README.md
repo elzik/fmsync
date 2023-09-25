@@ -7,7 +7,20 @@
 [![License](https://img.shields.io/github/license/elzik/fmsync)](https://github.com/elzik/fmsync/blob/regex-filters/LICENSE)
 [![Release](https://img.shields.io/github/v/release/elzik/fmsync?display_name=tag&sort=semver)](https://github.com/elzik/fmsync/releases)
 
-Ensure that a Markdown file's created date is synchronised with the created-at date found in its Front Matter
+# Introduction
+
+fmsync ensures that a Markdown file's created date is synchronised with the `created` date found in its Front Matter. It can do this either on the command line or by using a service configured to constantly watch for changes in Front Matter of files in one or more directories.
+
+# Installation
+
+There are not yet any official releases. To install on Windows:
+1. Clone the repository
+2. Run `/build/publish.ps1`
+3. Run `/build/local-install.ps1`
+
+You should add the command line app's path to your `PATH` environment variable: `C:\Program Files\fmsync\console`. The watcher service will be automatically started, watching the folder specified in its `appSettings.config` file.
+
+# Command Line
 
 ## Usage
 
@@ -17,12 +30,34 @@ Execute FmSync passing a path to a directory which contains files you wish to re
 fmsync c:\my-markdownfiles
 ```
 
-## Configuration
+## Logging
 
-FmSync is configured through its appSettings.json file which contains the following sections:
+By default, only Information, Warnings and Errors are logged to both the console and to a file located in `C:\ProgramData\fmsync\Elzik.FmSync.ConsoleYYYYMMDD.log`. A new file will be created for each day that the tool is used and files older than 7 days are removed.
 
-### Logging
-By default, logging is implemented using a single-line simple console logger with a log level of `Information`. This can be reconfigured in many ways. However, this configuration is not in the scope of this documentation; instead, refer to [Microsoft's documentation for Console logging and its various options](https://learn.microsoft.com/en-us/dotnet/core/extensions/logging?tabs=command-line). 
+# Worker Service
+
+## Usage
+
+By running `/build/local-install.ps1`, FmSync will be running as a Windows service, watching all of the directories listed in `WatcherOptions:WatchedDirectoryPaths`. Each time a file is created or edited, FmSync will check if the Front Matter `created` date is the same as the underlying file's `created` date and then update the latter to match the former if necessary.
+
+Instead of running the service as a Windows service, it can also be run as an executable or on the command line.
+
+## Logging
+
+By default, only Information, Warnings and Errors are logged to both the console (when started on the command line) and to a file located in `C:\ProgramData\fmsync\Elzik.FmSync.WorkerYYYYMMDD.log` (in all circumstances). A new file will be created for each day that the tool is used and files older than 7 days are removed.
+
+# Configuration
+
+FmSync is configured through a separate appSettings.json file for both the command line tool and the service which contains the following sections:
+
+### WatcherOptions (Only applicable when running as a service)
+
+This contains a single setting ``
+
+### Serilog
+Logging is provided for by Serilog with the default behaviours as described in the [Logging](##Logging) section above. It is beyond the scope of this readme to document this configuration. See the [Serilog documentation](https://github.com/serilog/serilog-settings-configuration#readme) for general information about configuration. Currently, [Console](https://github.com/serilog/serilog-sinks-console#readme) and [File](https://github.com/serilog/serilog-sinks-file#readme) Sinks are implemented and more information can be found on their respective repos.
+
+When opening any Github Issues, change the `MinimumLevel` configuration to `Debug` to increase the amount of information being logged.
 
 ### FrontMatterOptions
 

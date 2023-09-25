@@ -6,12 +6,12 @@ namespace Elzik.FmSync.Worker
     public class FmSyncWorker : BackgroundService
     {
         private readonly ILogger<FmSyncWorker> _logger;
-        private readonly FmSyncOptions _fmSyncOptions;
+        private readonly WatcherOptions _watcherOptions;
         private readonly FileSystemOptions _fileSystemOptions;
         private readonly IFrontMatterFileSynchroniser _fileSynchroniser;
         private readonly List<FileSystemWatcher> _folderWatchers;
 
-        public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<FmSyncOptions> fmSyncOptions, 
+        public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<WatcherOptions> fmSyncOptions, 
             IFrontMatterFileSynchroniser fileSynchroniser, IOptions<FileSystemOptions> fileSystemOptions)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -24,7 +24,7 @@ namespace Elzik.FmSync.Worker
                 throw new ArgumentNullException(nameof(fileSystemOptions));
             }
             _fileSystemOptions = fileSystemOptions.Value;
-            _fmSyncOptions = fmSyncOptions.Value;
+            _watcherOptions = fmSyncOptions.Value;
             _fileSynchroniser = fileSynchroniser ?? throw new ArgumentNullException(nameof(fileSynchroniser));
             _folderWatchers = new List<FileSystemWatcher>();
         }
@@ -33,7 +33,7 @@ namespace Elzik.FmSync.Worker
         {
             _logger.LogInformation("FmSyncWorker running at: {Time}", DateTimeOffset.Now);
 
-            foreach (var directoryPaths in _fmSyncOptions.WatchedDirectoryPaths)
+            foreach (var directoryPaths in _watcherOptions.WatchedDirectoryPaths)
             {
                 _logger.LogInformation("Configuring watcher on {DirectoryPath} for new and changed " +
                                        "{FilenamePattern} files.", directoryPaths, _fileSystemOptions.FilenamePattern);
@@ -58,6 +58,11 @@ namespace Elzik.FmSync.Worker
             }
 
             _logger.LogInformation("A total of {WatcherCount} folder watchers are running.", _folderWatchers.Count);
+            if (_folderWatchers.Count < 1)
+            {
+                _logger.LogWarning("Add a directory to watch to the {ConfigSection}:{ConfigItem} configuration.", 
+                    nameof(WatcherOptions), nameof(WatcherOptions.WatchedDirectoryPaths));
+            }
 
             await Task.Yield();
         }

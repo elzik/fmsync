@@ -1,6 +1,6 @@
 ﻿namespace Elzik.FmSync.Worker
 {
-    public class FmSyncOptions
+    public class WatcherOptions
     {
         public IEnumerable<string> WatchedDirectoryPaths { get; set; } = new List<string>();
     }

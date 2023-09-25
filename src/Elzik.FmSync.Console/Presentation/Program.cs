@@ -37,5 +37,5 @@ var searchPath = args.Length == 0
     ? Directory.GetCurrentDirectory()
     : args[0];
 
-var frontMatterFileSynchroniser = host.Services.GetRequiredService<IFrontMatterFolderSynchroniser>();
-frontMatterFileSynchroniser.SyncCreationDates(searchPath);
+var frontMatterFolderSynchroniser = host.Services.GetRequiredService<IFrontMatterFolderSynchroniser>();
+frontMatterFolderSynchroniser.SyncCreationDates(searchPath);

@@ -14,7 +14,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IMarkdownFrontMatter, MarkdownFrontMatter>();
         services.AddSingleton<IFile, FileAdapter>();
         services.AddSingleton<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
-        services.Configure<FmSyncOptions>(hostContext.Configuration.GetSection("FmSyncOptions"));
+        services.Configure<WatcherOptions>(hostContext.Configuration.GetSection("WatcherOptions"));
         services.Configure<FileSystemOptions>(hostContext.Configuration.GetSection("FileSystemOptions"));
         services.Configure<FrontMatterOptions>(hostContext.Configuration.GetSection("FrontMatterOptions"));
 #if IS_WINDOWS_OS
