@@ -49,7 +49,7 @@ public class FrontMatterFolderSynchroniserTests
         _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
         // Assert
-        _mockLogger.Received(1).Log(LogLevel.Information, $"Synchronising {_testFileSystemOptions.FilenamePattern} files in {testDirectoryPath}");
+        _mockLogger.Received(1).Log(LogLevel.Debug, $"Synchronising {_testFileSystemOptions.FilenamePattern} files in {testDirectoryPath}");
 
         _mockFileSynchroniser.DidNotReceiveWithAnyArgs().SyncCreationDate(default!);
     }

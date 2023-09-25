@@ -39,11 +39,11 @@ public class FrontMatterFileSynchroniserTests
         // Act
         _frontMatterFileSynchroniser.SyncCreationDate(testFilePath);
 
-        // Assert
-        _mockLogger.Received(1).Log(LogLevel.Information, 
-            $"{testFilePath} has no Front Matter created date.");
-        _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
-    }
+            // Assert
+            _mockLogger.Received(1).Log(LogLevel.Debug, 
+                $"{testFilePath} has no Front Matter created date.");
+            _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
+        }
 
     [Fact]
     public void SyncCreationDates_MarkDownAndFileDateEqual_OnlyLogs()
@@ -57,20 +57,20 @@ public class FrontMatterFileSynchroniserTests
         // Act
         _frontMatterFileSynchroniser.SyncCreationDate(testFilePath);
 
-        // Assert
-        _mockLogger.Received(1).Log(
-            LogLevel.Information,
-            Arg.Is<IDictionary<string, object>>(
-                dict =>
-                    dict.Any(kv => kv.Key == "{OriginalFormat}" 
-                                   && (string)kv.Value == "{FilePath} has a file created date ({FileCreatedDate}) " +
-                                   "the same as the created date specified in its Front Matter.") &&
-                    dict.Any(kv => kv.Key == "FilePath" 
-                                   && (string)kv.Value == testFilePath) &&
-                    dict.Any(kv => kv.Key == "FileCreatedDate" 
-                                   && (DateTime)kv.Value == testDate)));
-        _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
-    }
+            // Assert
+            _mockLogger.Received(1).Log(
+                LogLevel.Debug,
+                Arg.Is<IDictionary<string, object>>(
+                    dict =>
+                        dict.Any(kv => kv.Key == "{OriginalFormat}" 
+                                       && (string)kv.Value == "{FilePath} has a file created date ({FileCreatedDate}) " +
+                                       "the same as the created date specified in its Front Matter.") &&
+                        dict.Any(kv => kv.Key == "FilePath" 
+                                       && (string)kv.Value == testFilePath) &&
+                        dict.Any(kv => kv.Key == "FileCreatedDate" 
+                                       && (DateTime)kv.Value == testDate)));
+            _mockFile.DidNotReceiveWithAnyArgs().SetCreationTimeUtc(default!, default);
+        }
 
     [Fact]
     public void SyncCreationDates_FileDateLaterThanMarkdownDate_LogsAndUpdates()
@@ -85,24 +85,24 @@ public class FrontMatterFileSynchroniserTests
         // Act
         _frontMatterFileSynchroniser.SyncCreationDate(testFilePath);
 
-        // Assert
-        _mockLogger.Received(1).Log(
-            LogLevel.Information,
-            Arg.Is<IDictionary<string, object>>(
-                dict =>
-                    dict.Any(kv => kv.Key == "{OriginalFormat}"
-                                   && (string)kv.Value == "{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
-                                   "than the created date specified in its Front Matter ({FrontMatterCreatedDate})") &&
-                    dict.Any(kv => kv.Key == "FilePath"
-                                   && (string)kv.Value == testFilePath) &&
-                    dict.Any(kv => kv.Key == "FileCreatedDate"
-                                   && (DateTime)kv.Value == testFileDate) &&
-                    dict.Any(kv => kv.Key == "RelativeDescription"
-                                   && (string)kv.Value == "later") &&
-                    dict.Any(kv => kv.Key == "FrontMatterCreatedDate"
-                                   && (DateTime)kv.Value == testMarkDownDate)));
-        _mockFile.Received(1).SetCreationTimeUtc(testFilePath, testMarkDownDate);
-    }
+            // Assert
+            _mockLogger.Received(1).Log(
+                LogLevel.Debug,
+                Arg.Is<IDictionary<string, object>>(
+                    dict =>
+                        dict.Any(kv => kv.Key == "{OriginalFormat}"
+                                       && (string)kv.Value == "{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
+                                       "than the created date specified in its Front Matter ({FrontMatterCreatedDate})") &&
+                        dict.Any(kv => kv.Key == "FilePath"
+                                       && (string)kv.Value == testFilePath) &&
+                        dict.Any(kv => kv.Key == "FileCreatedDate"
+                                       && (DateTime)kv.Value == testFileDate) &&
+                        dict.Any(kv => kv.Key == "RelativeDescription"
+                                       && (string)kv.Value == "later") &&
+                        dict.Any(kv => kv.Key == "FrontMatterCreatedDate"
+                                       && (DateTime)kv.Value == testMarkDownDate)));
+            _mockFile.Received(1).SetCreationTimeUtc(testFilePath, testMarkDownDate);
+        }
 
     [Fact]
     public void SyncCreationDates_FileDateEarlierThanMarkdownDate_LogsAndUpdates()
@@ -119,7 +119,7 @@ public class FrontMatterFileSynchroniserTests
 
         // Assert
         _mockLogger.Received(1).Log(
-            LogLevel.Information,
+            LogLevel.Debug,
             Arg.Is<IDictionary<string, object>>(
                 dict =>
                     dict.Any(kv => kv.Key == "{OriginalFormat}"

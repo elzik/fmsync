@@ -31,13 +31,13 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 
             if (comparisonResult == 0)
             {
-                _logger.LogInformation("{FilePath} has a file created date ({FileCreatedDate}) the same as the created " +
+                _logger.LogDebug("{FilePath} has a file created date ({FileCreatedDate}) the same as the created " +
                                        "date specified in its Front Matter.", markDownFilePath, fileCreatedDate);
             }
             else
             {
                 var relativeDescription = comparisonResult < 0 ? "earlier" : "later";
-                _logger.LogInformation("{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
+                _logger.LogDebug("{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
                                        "than the created date specified in its Front Matter ({FrontMatterCreatedDate})",
                     markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
 
@@ -50,7 +50,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         }
         else
         {
-            _logger.LogInformation("{FilePath} has no Front Matter created date.", markDownFilePath);
+            _logger.LogDebug("{FilePath} has no Front Matter created date.", markDownFilePath);
         }
 
         return new SyncResult
