@@ -14,9 +14,9 @@ fmsync ensures that a Markdown file's created date is synchronised with the `cre
 # Installation
 
 There are not yet any official releases. To install on Windows:
- 1. Clone the repository
- 2. Run `/build/publish.ps1`
- 3. Run `/build/local-install.ps1`
+1.  Clone the repository
+2.  Run `/build/publish.ps1`
+3.  Run `/build/local-install.ps1`
 
 You should add the command line app's path to your `PATH` environment variable: `C:\Program Files\fmsync\console`. The watcher service will be automatically started, watching the folder specified in its `appSettings.config` file.
 
