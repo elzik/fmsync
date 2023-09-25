@@ -52,7 +52,7 @@ FmSync is configured through a separate appSettings.json file for both the comma
 
 ### WatcherOptions (Only applicable when running as a service)
 
-This contains a single setting ``
+This contains a single setting `WatchedDirectoryPaths` which contains an array of paths, one for each directory to watch for new and changed files which need their created date synchronising.
 
 ### Serilog
 Logging is provided for by Serilog with the default behaviours as described in the [Logging](##Logging) section above. It is beyond the scope of this readme to document this configuration. See the [Serilog documentation](https://github.com/serilog/serilog-settings-configuration#readme) for general information about configuration. Currently, [Console](https://github.com/serilog/serilog-sinks-console#readme) and [File](https://github.com/serilog/serilog-sinks-file#readme) Sinks are implemented and more information can be found on their respective repos.
