@@ -1,0 +1,27 @@
+﻿<?define Name = "fmsync" ?>
+<?define Manufacturer = "Elzik" ?>
+<?define Version = "1.0.0.0" ?>
+<?define UpgradeCode = "72617562-fb47-49e4-81ba-43bb876cbfac" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+	<Package Name="$(Name)"
+	         Manufacturer="$(Manufacturer)"
+	         Version="$(Version)"
+	         UpgradeCode="$(var.UpgradeCode)"
+	         Compressed="true">
+	    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
+
+	    <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />
+		<ui:WixUI Id="WixUI_FeatureTree" />
+
+	    <Feature Id="Worker" Title="Service Setup" Level="1" AllowAbsent ="true">
+			<ComponentGroupRef Id="Worker" />
+	    </Feature>
+
+	    <Feature Id="Console" Title="Command Line Setup" Level="1" AllowAbsent ="true">
+		    <ComponentGroupRef Id="Console" />
+	    </Feature>
+
+  </Package>
+</Wix>

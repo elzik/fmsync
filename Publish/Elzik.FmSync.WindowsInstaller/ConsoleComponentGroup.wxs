@@ -1,0 +1,24 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+	  <ComponentGroup Id="Console" Directory="CONSOLE_INSTALLFOLDER">
+		  <Component Id="ConsoleExecutable" Bitness="always64">
+			  <File Id="Elzik.FmSync.Console.exe"
+			        Source="$(var.SolutionDir)Publish\output\Elzik.FmSync.Console\win-x64\fmsync.exe"
+			        KeyPath="true" />
+			  <Environment Id="Path"
+						   Name="PATH"
+						   Value="[CONSOLE_INSTALLFOLDER]"
+						   Permanent="no"
+						   Part="last"
+						   Action="set"
+						   System="yes" />
+				<RemoveFile Id="ALL_CONSOLE_EXECUTABLES" Name="*.exe" On="both" />
+		  </Component>
+		  <Component Id="ConsoleConfig" Permanent="true">
+			  <File Id="console.appSettings.json"
+			        Source="$(var.SolutionDir)Publish\output\Elzik.FmSync.Console\win-x64\appSettings.json"
+			        KeyPath="true" />
+		  </Component>
+	  </ComponentGroup>
+  </Fragment>
+</Wix>

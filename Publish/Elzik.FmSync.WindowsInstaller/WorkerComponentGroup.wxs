@@ -1,0 +1,36 @@
+<?define Name = "fmsync" ?>
+<?define Description = "Ensure that a Markdown file's created date is syncronised with the created date found in its Front Matter" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+	  <ComponentGroup Id="Worker" Directory="WORKER_INSTALLFOLDER">
+		  <Component Id="WorkerExecutable" Bitness="always64">
+			  <File Id="Elzik.FmSync.Worker.exe"
+			        Source="$(var.SolutionDir)Publish\output\Elzik.FmSync.Worker\win-x64\Elzik.FmSync.Worker.exe"
+			        KeyPath="true" />
+
+				    <RemoveFile Id="ALL_WORKER_EXECUTABLES" Name="*.exe" On="both" />
+
+				    <ServiceInstall Id="ServiceInstaller"
+				                    Type="ownProcess"
+				                    Name="App.WindowsService"
+				                    DisplayName="$(Name)"
+				                    Description="$(Description)"
+				                    Start="auto"
+				                    ErrorControl="normal" />
+
+				    <ServiceControl Id="StartService"
+				                    Start="install"
+				                    Stop="both"
+				                    Remove="uninstall"
+				                    Name="App.WindowsService"
+				                    Wait="true" />
+		  </Component>
+		  <Component Id="WorkerConfig" Permanent="true">
+			  <File Id="worker.appSettings.json"
+			        Source="$(var.SolutionDir)Publish\output\Elzik.FmSync.Worker\win-x64\appSettings.json"
+			        KeyPath="true" />
+		  </Component>
+	  </ComponentGroup>
+  </Fragment>
+</Wix>
