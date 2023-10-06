@@ -57,10 +57,10 @@ namespace Elzik.FmSync.Worker
                 _logger.LogInformation("Watcher on {DirectoryPath} has started.", directoryPaths);
             }
 
-            _logger.LogInformation("A total of {WatcherCount} folder watchers are running.", _folderWatchers.Count);
+            _logger.LogInformation("A total of {WatcherCount} directory watchers are running.", _folderWatchers.Count);
             if (_folderWatchers.Count < 1)
             {
-                _logger.LogWarning("Add a directory to watch to the {ConfigSection}:{ConfigItem} configuration.", 
+                _logger.LogWarning("No directories are being watched. Add at least one directory to watch to the {ConfigSection}:{ConfigItem} configuration.", 
                     nameof(WatcherOptions), nameof(WatcherOptions.WatchedDirectoryPaths));
             }
 
