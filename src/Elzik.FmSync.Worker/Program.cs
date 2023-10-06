@@ -27,7 +27,7 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .ConfigureAppConfiguration((_, config) =>
     {
-        config.AddJsonFile("appSettings.json", true, true);
+        config.AddJsonFile("appSettings.json", false);
     })
     .Build();
 
