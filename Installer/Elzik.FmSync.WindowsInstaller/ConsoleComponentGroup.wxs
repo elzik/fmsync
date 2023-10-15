@@ -3,7 +3,7 @@
 	  <ComponentGroup Id="Console" Directory="CONSOLE_INSTALLFOLDER">
 		  <Component Id="ConsoleExecutable" Bitness="always64">
 			  <File Id="Elzik.FmSync.Console.exe"
-			        Source="$(var.SolutionDir)Publish\output\Elzik.FmSync.Console\win-x64\fmsync.exe"
+			        Source="$(var.Elzik.FmSync.Console.TargetDir)publish\fmsync.exe"
 			        KeyPath="true" />
 			  <Environment Id="Path"
 						   Name="PATH"
@@ -16,7 +16,7 @@
 		  </Component>
 		  <Component Id="ConsoleConfig" Permanent="true">
 			  <File Id="console.appSettings.json"
-			        Source="$(var.SolutionDir)Publish\output\Elzik.FmSync.Console\win-x64\appSettings.json"
+			        Source="$(var.Elzik.FmSync.Console.TargetDir)publish\appSettings.json"
 			        KeyPath="true" />
 		  </Component>
 	  </ComponentGroup>

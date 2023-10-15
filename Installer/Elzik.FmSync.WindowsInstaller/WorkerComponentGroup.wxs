@@ -6,7 +6,7 @@
 	  <ComponentGroup Id="Worker" Directory="WORKER_INSTALLFOLDER">
 		  <Component Id="WorkerExecutable" Bitness="always64">
 			  <File Id="Elzik.FmSync.Worker.exe"
-			        Source="$(var.SolutionDir)Publish\output\Elzik.FmSync.Worker\win-x64\Elzik.FmSync.Worker.exe"
+			        Source="$(var.Elzik.FmSync.Worker.TargetDir)publish\Elzik.FmSync.Worker.exe"
 			        KeyPath="true" />
 
 				    <RemoveFile Id="ALL_WORKER_EXECUTABLES" Name="*.exe" On="both" />
@@ -28,7 +28,7 @@
 		  </Component>
 		  <Component Id="WorkerConfig" Permanent="true">
 			  <File Id="worker.appSettings.json"
-			        Source="$(var.SolutionDir)Publish\output\Elzik.FmSync.Worker\win-x64\appSettings.json"
+			        Source="$(var.Elzik.FmSync.Worker.TargetDir)publish\appSettings.json"
 			        KeyPath="true" />
 		  </Component>
 	  </ComponentGroup>

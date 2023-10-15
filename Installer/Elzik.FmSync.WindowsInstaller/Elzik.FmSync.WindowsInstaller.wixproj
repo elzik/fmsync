@@ -1,12 +1,12 @@
 ﻿<Project Sdk="WixToolset.Sdk/4.0.0">
   <ItemGroup>
-    <None Include="CreateEula.ps1" />
     <None Include="LICENSE.rtf" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.UI.wixext" Version="4.0.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Elzik.FmSync.Console\Elzik.FmSync.Console.csproj" />
     <ProjectReference Include="..\..\src\Elzik.FmSync.Worker\Elzik.FmSync.Worker.csproj" />
   </ItemGroup>
 </Project>
