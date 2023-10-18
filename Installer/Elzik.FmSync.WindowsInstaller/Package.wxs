@@ -1,6 +1,6 @@
 ﻿<?define Name = "fmsync" ?>
 <?define Manufacturer = "Elzik" ?>
-<?define Version = "1.0.0.0" ?>
+<?define Version = "$(var.GitVersion_MajorMinorPatch)" ?>
 <?define UpgradeCode = "72617562-fb47-49e4-81ba-43bb876cbfac" ?>
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
