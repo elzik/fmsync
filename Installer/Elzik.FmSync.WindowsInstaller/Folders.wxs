@@ -1,0 +1,15 @@
+<?define Manufacturer = "Elzik" ?>
+<?define Name = "fmsync" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Fragment>
+		<StandardDirectory Id="ProgramFiles6432Folder">
+			<Directory Id="ELZIK_INSTALLFOLDER" Name="$(var.Manufacturer)">
+				<Directory Id="FMSYNC_INSTALLFOLDER" Name="$(var.Name)">
+					<Directory Id="WORKER_INSTALLFOLDER" Name="Service" />
+					<Directory Id="CONSOLE_INSTALLFOLDER" Name="CommandLine" />
+				</Directory>
+			</Directory>
+		</StandardDirectory>
+	</Fragment>
+</Wix>

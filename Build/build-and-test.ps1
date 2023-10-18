@@ -1,7 +1,5 @@
-dotnet build $PSScriptRoot\..\Elzik.FmSync.sln
-
 dotnet test `
-	--no-build `
+	-c Release `
 	--verbosity normal `
 	-p:CollectCoverage=true `
 	-p:CoverletOutput=TestResults/coverage.opencover.xml `

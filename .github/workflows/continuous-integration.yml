@@ -1,7 +1,12 @@
 name: Continuous Integration
 
 on:
-  [push, pull_request]
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - '*'
 
 jobs:
   build:
@@ -21,7 +26,7 @@ jobs:
       with:
         dotnet-version: 7.0.x
     - name: Build & Test
-      run: ./Build/continuous-integration.ps1
+      run: ./Build/build-and-test.ps1
       shell: pwsh  
     - name: Upoload Coverage Badge
       if: github.event_name != 'pull_request' && matrix.os == 'windows-latest'
