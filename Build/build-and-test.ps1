@@ -1,8 +1,10 @@
-dotnet test $PSScriptRoot/../Elzik.FmSync.sln `
+$repoRootPath = (Resolve-Path "$PSScriptRoot/../").Path
+
+dotnet test $repoRootPath/Elzik.FmSync.sln `
 	-c Release `
 	--verbosity normal `
 	-p:CollectCoverage=true `
-	-p:CoverletOutput=$PSScriptRoot/../tests/TestResults/coverage.opencover.xml `
+	-p:CoverletOutput=$repoRootPath/tests/TestResults/coverage.opencover.xml `
 	-p:CoverletOutputFormat=opencover
 
 dotnet tool update `
@@ -10,6 +12,6 @@ dotnet tool update `
 	--version 5.1.8
 
 reportgenerator `
-	"-reports:$PSScriptRoot/../tests/Elzik.FmSync.Application.Tests.Unit/TestResults/coverage.opencover.xml;$PSScriptRoot/../tests/Elzik.FmSync.Infrastructure.Tests.Integration/TestResults/coverage.opencover.xml;" `
-	"-targetdir:$PSScriptRoot/../tests/TestResults" `
+	"-reports:$repoRootPath/tests/Elzik.FmSync.Application.Tests.Unit/TestResults/coverage.opencover.xml;$repoRootPath/tests/Elzik.FmSync.Infrastructure.Tests.Integration/TestResults/coverage.opencover.xml;" `
+	"-targetdir:$repoRootPath/tests/TestResults" `
 	"-reporttypes:Badges"
