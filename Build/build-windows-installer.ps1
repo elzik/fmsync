@@ -1,4 +1,6 @@
 $repoRootPath = (Resolve-Path "$PSScriptRoot/../").Path
+$repoRootPath = $repoRootPath.Substring(0,$repoRootPath.Length-1)
+Write-Output "Repo root path:$repoRootPath"
 
 dotnet publish $repoRootPath\src\Elzik.FmSync.Worker\Elzik.FmSync.Worker.csproj `
 	--runtime win-x64 `
