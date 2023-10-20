@@ -6,7 +6,7 @@ dotnet test $repoRootPath/Elzik.FmSync.sln `
 	-c Release `
 	--verbosity normal `
 	-p:CollectCoverage=true `
-	-p:CoverletOutput=$repoRootPath/tests/TestResults/coverage.opencover.xml `
+	-p:CoverletOutput=TestResults/coverage.opencover.xml `
 	-p:CoverletOutputFormat=opencover
 
 dotnet tool update `
