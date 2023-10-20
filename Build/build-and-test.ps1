@@ -1,4 +1,4 @@
-dotnet test $PSScriptRoot\..\Elzik.FmSync.sln `
+dotnet test $PSScriptRoot/..Elzik.FmSync.sln `
 	-c Release `
 	--verbosity normal `
 	-p:CollectCoverage=true `
