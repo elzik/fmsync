@@ -23,7 +23,7 @@ jobs:
     - name: Build & Test
       run: ./Build/build-and-test.ps1
       shell: pwsh  
-    - name: Upoload Coverage Badge
+    - name: Upload Coverage Badge
       if: github.event_name != 'pull_request' && matrix.os == 'windows-latest'
       uses: exuanbo/actions-deploy-gist@v1
       with:
