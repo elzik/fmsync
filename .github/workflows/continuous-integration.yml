@@ -1,7 +1,12 @@
 name: Continuous Integration
 
 on:
-  [push, pull_request]
+  push:
+    branches:
+    - main
+  pull_request:
+    branches:
+    - '*'
 
 jobs:
   build:
@@ -33,7 +38,7 @@ jobs:
         gist_file_name: fmsync-code-coverage-${{ github.ref_name }}.svg
         file_path: tests/TestResults/badge_shieldsio_linecoverage_green.svg
     - name: Build Windows Installer
-      if: (github.ref_name == 'main' ||  github.event_name == 'pull_request') && matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
     - name: Tag With SemVer
