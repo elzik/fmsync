@@ -3,4 +3,4 @@ dotnet-gitversion
 $semVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
 $tag = "v$semVer"
 Write-Output "tag=$tag" >> $GITHUB_OUTPUT
-Write-Host $tag
+Write-Output $tag
