@@ -36,4 +36,7 @@ jobs:
       if: (github.ref_name == 'main' ||  github.event_name == 'pull_request') && matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
-      
+    - name: Tag With SemVer
+      if: github.ref_name == 'main'
+      run: ./Build/tag-with-semver.ps1
+      shell: pwsh

@@ -1,5 +1,6 @@
 dotnet tool update --global GitVersion.Tool
 $semVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
 $tag = "v$semVer"
-Write-Output "tag=$tag" >> $GITHUB_OUTPUT
-Write-Output $tag
+git tag $tag -f
+git push --tags
+Write-Output "Tagged with $tag"
