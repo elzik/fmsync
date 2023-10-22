@@ -1,12 +1,7 @@
 name: Continuous Integration
 
 on:
-  push:
-    branches:
-    - main
-  pull_request:
-    branches:
-    - '*'
+  [push, pull_request]
 
 jobs:
   build:
@@ -28,7 +23,7 @@ jobs:
     - name: Build & Test
       run: ./Build/build-and-test.ps1
       shell: pwsh  
-    - name: Upoload Coverage Badge
+    - name: Upload Coverage Badge
       if: github.event_name != 'pull_request' && matrix.os == 'windows-latest'
       uses: exuanbo/actions-deploy-gist@v1
       with:
@@ -37,3 +32,15 @@ jobs:
         gist_description: "code-coverage-${{ github.ref_name }}"
         gist_file_name: fmsync-code-coverage-${{ github.ref_name }}.svg
         file_path: tests/TestResults/badge_shieldsio_linecoverage_green.svg
+    - name: Build Windows Installer
+      if: matrix.os == 'windows-latest'
+      run: ./Build/build-windows-installer.ps1
+      shell: pwsh
+    - name: Tag With SemVer
+      if: github.ref_name == 'main'
+      run: ./Build/tag-with-semver.ps1
+      shell: pwsh
+    - name: Debug Output
+      if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
+      run: Write-Output 'This was a tag push!'
+      shell: pwsh

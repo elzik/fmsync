@@ -1,4 +1,4 @@
 $ErrorActionPreference = "Stop"
 
-& Build/build-and-test.ps1
-& Build/build-windows-installer.ps1
+& $PSScriptRoot/build-and-test.ps1
+& $PSScriptRoot/build-windows-installer.ps1
