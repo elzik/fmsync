@@ -40,3 +40,7 @@ jobs:
       if: github.ref_name == 'main'
       run: ./Build/tag-with-semver.ps1
       shell: pwsh
+    - name: Debug Output
+      if: contains(github.ref, 'refs/tags/')
+      run: Write-Output 'This was a tag push!'
+      shell: pwsh
