@@ -57,5 +57,5 @@ jobs:
         tag_name: ${{ env.GitVersion_SemVer }}
         generate_release_notes: true
         prerelease: ${{ github.ref_name != 'main' }}
-        files: /Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/Elzik.FmSync.WindowsInstaller.msi
+        files: /fmsync/Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/Elzik.FmSync.WindowsInstaller.msi
 
