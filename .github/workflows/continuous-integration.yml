@@ -49,9 +49,10 @@ jobs:
         $tag = git describe --tags --abbrev=0
         Write-Output "tag:$tag"
         Write-Output "steps.tag.outputs.tag:${{ steps.tag.outputs.tag }}"
+        Write-Output "$env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
       shell: pwsh
     - name: Release
       uses: softprops/action-gh-release@v1 
       if: github.ref_name == 'main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
       with:
-        tag_name: ${{ steps.tag.outputs.tag }}
+        tag_name: ${{ env.GitVersion_SemVer }}
