@@ -37,6 +37,7 @@ jobs:
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
     - name: Tag With SemVer
+      id: tag
       if: github.ref_name == 'main'
       run: ./Build/tag-with-semver.ps1
       shell: pwsh
@@ -47,7 +48,10 @@ jobs:
         Write-Output "github.ref:${{ github.ref }}"
         $tag = git describe --tags --abbrev=0
         Write-Output "tag:$tag"
+        Write-Output "steps.tag.outputs.tag:${{ steps.tag.outputs.tag }}"
       shell: pwsh
     - name: Release
       uses: softprops/action-gh-release@v1 
       if: github.ref_name == 'main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+      with:
+        tag_name: ${{ steps.tag.outputs.tag }}
