@@ -41,6 +41,8 @@ jobs:
         Write-Output "github.ref_name:${{ github.ref_name }}"
         Write-Output "github.event_name:${{ github.event_name }}"
         Write-Output "github.ref:${{ github.ref }}"
+        $tag = git describe --tags --abbrev=0
+        Write-Output "tag:$tag"
       shell: pwsh
     - name: Tag With SemVer
       if: github.ref_name == 'main'
