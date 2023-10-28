@@ -56,3 +56,4 @@ jobs:
       with:
         tag_name: ${{ env.GitVersion_SemVer }}
         generate_release_notes: true
+        prerelease: ${{ github.ref_name != 'main' }}
