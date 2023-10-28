@@ -40,7 +40,6 @@ jobs:
       if: github.ref_name == 'main'
       run: ./Build/tag-with-semver.ps1
       shell: pwsh
-    - name: Debug Output
-      if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-      run: Write-Output 'This was a tag push!'
-      shell: pwsh
+    - name: Release
+      uses: softprops/action-gh-release@v1 
+      if: github.ref_name == 'main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
