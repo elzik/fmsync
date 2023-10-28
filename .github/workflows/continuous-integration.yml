@@ -55,3 +55,4 @@ jobs:
       if: github.ref_name == 'main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
       with:
         tag_name: ${{ env.GitVersion_SemVer }}
+        generate_release_notes: true
