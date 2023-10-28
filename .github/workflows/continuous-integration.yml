@@ -36,10 +36,13 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
+    - name: Debug Output
+      run: |
+        Write-Output "github.ref_name:${{ github.ref_name }}"
+        Write-Output "github.event_name:${{ github.event_name }}"
+        Write-Output "github.ref:${{ github.ref }}"
+      shell: pwsh
     - name: Tag With SemVer
       if: github.ref_name == 'main'
       run: ./Build/tag-with-semver.ps1
       shell: pwsh
-    - name: Release
-      uses: softprops/action-gh-release@v1 
-      if: github.ref_name == 'main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
