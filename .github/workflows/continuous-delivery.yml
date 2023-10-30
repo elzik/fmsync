@@ -36,6 +36,21 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
+    - name: Check if PR Exists
+      id: prcheck
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        prs=$(gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --json baseRefName,headRefName \
+            --jq '
+                map(select(.baseRefName == "main" and .headRefName == "${{ github.ref_name }}"))
+                | length
+            ')
+        if ((prs > 0)); then
+            echo "pull_request_exists=true" >> "$GITHUB_OUTPUT"
+        fi
     - name: Tag With SemVer
       id: tag
       if: github.ref_name == 'main'
@@ -49,6 +64,7 @@ jobs:
         $tag = git describe --tags --abbrev=0
         Write-Output "tag:$tag"
         Write-Output "env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
+        Write-Output "steps.prcheck.outputs.pull_request_exists:${{ steps.prcheck.outputs.pull_request_exists }}"
       shell: pwsh
     - name: Release
       uses: softprops/action-gh-release@v1 
