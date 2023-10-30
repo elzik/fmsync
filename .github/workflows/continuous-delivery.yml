@@ -40,18 +40,18 @@ jobs:
       id: prcheck
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      shell: bash
       run: |
-        prs=$(gh pr list \
-            --repo "$GITHUB_REPOSITORY" \
-            --json baseRefName,headRefName \
-            --jq '
-                map(select(.baseRefName == "main" and .headRefName == "${{ github.ref_name }}"))
-                | length
-            ')
-        if ((prs > 0)); then
-            echo "pull_request_exists=true" >> "$GITHUB_OUTPUT"
-        fi
+        $prs = $(gh pr list `
+        --repo "$env:GITHUB_REPOSITORY" `
+        --json baseRefName,headRefName `
+        --jq '
+            map(select(.baseRefName == "main" and .headRefName == $env:github_ref_name))
+            | length
+        ')
+        if ($prs -gt 0) {
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "pull_request_exists=true"
+        }
+      shell: pwsh
     - name: Tag With SemVer
       id: tag
       if: github.ref_name == 'main'
