@@ -48,9 +48,8 @@ jobs:
             map(select(.baseRefName == \"main\" and .headRefName == \"${{ github.ref_name }}\"))
             | length
         ')
-        if ($prs -gt 0) {
-          Add-Content -Path $env:GITHUB_OUTPUT -Value "pull_request_exists=true"
-        }
+        $exists = ($prs -gt 0)
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "pull_request_exists=$exists"
       shell: pwsh
     - name: Tag With SemVer
       id: tag
