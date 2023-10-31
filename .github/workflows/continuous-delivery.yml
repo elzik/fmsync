@@ -1,7 +1,13 @@
 name: Continuous Delivery
 
 on:
-  [push, pull_request]
+  push: {}
+  pull_request: {}
+  workflow_dispatch:
+    inputs:
+      force-release:
+        type: boolean
+        description: Force tag & release even when the source branch is not main
 
 jobs:
   continuous-delivery:
@@ -46,8 +52,6 @@ jobs:
         Write-Output "github.ref_name:${{ github.ref_name }}"
         Write-Output "github.event_name:${{ github.event_name }}"
         Write-Output "github.ref:${{ github.ref }}"
-        $tag = git describe --tags --abbrev=0
-        Write-Output "tag:$tag"
         Write-Output "env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
       shell: pwsh
     - name: Release
