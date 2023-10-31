@@ -42,7 +42,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
-    - name: Check if PR Exists
+C:\Source\Personal\fmsync\.    - name: Check if PR Exists
       id: prcheck
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -60,7 +60,7 @@ jobs:
     - name: Check for Release Requirement
       id: release-check
       run: |
-        $needsRelease = ("${{ github.ref_name }}" -eq 'main') -or ("${{ github.event.inputs.force-release }}" -e 'true')
+        $needsRelease = ("${{ github.ref_name }}" -eq 'main') -or ("${{ github.event.inputs.force-release }}" -eq 'true')
         Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
       shell: pwsh
     - name: Tag With SemVer
