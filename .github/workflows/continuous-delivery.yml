@@ -61,9 +61,9 @@ jobs:
         Write-Output "env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
         Write-Output "steps.release-check.outputs.needs-release:${{ steps.release-check.outputs.needs-release }}"
       shell: pwsh
-    - name: Release
+    - name: Windows Release
       uses: softprops/action-gh-release@v1
-      if: steps.release-check.outputs.needs-release == 'True'
+      if: steps.release-check.outputs.needs-release == 'True' && matrix.os == 'windows-latest'
       with:
         tag_name: ${{ env.GitVersion_SemVer }}
         generate_release_notes: true
