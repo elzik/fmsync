@@ -60,8 +60,8 @@ jobs:
     - name: Check for Release Requirement
       id: release-check
       run: |
-        $needs-release = (${{ github.ref_name }} -eq 'main') -or (${{ github.event.inputs.force-release }} -e 'true')
-        Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needs-release"
+        $needsRelease = (${{ github.ref_name }} -eq 'main') -or (${{ github.event.inputs.force-release }} -e 'true')
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
       shell: pwsh
     - name: Tag With SemVer
       id: tag
