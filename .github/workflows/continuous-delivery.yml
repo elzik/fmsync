@@ -4,6 +4,10 @@ on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      force-release:
+        type: boolean
+        description: Force tag & release even when the source branch is not main
 
 jobs:
   continuous-delivery:
@@ -24,7 +28,7 @@ jobs:
         dotnet-version: 7.0.x
     - name: Build & Test
       run: ./Build/build-and-test.ps1
-      shell: pwsh  
+      shell: pwsh
     - name: Upload Coverage Badge
       if: github.event_name != 'pull_request' && matrix.os == 'windows-latest'
       uses: exuanbo/actions-deploy-gist@v1
@@ -53,6 +57,12 @@ jobs:
         $exists = ($prs -gt 0)
         Add-Content -Path $env:GITHUB_OUTPUT -Value "pull_request_exists=$exists"
       shell: pwsh
+    - name: Check for Release Requirement
+      id: release-check
+      run: |
+        $needs-release = (${{ github.ref_name }} -eq 'main') -or (${{ github.event.inputs.force-release }} -e 'true')
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needs-release"
+      shell: pwsh
     - name: Tag With SemVer
       id: tag
       if: github.ref_name == 'main'
@@ -65,9 +75,10 @@ jobs:
         Write-Output "github.ref:${{ github.ref }}"
         Write-Output "env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
         Write-Output "steps.prcheck.outputs.pull_request_exists:${{ steps.prcheck.outputs.pull_request_exists }}"
+        Write-Output "steps.release-check.outputs.needs-release:${{ steps.release-check.outputs.needs-release }}"
       shell: pwsh
     - name: Release
-      uses: softprops/action-gh-release@v1 
+      uses: softprops/action-gh-release@v1
       if: github.ref_name == 'main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
       with:
         tag_name: ${{ env.GitVersion_SemVer }}
