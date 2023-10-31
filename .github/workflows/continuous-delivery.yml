@@ -1,7 +1,13 @@
 name: Continuous Delivery
 
 on:
-  [push, pull_request]
+  push: {}
+  pull_request: {}
+  workflow_dispatch:
+    inputs:
+      force-release:
+        type: boolean
+        description: Force tag & release even when the source branch is not main
 
 jobs:
   continuous-delivery:
