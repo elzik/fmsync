@@ -48,11 +48,6 @@ jobs:
         $needsRelease = ("${{ github.ref_name }}" -eq 'main') -or ("${{ github.event.inputs.force-release }}" -eq 'true')
         Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
       shell: pwsh
-    - name: Tag With SemVer
-      id: tag
-      if: github.ref_name == 'main'
-      run: ./Build/tag-with-semver.ps1
-      shell: pwsh
     - name: Debug Output
       run: |
         Write-Output "github.ref_name:${{ github.ref_name }}"
