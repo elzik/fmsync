@@ -42,7 +42,7 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
-C:\Source\Personal\fmsync\.    - name: Check if PR Exists
+    - name: Check if PR Exists
       id: prcheck
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
