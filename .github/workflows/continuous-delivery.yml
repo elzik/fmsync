@@ -1,8 +1,8 @@
 name: Continuous Delivery
 
 on:
-  push:
-  pull_request:
+  push: {}
+  pull_request: {}
   workflow_dispatch:
     inputs:
       force-release:
@@ -42,31 +42,11 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
-    - name: Check if PR Exists
-      id: prcheck
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        $prs = $(gh pr list `
-        --repo "$env:GITHUB_REPOSITORY" `
-        --json baseRefName,headRefName `
-        --jq '
-            map(select(.baseRefName == \"main\" and .headRefName == \"${{ github.ref_name }}\"))
-            | length
-        ')
-        $exists = ($prs -gt 0)
-        Add-Content -Path $env:GITHUB_OUTPUT -Value "pull_request_exists=$exists"
-      shell: pwsh
     - name: Check for Release Requirement
       id: release-check
       run: |
         $needsRelease = ("${{ github.ref_name }}" -eq 'main') -or ("${{ github.event.inputs.force-release }}" -eq 'true')
         Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
-      shell: pwsh
-    - name: Tag With SemVer
-      id: tag
-      if: github.ref_name == 'main'
-      run: ./Build/tag-with-semver.ps1
       shell: pwsh
     - name: Debug Output
       run: |
@@ -74,12 +54,11 @@ jobs:
         Write-Output "github.event_name:${{ github.event_name }}"
         Write-Output "github.ref:${{ github.ref }}"
         Write-Output "env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
-        Write-Output "steps.prcheck.outputs.pull_request_exists:${{ steps.prcheck.outputs.pull_request_exists }}"
         Write-Output "steps.release-check.outputs.needs-release:${{ steps.release-check.outputs.needs-release }}"
       shell: pwsh
-    - name: Release
+    - name: Windows Release
       uses: softprops/action-gh-release@v1
-      if: github.ref_name == 'main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+      if: steps.release-check.outputs.needs-release == 'True' && matrix.os == 'windows-latest'
       with:
         tag_name: ${{ env.GitVersion_SemVer }}
         generate_release_notes: true
