@@ -56,6 +56,13 @@ jobs:
         Write-Output "env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
         Write-Output "steps.release-check.outputs.needs-release:${{ steps.release-check.outputs.needs-release }}"
       shell: pwsh
+    - name: Tag With SemVer
+      id: tag
+      if: steps.release-check.outputs.needs-release == 'True'
+      run: |
+        git tag v${{ env.GitVersion_SemVer }}
+	git push --tags
+      shell: pwsh
     - name: Windows Release
       uses: softprops/action-gh-release@v1
       if: steps.release-check.outputs.needs-release == 'True' && matrix.os == 'windows-latest'
