@@ -57,10 +57,9 @@ jobs:
         Write-Output "steps.release-check.outputs.needs-release:${{ steps.release-check.outputs.needs-release }}"
       shell: pwsh
     - name: Tag With SemVer
-      id: tag
       if: steps.release-check.outputs.needs-release == 'True'
       run: |
-        git tag v${{ env.GitVersion_SemVer }}
+        git tag "v${{ env.GitVersion_SemVer }}"
 	git push --tags
       shell: pwsh
     - name: Windows Release
