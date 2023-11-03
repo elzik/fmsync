@@ -1,15 +1,18 @@
 ﻿<?define Name = "fmsync" ?>
 <?define Manufacturer = "Elzik" ?>
 <?define Version = "$(var.GitVersion_MajorMinorPatch)" ?>
+<?define SemanticVersion = "$(var.GitVersion_SemVer)" ?>
 <?define UpgradeCode = "72617562-fb47-49e4-81ba-43bb876cbfac" ?>
 
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
      xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
-	<Package Name="$(Name)"
+	<Package Name="$(Name) v$(SemanticVersion)"
 	         Manufacturer="$(Manufacturer)"
 	         Version="$(Version)"
 	         UpgradeCode="$(var.UpgradeCode)"
 	         Compressed="true">
+		
+		<MediaTemplate EmbedCab="yes" />
 	    <MajorUpgrade DowngradeErrorMessage="!(loc.DowngradeError)" />
 
 	    <WixVariable Id="WixUILicenseRtf" Value="LICENSE.rtf" />

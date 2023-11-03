@@ -28,7 +28,7 @@ jobs:
         dotnet-version: 7.0.x
     - name: Build & Test
       run: ./Build/build-and-test.ps1
-      shell: pwsh  
+      shell: pwsh
     - name: Upload Coverage Badge
       if: github.event_name != 'pull_request' && matrix.os == 'windows-latest'
       uses: exuanbo/actions-deploy-gist@v1
@@ -42,10 +42,11 @@ jobs:
       if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
-    - name: Tag With SemVer
-      id: tag
-      if: github.ref_name == 'main'
-      run: ./Build/tag-with-semver.ps1
+    - name: Check for Release Requirement
+      id: release-check
+      run: |
+        $needsRelease = ("${{ github.ref_name }}" -eq 'main') -or ("${{ github.event.inputs.force-release }}" -eq 'true')
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
       shell: pwsh
     - name: Debug Output
       run: |
@@ -53,13 +54,19 @@ jobs:
         Write-Output "github.event_name:${{ github.event_name }}"
         Write-Output "github.ref:${{ github.ref }}"
         Write-Output "env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
+        Write-Output "steps.release-check.outputs.needs-release:${{ steps.release-check.outputs.needs-release }}"
       shell: pwsh
-    - name: Release
-      uses: softprops/action-gh-release@v1 
-      if: github.ref_name == 'main' || (github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
+    - name: Tag With SemVer
+      if: steps.release-check.outputs.needs-release == 'True'
+      run: |
+        git tag "v${{ env.GitVersion_SemVer }}"
+        git push --tags
+      shell: pwsh
+    - name: Windows Release
+      uses: softprops/action-gh-release@v1
+      if: steps.release-check.outputs.needs-release == 'True' && matrix.os == 'windows-latest'
       with:
-        tag_name: ${{ env.GitVersion_SemVer }}
+        tag_name: v${{ env.GitVersion_SemVer }}
         generate_release_notes: true
         prerelease: ${{ github.ref_name != 'main' }}
-        files: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/Elzik.FmSync.WindowsInstaller.msi
-
+        files: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/fmsync*.msi

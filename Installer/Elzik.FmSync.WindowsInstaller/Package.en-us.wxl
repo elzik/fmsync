@@ -4,5 +4,7 @@ This file contains the declaration of all the localizable strings.
 <WixLocalization xmlns="http://wixtoolset.org/schemas/v4/wxl" Culture="en-US">
 
   <String Id="DowngradeError" Value="A newer version of [ProductName] is already installed." />
-
+  <?if $(var.GitVersion_SemVer) != null ?>
+	<String Id="WelcomeDlgDescription" Value="This Setup Wizard will install [ProductName] which is a prerelease version. If you come to install a release version with the same major.minor.patch version in the future, you must uninstall this prerelease version first. Click Next to continue or Cancel to exit the Setup Wizard." />
+  <?endif ?>
 </WixLocalization>
