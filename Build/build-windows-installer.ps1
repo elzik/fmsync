@@ -22,3 +22,7 @@ dotnet build $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\Elzik.FmSync.
 	--configuration Release `
 	-p:Platform=x64 `
 	-p:PublishSingleFile=true
+
+dotnet tool update --global GitVersion.Tool
+$SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
+cp $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\bin\x64\Release\en-US\Elzik.FmSync.WindowsInstaller.msi "$repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\bin\x64\Release\en-US\fmsync v$SemVer.msi"
