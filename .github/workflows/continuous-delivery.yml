@@ -1,7 +1,9 @@
 name: Continuous Delivery
 
 on:
-  push: {}
+  push:
+    branches:
+      - "*"
   pull_request: {}
   workflow_dispatch:
     inputs:
