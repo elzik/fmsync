@@ -1,5 +1,7 @@
 ﻿using Elzik.FmSync.Domain;
 using Microsoft.Extensions.Logging;
+using Polly;
+using Polly.Retry;
 using Thinktecture.IO;
 
 namespace Elzik.FmSync;
@@ -9,6 +11,13 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
     private readonly ILogger<FrontMatterFileSynchroniser> _logger;
     private readonly IMarkdownFrontMatter _markdownFrontMatter;
     private readonly IFile _file;
+    private readonly ResiliencePipeline fileWriteResiliencePipeline = new ResiliencePipelineBuilder()
+    .AddRetry(new RetryStrategyOptions()
+    {
+        MaxRetryAttempts = 5,
+        BackoffType = DelayBackoffType.Exponential,
+    })
+    .Build();
 
     public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger,
         IMarkdownFrontMatter markdownFrontMatter, IFile file)
@@ -16,6 +25,14 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _markdownFrontMatter = markdownFrontMatter ?? throw new ArgumentNullException(nameof(markdownFrontMatter));
         _file = file ?? throw new ArgumentNullException(nameof(file));
+    }
+
+    public SyncResult SyncCreationDateWithResilience(string markDownFilePath)
+    {
+        return fileWriteResiliencePipeline.Execute(() =>
+        {
+            return SyncCreationDate(markDownFilePath);
+        });
     }
 
     public SyncResult SyncCreationDate(string markDownFilePath)
@@ -39,7 +56,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
                 var relativeDescription = comparisonResult < 0 ? "earlier" : "later";
                 _logger.LogDebug("{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
                                        "than the created date specified in its Front Matter ({FrontMatterCreatedDate})",
-                    markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
+                markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
 
                 _file.SetCreationTimeUtc(markDownFilePath, frontMatterCreatedDate.Value);
                 fileCreatedDateUpdated = true;

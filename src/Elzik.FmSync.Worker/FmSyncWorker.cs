@@ -86,7 +86,7 @@ namespace Elzik.FmSync.Worker
         {
             try
             {
-                _fileSynchroniser.SyncCreationDate(markDownFilePath);
+                _fileSynchroniser.SyncCreationDateWithResilience(markDownFilePath);
             }
             catch (Exception exception)
             {
