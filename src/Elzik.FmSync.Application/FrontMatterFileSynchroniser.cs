@@ -1,7 +1,5 @@
 ﻿using Elzik.FmSync.Domain;
 using Microsoft.Extensions.Logging;
-using Polly;
-using Polly.Retry;
 using Thinktecture.IO;
 
 namespace Elzik.FmSync;
