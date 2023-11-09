@@ -13,7 +13,7 @@ var host = Host.CreateDefaultBuilder(args)
     {
         services.AddSingleton<IMarkdownFrontMatter, MarkdownFrontMatter>();
         services.AddSingleton<IFile, FileAdapter>();
-        services.AddSingleton<IFrontMatterFileSynchroniser, FrontMatterFileSynchroniser>();
+        services.AddSingleton<IFrontMatterFileSynchroniser, ResiliantFrontMatterFileSynchroniser>();
         services.Configure<WatcherOptions>(hostContext.Configuration.GetSection("WatcherOptions"));
         services.Configure<FileSystemOptions>(hostContext.Configuration.GetSection("FileSystemOptions"));
         services.Configure<FrontMatterOptions>(hostContext.Configuration.GetSection("FrontMatterOptions"));

@@ -1,5 +1,7 @@
 using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.Options;
+using System.Diagnostics;
+using System.Reflection;
 
 namespace Elzik.FmSync.Worker
 {
@@ -31,14 +33,15 @@ namespace Elzik.FmSync.Worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("FmSyncWorker running at: {Time}", DateTimeOffset.Now);
+            _logger.LogInformation("fmsync {Version} has started.", GetProductVersion());
+            _logger.LogDebug("File synchroniation is implemented by {SyncName}", _fileSynchroniser.GetType().Name);
 
             foreach (var directoryPaths in _watcherOptions.WatchedDirectoryPaths)
             {
                 _logger.LogInformation("Configuring watcher on {DirectoryPath} for new and changed " +
                                        "{FilenamePattern} files.", directoryPaths, _fileSystemOptions.FilenamePattern);
-                
-                var folderWatcher = new FileSystemWatcher(directoryPaths, 
+
+                var folderWatcher = new FileSystemWatcher(directoryPaths,
                     _fileSystemOptions.FilenamePattern ?? string.Empty)
                 {
                     EnableRaisingEvents = true,
@@ -60,11 +63,16 @@ namespace Elzik.FmSync.Worker
             _logger.LogInformation("A total of {WatcherCount} directory watchers are running.", _folderWatchers.Count);
             if (_folderWatchers.Count < 1)
             {
-                _logger.LogWarning("No directories are being watched. Add at least one directory to watch to the {ConfigSection}:{ConfigItem} configuration.", 
+                _logger.LogWarning("No directories are being watched. Add at least one directory to watch to the {ConfigSection}:{ConfigItem} configuration.",
                     nameof(WatcherOptions), nameof(WatcherOptions.WatchedDirectoryPaths));
             }
 
             await Task.Yield();
+        }
+
+        private static string? GetProductVersion()
+        {
+            return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
@@ -86,7 +94,7 @@ namespace Elzik.FmSync.Worker
         {
             try
             {
-                _fileSynchroniser.SyncCreationDateWithResilience(markDownFilePath);
+                _fileSynchroniser.SyncCreationDate(markDownFilePath);
             }
             catch (Exception exception)
             {

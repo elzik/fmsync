@@ -11,13 +11,6 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
     private readonly ILogger<FrontMatterFileSynchroniser> _logger;
     private readonly IMarkdownFrontMatter _markdownFrontMatter;
     private readonly IFile _file;
-    private readonly ResiliencePipeline fileWriteResiliencePipeline = new ResiliencePipelineBuilder()
-    .AddRetry(new RetryStrategyOptions()
-    {
-        MaxRetryAttempts = 5,
-        BackoffType = DelayBackoffType.Exponential,
-    })
-    .Build();
 
     public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger,
         IMarkdownFrontMatter markdownFrontMatter, IFile file)
@@ -27,15 +20,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         _file = file ?? throw new ArgumentNullException(nameof(file));
     }
 
-    public SyncResult SyncCreationDateWithResilience(string markDownFilePath)
-    {
-        return fileWriteResiliencePipeline.Execute(() =>
-        {
-            return SyncCreationDate(markDownFilePath);
-        });
-    }
-
-    public SyncResult SyncCreationDate(string markDownFilePath)
+    public virtual SyncResult SyncCreationDate(string markDownFilePath)
     {
         var fileCreatedDateUpdated = false;
         var frontMatterCreatedDate = _markdownFrontMatter.GetCreatedDateUtc(markDownFilePath);
