@@ -7,24 +7,23 @@ using Polly.Registry;
 
 namespace Elzik.FmSync
 {
-    public class ResiliantFrontMatterFileSynchroniser : FrontMatterFileSynchroniser
+    public class ResiliantFrontMatterFileSynchroniser : IResiliantFrontMatterFileSynchroniser
     {
-        private readonly ResiliencePipeline fileWriteResiliencePipeline;
+        private readonly ResiliencePipeline _fileWriteResiliencePipeline;
+        private readonly IFrontMatterFileSynchroniser _frontMatterFileSynchroniser;
 
-        public ResiliantFrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger,
-                                                    IMarkdownFrontMatter markdownFrontMatter,
-                                                    IFile file,
+        public ResiliantFrontMatterFileSynchroniser(IFrontMatterFileSynchroniser frontMatterFileSynchroniser,
                                                     ResiliencePipelineProvider<string> resiliencePipelineProvider)
-            : base(logger, markdownFrontMatter, file)
         {
-            fileWriteResiliencePipeline = resiliencePipelineProvider.GetPipeline("retry-5-times");
+            _fileWriteResiliencePipeline = resiliencePipelineProvider.GetPipeline("retry-5-times");
+            _frontMatterFileSynchroniser = frontMatterFileSynchroniser;
         }
 
-        public override SyncResult SyncCreationDate(string markDownFilePath)
+        public SyncResult SyncCreationDate(string markDownFilePath)
         {
-            return fileWriteResiliencePipeline.Execute(() =>
+            return _fileWriteResiliencePipeline.Execute(() =>
             {
-                return base.SyncCreationDate(markDownFilePath);
+                return _frontMatterFileSynchroniser.SyncCreationDate(markDownFilePath);
             });
         }
     }

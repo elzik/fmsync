@@ -14,7 +14,7 @@ namespace Elzik.FmSync.Worker
         private readonly List<FileSystemWatcher> _folderWatchers;
 
         public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<WatcherOptions> fmSyncOptions, 
-            IFrontMatterFileSynchroniser fileSynchroniser, IOptions<FileSystemOptions> fileSystemOptions)
+            IResiliantFrontMatterFileSynchroniser fileSynchroniser, IOptions<FileSystemOptions> fileSystemOptions)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             if (fmSyncOptions == null)
