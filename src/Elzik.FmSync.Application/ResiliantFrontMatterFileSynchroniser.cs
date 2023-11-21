@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Polly.Retry;
 using Polly;
 using Thinktecture.IO;
+using Polly.Registry;
 
 namespace Elzik.FmSync
 {
@@ -10,16 +11,13 @@ namespace Elzik.FmSync
     {
         private readonly ResiliencePipeline fileWriteResiliencePipeline;
 
-        public ResiliantFrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger, IMarkdownFrontMatter markdownFrontMatter, IFile file) 
+        public ResiliantFrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger,
+                                                    IMarkdownFrontMatter markdownFrontMatter,
+                                                    IFile file,
+                                                    ResiliencePipelineProvider<string> resiliencePipelineProvider)
             : base(logger, markdownFrontMatter, file)
         {
-            fileWriteResiliencePipeline = new ResiliencePipelineBuilder()
-                .AddRetry(new RetryStrategyOptions()
-                {
-                    MaxRetryAttempts = 5,
-                    BackoffType = DelayBackoffType.Exponential,
-                })
-                .Build();
+            fileWriteResiliencePipeline = resiliencePipelineProvider.GetPipeline("retry-5-times");
         }
 
         public override SyncResult SyncCreationDate(string markDownFilePath)
