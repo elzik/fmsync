@@ -15,7 +15,7 @@ namespace Elzik.FmSync
         public ResiliantFrontMatterFileSynchroniser(IFrontMatterFileSynchroniser frontMatterFileSynchroniser,
                                                     ResiliencePipelineProvider<string> resiliencePipelineProvider)
         {
-            _fileWriteResiliencePipeline = resiliencePipelineProvider.GetPipeline("retry-5-times");
+            _fileWriteResiliencePipeline = resiliencePipelineProvider.GetPipeline(Retry5TimesPipelineBuilder.StrategyName);
             _frontMatterFileSynchroniser = frontMatterFileSynchroniser;
         }
 

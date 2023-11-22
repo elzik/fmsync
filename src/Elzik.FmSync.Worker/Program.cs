@@ -6,12 +6,11 @@ using Serilog;
 using Thinktecture.IO.Adapters;
 using Thinktecture.IO;
 using Polly;
-using Polly.Retry;
 
 var host = Host.CreateDefaultBuilder(args)
     .UseSerilog((context, config) => config
         .ReadFrom.Configuration(context.Configuration))
-    .ConfigureServices((hostContext, services) =>
+    .ConfigureServices((Action<HostBuilderContext, IServiceCollection>)((hostContext, services) =>
     {
         services.AddSingleton<IMarkdownFrontMatter, MarkdownFrontMatter>();
         services.AddSingleton<IFile, FileAdapter>();
@@ -20,14 +19,7 @@ var host = Host.CreateDefaultBuilder(args)
         services.Configure<WatcherOptions>(hostContext.Configuration.GetSection("WatcherOptions"));
         services.Configure<FileSystemOptions>(hostContext.Configuration.GetSection("FileSystemOptions"));
         services.Configure<FrontMatterOptions>(hostContext.Configuration.GetSection("FrontMatterOptions"));
-        services.AddResiliencePipeline("retry-5-times", builder =>
-            {
-                builder.AddRetry(new RetryStrategyOptions()
-                {
-                    MaxRetryAttempts = 5,
-                    BackoffType = DelayBackoffType.Exponential,
-                });
-            });
+        services.AddResiliencePipeline(Retry5TimesPipelineBuilder.StrategyName, builder => builder.AddRetry5Times());
 #if IS_WINDOWS_OS
         services.AddWindowsService(options =>
         {
@@ -35,7 +27,7 @@ var host = Host.CreateDefaultBuilder(args)
         });
 #endif
         services.AddHostedService<FmSyncWorker>();
-    })
+    }))
     .ConfigureAppConfiguration((_, config) =>
     {
         config.AddJsonFile("appSettings.json", false);

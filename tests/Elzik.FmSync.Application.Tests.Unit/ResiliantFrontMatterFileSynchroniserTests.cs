@@ -20,7 +20,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
 
             _emptyResiliencePipelineProvider = Substitute.For<ResiliencePipelineProvider<string>>();
             _emptyResiliencePipelineProvider
-                .GetPipeline("retry-5-times")
+                .GetPipeline(Retry5TimesPipelineBuilder.StrategyName)
                 .Returns(ResiliencePipeline.Empty);
         }
 
