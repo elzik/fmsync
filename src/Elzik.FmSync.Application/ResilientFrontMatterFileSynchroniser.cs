@@ -7,12 +7,12 @@ using Polly.Registry;
 
 namespace Elzik.FmSync
 {
-    public class ResiliantFrontMatterFileSynchroniser : IResiliantFrontMatterFileSynchroniser
+    public class ResilientFrontMatterFileSynchroniser : IResilientFrontMatterFileSynchroniser
     {
         private readonly ResiliencePipeline _fileWriteResiliencePipeline;
         private readonly IFrontMatterFileSynchroniser _frontMatterFileSynchroniser;
 
-        public ResiliantFrontMatterFileSynchroniser(IFrontMatterFileSynchroniser frontMatterFileSynchroniser,
+        public ResilientFrontMatterFileSynchroniser(IFrontMatterFileSynchroniser frontMatterFileSynchroniser,
                                                     ResiliencePipelineProvider<string> resiliencePipelineProvider)
         {
             _fileWriteResiliencePipeline = resiliencePipelineProvider.GetPipeline(Retry5TimesPipelineBuilder.StrategyName);

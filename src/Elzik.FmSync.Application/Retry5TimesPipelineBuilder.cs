@@ -1,5 +1,5 @@
-﻿using Polly.Retry;
-using Polly;
+﻿using Polly;
+using Polly.Retry;
 
 namespace Elzik.FmSync
 {
@@ -9,7 +9,7 @@ namespace Elzik.FmSync
 
         public static ResiliencePipelineBuilder AddRetry5Times(this ResiliencePipelineBuilder builder)
         {
-            builder.AddRetry(new RetryStrategyOptions()
+            builder.AddRetry(new RetryStrategyOptions
             {
                 MaxRetryAttempts = 5,
                 BackoffType = DelayBackoffType.Exponential,

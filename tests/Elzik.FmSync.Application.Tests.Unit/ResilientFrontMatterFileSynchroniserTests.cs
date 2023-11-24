@@ -6,13 +6,13 @@ using Xunit;
 
 namespace Elzik.FmSync.Application.Tests.Unit
 {
-    public class ResiliantFrontMatterFileSynchroniserTests
+    public class ResilientFrontMatterFileSynchroniserTests
  {
         private readonly Fixture _fixture;
         private readonly IFrontMatterFileSynchroniser _mockFrontMatterFileSynchroniser;
         private readonly ResiliencePipelineProvider<string> _emptyResiliencePipelineProvider;
 
-        public ResiliantFrontMatterFileSynchroniserTests()
+        public ResilientFrontMatterFileSynchroniserTests()
         {
             _fixture = new Fixture();
 
@@ -31,10 +31,10 @@ namespace Elzik.FmSync.Application.Tests.Unit
             var testFilePath = _fixture.Create<string>();
 
             // Act
-            var resiliantFrontMatterFileSynchroniser = new ResiliantFrontMatterFileSynchroniser(
+            var resilientFrontMatterFileSynchroniser = new ResilientFrontMatterFileSynchroniser(
                 _mockFrontMatterFileSynchroniser,
                 _emptyResiliencePipelineProvider);
-            resiliantFrontMatterFileSynchroniser.SyncCreationDate(testFilePath);
+            resilientFrontMatterFileSynchroniser.SyncCreationDate(testFilePath);
 
             // Assert
             _mockFrontMatterFileSynchroniser.Received(1).SyncCreationDate(testFilePath);
