@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -32,6 +32,7 @@
 
 	<ItemGroup Condition="'$(OS)' == 'Windows_NT'">
 		<PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="7.0.1" />
+		<PackageReference Include="System.Management" Version="8.0.0" />
 	</ItemGroup>
 
 	<ItemGroup>

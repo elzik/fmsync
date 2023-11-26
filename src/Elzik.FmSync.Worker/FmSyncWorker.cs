@@ -1,6 +1,7 @@
 using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Management;
 using System.Reflection;
 
 namespace Elzik.FmSync.Worker
@@ -13,7 +14,7 @@ namespace Elzik.FmSync.Worker
         private readonly IFrontMatterFileSynchroniser _fileSynchroniser;
         private readonly List<FileSystemWatcher> _folderWatchers;
 
-        public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<WatcherOptions> fmSyncOptions, 
+        public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<WatcherOptions> fmSyncOptions,
             IResilientFrontMatterFileSynchroniser fileSynchroniser, IOptions<FileSystemOptions> fileSystemOptions)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -67,7 +68,39 @@ namespace Elzik.FmSync.Worker
                     nameof(WatcherOptions), nameof(WatcherOptions.WatchedDirectoryPaths));
             }
 
+            WatchForVolumneChanges();
+
             await Task.Yield();
+        }
+
+        private void WatchForVolumneChanges()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                var deviceChangeWatcher = new ManagementEventWatcher();
+                var deviceChangedQuery = new WqlEventQuery("SELECT * FROM Win32_DeviceChangeEvent");
+
+                deviceChangeWatcher.EventArrived += (s, e) =>
+                {
+                    if (OperatingSystem.IsWindows())
+                    {
+                        var eventType = Convert.ToInt16(e.NewEvent.Properties["EventType"].Value);
+                        var descriptor = Convert.ToByte(e.NewEvent.Properties["SECURITY_DESCRIPTOR"].Value);
+
+                        _logger.LogDebug("Device with SecurityDescriptor {SecurityDescriptor} had Event{Event}", 
+                            descriptor, eventType);
+                    }
+                };
+
+                deviceChangeWatcher.Query = deviceChangedQuery;
+                deviceChangeWatcher.Start();
+            }
+        }
+
+        public enum EventType
+        {
+            Inserted = 2,
+            Removed = 3
         }
 
         private static string? GetProductVersion()
@@ -98,7 +131,7 @@ namespace Elzik.FmSync.Worker
             }
             catch (Exception exception)
             {
-                _logger.LogError(exception, "An error occurred whilst processing {FilePath}.", 
+                _logger.LogError(exception, "An error occurred whilst processing {FilePath}.",
                     markDownFilePath);
             }
         }
@@ -107,8 +140,8 @@ namespace Elzik.FmSync.Worker
         {
             var sourceDirectoryPath = ((FileSystemWatcher)sender).Path;
 
-            _logger.LogError(e.GetException(), 
-                "FmSync is unable to continue monitoring changes in {FolderPath}.", 
+            _logger.LogError(e.GetException(),
+                "FmSync is unable to continue monitoring changes in {FolderPath}.",
                 sourceDirectoryPath);
         }
     }
