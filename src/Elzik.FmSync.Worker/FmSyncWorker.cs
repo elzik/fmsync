@@ -77,15 +77,16 @@ namespace Elzik.FmSync.Worker
         {
             if (OperatingSystem.IsWindows())
             {
-                ManagementEventWatcher volumneChangeWatcher = new();
-                WqlEventQuery volumeChangedQuery = new("SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2 or EventType = 3");
+                var volumneChangeWatcher = new ManagementEventWatcher();
+                var volumeChangedQuery = new WqlEventQuery(
+                    "SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2 or EventType = 3");
 
                 volumneChangeWatcher.EventArrived += (s, e) =>
                 {
                     if (OperatingSystem.IsWindows())
                     {
                         var driveName = e.NewEvent.Properties["DriveName"].Value;
-                        EventType eventType = (EventType)(Convert.ToInt16(e.NewEvent.Properties["EventType"].Value));
+                        var eventType = (EventType)(Convert.ToInt16(e.NewEvent.Properties["EventType"].Value));
 
                         var eventName = Enum.GetName(typeof(EventType), eventType);
 
