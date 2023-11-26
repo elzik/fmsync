@@ -1,6 +1,7 @@
 using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Management;
 using System.Reflection;
 
 namespace Elzik.FmSync.Worker
@@ -67,7 +68,40 @@ namespace Elzik.FmSync.Worker
                     nameof(WatcherOptions), nameof(WatcherOptions.WatchedDirectoryPaths));
             }
 
+            WatchForVolumneChanges();
+
             await Task.Yield();
+        }
+
+        private void WatchForVolumneChanges()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                ManagementEventWatcher volumneChangeWatcher = new();
+                WqlEventQuery volumeChangedQuery = new("SELECT * FROM Win32_VolumeChangeEvent WHERE EventType = 2 or EventType = 3");
+
+                volumneChangeWatcher.EventArrived += (s, e) =>
+                {
+                    if (OperatingSystem.IsWindows())
+                    {
+                        var driveName = e.NewEvent.Properties["DriveName"].Value;
+                        EventType eventType = (EventType)(Convert.ToInt16(e.NewEvent.Properties["EventType"].Value));
+
+                        var eventName = Enum.GetName(typeof(EventType), eventType);
+
+                        _logger.LogDebug("New event for drive {DriveName}:{EventName}", driveName, eventName);
+                    }
+                };
+
+                volumneChangeWatcher.Query = volumeChangedQuery;
+                volumneChangeWatcher.Start();
+            }
+        }
+
+        public enum EventType
+        {
+            Inserted = 2,
+            Removed = 3
         }
 
         private static string? GetProductVersion()
