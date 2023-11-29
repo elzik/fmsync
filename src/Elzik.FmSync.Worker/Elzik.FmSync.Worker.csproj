@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Worker">
+﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
 	<PropertyGroup>
 		<TargetFramework>net7.0</TargetFramework>
@@ -37,6 +37,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Elzik.FmSync.Application\Elzik.FmSync.Application.csproj" />
 		<ProjectReference Include="..\Elzik.FmSync.Infrastructure\Elzik.FmSync.Infrastructure.csproj" />
+		<ProjectReference Include="..\FileSystemWatcherAlts\FileSystemWatcherAlts.csproj" />
 	</ItemGroup>
 
 </Project>

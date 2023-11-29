@@ -1,4 +1,5 @@
 using Elzik.FmSync.Infrastructure;
+using FileSystemWatcherAlts.Wrappers;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
 using System.Reflection;
@@ -11,7 +12,7 @@ namespace Elzik.FmSync.Worker
         private readonly WatcherOptions _watcherOptions;
         private readonly FileSystemOptions _fileSystemOptions;
         private readonly IFrontMatterFileSynchroniser _fileSynchroniser;
-        private readonly List<FileSystemWatcher> _folderWatchers;
+        private readonly List<FileSystemAutoRefreshingWatcher> _folderWatchers;
 
         public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<WatcherOptions> fmSyncOptions, 
             IResilientFrontMatterFileSynchroniser fileSynchroniser, IOptions<FileSystemOptions> fileSystemOptions)
@@ -28,7 +29,7 @@ namespace Elzik.FmSync.Worker
             _fileSystemOptions = fileSystemOptions.Value;
             _watcherOptions = fmSyncOptions.Value;
             _fileSynchroniser = fileSynchroniser ?? throw new ArgumentNullException(nameof(fileSynchroniser));
-            _folderWatchers = new List<FileSystemWatcher>();
+            _folderWatchers = new List<FileSystemAutoRefreshingWatcher>();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -41,12 +42,12 @@ namespace Elzik.FmSync.Worker
                 _logger.LogInformation("Configuring watcher on {DirectoryPath} for new and changed " +
                                        "{FilenamePattern} files.", directoryPaths, _fileSystemOptions.FilenamePattern);
 
-                var folderWatcher = new FileSystemWatcher(directoryPaths,
+                var folderWatcher = new FileSystemAutoRefreshingWatcher(directoryPaths,
                     _fileSystemOptions.FilenamePattern ?? string.Empty)
                 {
                     EnableRaisingEvents = true,
                     IncludeSubdirectories = true,
-                    NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime
+                    NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime,
                 };
 
                 _folderWatchers.Add(folderWatcher);
