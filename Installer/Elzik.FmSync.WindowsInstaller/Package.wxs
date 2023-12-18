@@ -26,5 +26,23 @@
 		    <ComponentGroupRef Id="Console" />
 	    </Feature>
 
+		<Binary Id="CustomActions" SourceFile=
+				"..\Elzik.FmSync.WindowsInstaller.CustomActions\bin\x64\Release\net472\win-x64\Elzik.FmSync.WindowsInstaller.CustomActions.CA.dll" />
+
+		<CustomAction Id="TestCustomAction"
+					  BinaryRef="CustomActions"
+					  Execute="deferred"
+					  Impersonate="false"
+					  DllEntry="TestCustomAction"
+					  Return="check" />
+		<CustomAction Id="SetWorkerInstallFolder" 
+					  Property="TestCustomAction" 
+					  Value="WorkerInstallFolder=[WORKER_INSTALLFOLDER]" />
+
+		<InstallExecuteSequence>
+			<Custom Action="SetWorkerInstallFolder" After="CreateFolders"/>
+			<Custom Action="TestCustomAction" Before="StartServices" />
+		</InstallExecuteSequence>
+
   </Package>
 </Wix>

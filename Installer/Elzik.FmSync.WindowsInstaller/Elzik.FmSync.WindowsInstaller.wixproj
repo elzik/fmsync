@@ -16,5 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Elzik.FmSync.Console\Elzik.FmSync.Console.csproj" />
     <ProjectReference Include="..\..\src\Elzik.FmSync.Worker\Elzik.FmSync.Worker.csproj" />
+    <ProjectReference Include="..\Elzik.FmSync.WindowsInstaller.CustomActions\Elzik.FmSync.WindowsInstaller.CustomActions.csproj" />
   </ItemGroup>
 </Project>
