@@ -9,6 +9,7 @@
     <DockerfileContext>..\..</DockerfileContext>
     <RootNamespace>Elzik.FmSync</RootNamespace>
     <AssemblyName>fmsync</AssemblyName>
+	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <ItemGroup>
