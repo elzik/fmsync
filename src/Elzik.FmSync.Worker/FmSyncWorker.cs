@@ -63,16 +63,21 @@ namespace Elzik.FmSync.Worker
             _logger.LogInformation("A total of {WatcherCount} directory watchers are running.", _folderWatchers.Count);
             if (_folderWatchers.Count < 1)
             {
-                _logger.LogWarning("No directories are being watched. Add at least one directory to watch to the {ConfigSection}:{ConfigItem} configuration.",
+                _logger.LogWarning("No directories are being watched. Add at least one directory to watch to " +
+                    "the {ConfigSection}:{ConfigItem} configuration.",
                     nameof(WatcherOptions), nameof(WatcherOptions.WatchedDirectoryPaths));
             }
 
             await Task.Yield();
         }
 
-        private static string? GetProductVersion()
+        private static string GetProductVersion()
         {
-            return FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location).ProductVersion;
+            var processPath = Environment.ProcessPath 
+                ?? throw new InvalidOperationException("Currently executing process path not found.");
+
+            return FileVersionInfo.GetVersionInfo(processPath).ProductVersion
+                ?? throw new InvalidOperationException("Currently executing process product version not found.");
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
