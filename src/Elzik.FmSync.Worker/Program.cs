@@ -31,6 +31,9 @@ var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((_, config) =>
     {
         config.AddJsonFile("appSettings.json", false);
+#if DEBUG
+        config.AddJsonFile("appSettings.Development.json", true);
+#endif
     })
     .Build();
 
