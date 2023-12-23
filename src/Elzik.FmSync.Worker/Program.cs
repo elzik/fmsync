@@ -8,9 +8,12 @@ using Thinktecture.IO;
 using Polly;
 
 var host = Host.CreateDefaultBuilder(args)
-    .UseSerilog((context, config) => config
-        .ReadFrom.Configuration(context.Configuration))
-    .ConfigureServices((Action<HostBuilderContext, IServiceCollection>)((hostContext, services) =>
+    .ConfigureAppConfiguration((_, config) =>
+    {
+        config.AddJsonFile("appSettings.json", false);
+    })
+    .UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration))
+    .ConfigureServices((hostContext, services) =>
     {
         services.AddSingleton<IMarkdownFrontMatter, MarkdownFrontMatter>();
         services.AddSingleton<IFile, FileAdapter>();
@@ -27,13 +30,6 @@ var host = Host.CreateDefaultBuilder(args)
         });
 #endif
         services.AddHostedService<FmSyncWorker>();
-    }))
-    .ConfigureAppConfiguration((_, config) =>
-    {
-        config.AddJsonFile("appSettings.json", false);
-#if DEBUG
-        config.AddJsonFile("appSettings.Development.json", true);
-#endif
     })
     .Build();
 
