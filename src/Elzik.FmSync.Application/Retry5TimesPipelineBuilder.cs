@@ -1,5 +1,6 @@
 ﻿using Polly;
 using Polly.Retry;
+using YamlDotNet.Core;
 
 namespace Elzik.FmSync
 {
@@ -13,7 +14,9 @@ namespace Elzik.FmSync
             {
                 MaxRetryAttempts = 5,
                 BackoffType = DelayBackoffType.Exponential,
-                ShouldHandle = new PredicateBuilder().Handle<IOException>(WhenFileIsInUse)
+                ShouldHandle = new PredicateBuilder()
+                    .Handle<IOException>(WhenFileIsInUse)
+                    .Handle<YamlException>(WithInnerFormatException)
             });
 
             return builder;
@@ -23,6 +26,11 @@ namespace Elzik.FmSync
         {
             // https://stackoverflow.com/a/67144250/1025593
             return (ex.HResult & 0x0000FFFF) == 32;
+        }
+
+        private static bool WithInnerFormatException(YamlException arg)
+        {
+            return arg.InnerException?.GetType() == typeof(FormatException);
         }
     }
 }
