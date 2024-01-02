@@ -1,4 +1,3 @@
-using Elzik.FmSync;
 using Elzik.FmSync.Domain;
 using Elzik.FmSync.Infrastructure;
 using Elzik.FmSync.Worker;
@@ -6,6 +5,7 @@ using Serilog;
 using Thinktecture.IO.Adapters;
 using Thinktecture.IO;
 using Polly;
+using Elzik.FmSync.Application;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((_, config) =>

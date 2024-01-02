@@ -6,8 +6,8 @@
 using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage(
-    "Style", 
-    "IDE0042:Deconstruct variable declaration", 
-    Justification = "I want to keep all variables concerned with logging together without needing to create a separate class to do so.", 
-    Scope = "member", 
-    Target = "~M:Elzik.FmSync.FrontMatterFolderSynchroniser.SyncCreationDates(System.String)")]
+    "Style",
+    "IDE0042:Deconstruct variable declaration",
+    Justification = "I want to keep all variables concerned with logging together without needing to create a separate class to do so.",
+    Scope = "member",
+    Target = "~M:Elzik.FmSync.Application.FrontMatterFolderSynchroniser.SyncCreationDates(System.String)")]

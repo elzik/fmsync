@@ -1,4 +1,4 @@
-﻿namespace Elzik.FmSync;
+﻿namespace Elzik.FmSync.Application;
 
 public interface IFrontMatterFileSynchroniser
 {

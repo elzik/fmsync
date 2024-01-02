@@ -1,7 +1,7 @@
+using Elzik.FmSync.Application;
 using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
-using System.Reflection;
 
 namespace Elzik.FmSync.Worker
 {

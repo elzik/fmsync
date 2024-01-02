@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Thinktecture.IO;
 
-namespace Elzik.FmSync;
+namespace Elzik.FmSync.Application;
 
 public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 {

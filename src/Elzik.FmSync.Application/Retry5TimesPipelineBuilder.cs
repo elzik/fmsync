@@ -2,7 +2,7 @@
 using Polly.Retry;
 using YamlDotNet.Core;
 
-namespace Elzik.FmSync
+namespace Elzik.FmSync.Application
 {
     public static class Retry5TimesPipelineBuilder
     {

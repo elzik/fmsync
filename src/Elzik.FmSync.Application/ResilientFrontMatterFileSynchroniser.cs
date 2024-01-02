@@ -5,7 +5,7 @@ using Polly;
 using Thinktecture.IO;
 using Polly.Registry;
 
-namespace Elzik.FmSync
+namespace Elzik.FmSync.Application
 {
     public class ResilientFrontMatterFileSynchroniser : IResilientFrontMatterFileSynchroniser
     {
