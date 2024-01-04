@@ -9,6 +9,9 @@
     <DockerfileContext>..\..</DockerfileContext>
     <RootNamespace>Elzik.FmSync</RootNamespace>
     <AssemblyName>fmsync</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'!='Debug'">
 	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
