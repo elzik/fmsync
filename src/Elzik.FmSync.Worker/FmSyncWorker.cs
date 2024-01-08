@@ -13,22 +13,20 @@ namespace Elzik.FmSync.Worker
         private readonly IFrontMatterFileSynchroniser _fileSynchroniser;
         private readonly List<FileSystemWatcher> _folderWatchers;
 
-        public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<WatcherOptions> watcherOptions,
+        public FmSyncWorker(ILogger<FmSyncWorker> logger, IOptions<WatcherOptions> fmSyncOptions, 
             IResilientFrontMatterFileSynchroniser fileSynchroniser, IOptions<FileSystemOptions> fileSystemOptions)
         {
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            if (watcherOptions == null)
+            if (fmSyncOptions == null)
             {
-                throw new ArgumentNullException(nameof(watcherOptions));
+                throw new ArgumentNullException(nameof(fmSyncOptions));
             }
             if (fileSystemOptions == null)
             {
                 throw new ArgumentNullException(nameof(fileSystemOptions));
             }
             _fileSystemOptions = fileSystemOptions.Value;
-            _watcherOptions = watcherOptions.Value;
+            _watcherOptions = fmSyncOptions.Value;
             _fileSynchroniser = fileSynchroniser ?? throw new ArgumentNullException(nameof(fileSynchroniser));
             _folderWatchers = new List<FileSystemWatcher>();
         }
@@ -38,12 +36,12 @@ namespace Elzik.FmSync.Worker
             _logger.LogInformation("fmsync {Version} has started.", GetProductVersion());
             _logger.LogDebug("File synchroniation is implemented by {SyncName}", _fileSynchroniser.GetType().Name);
 
-            foreach (var directoryPath in _watcherOptions.WatchedDirectoryPaths)
+            foreach (var directoryPaths in _watcherOptions.WatchedDirectoryPaths)
             {
                 _logger.LogInformation("Configuring watcher on {DirectoryPath} for new and changed " +
-                                       "{FilenamePattern} files.", directoryPath, _fileSystemOptions.FilenamePattern);
+                                       "{FilenamePattern} files.", directoryPaths, _fileSystemOptions.FilenamePattern);
 
-                var folderWatcher = new FileSystemWatcher(directoryPath,
+                var folderWatcher = new FileSystemWatcher(directoryPaths,
                     _fileSystemOptions.FilenamePattern ?? string.Empty)
                 {
                     EnableRaisingEvents = true,
@@ -59,7 +57,7 @@ namespace Elzik.FmSync.Worker
 
                 folderWatcher.EnableRaisingEvents = true;
 
-                _logger.LogInformation("Watcher on {DirectoryPath} has started.", directoryPath);
+                _logger.LogInformation("Watcher on {DirectoryPath} has started.", directoryPaths);
             }
 
             _logger.LogInformation("A total of {WatcherCount} directory watchers are running.", _folderWatchers.Count);
@@ -117,12 +115,6 @@ namespace Elzik.FmSync.Worker
             _logger.LogError(e.GetException(), 
                 "FmSync is unable to continue monitoring changes in {FolderPath}.", 
                 sourceDirectoryPath);
-        }
-
-        private void OnUnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            _logger.LogCritical("An unhandled exception occured - the service will now stop. " +
-                    "{Exception}", (Exception)e.ExceptionObject);
         }
     }
 }
