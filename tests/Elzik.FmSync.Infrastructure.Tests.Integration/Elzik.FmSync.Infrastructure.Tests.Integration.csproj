@@ -6,6 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'!='Debug'">
+	<TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Elzik.FmSync.Infrastructure\Elzik.FmSync.Infrastructure.csproj" />
   </ItemGroup>

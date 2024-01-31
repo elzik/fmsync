@@ -26,7 +26,7 @@
 				                    Name="App.WindowsService"
 				                    Wait="true" />
 		  </Component>
-		  <Component Id="WorkerConfig" Permanent="true">
+		  <Component Id="WorkerConfig" Permanent="true" NeverOverwrite="true">
 			  <File Id="worker.appSettings.json"
 			        Source="$(var.Elzik.FmSync.Worker.TargetDir)publish\appSettings.json"
 			        KeyPath="true" />

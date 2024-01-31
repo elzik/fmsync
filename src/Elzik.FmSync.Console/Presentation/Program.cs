@@ -1,4 +1,4 @@
-﻿using Elzik.FmSync;
+﻿using Elzik.FmSync.Application;
 using Elzik.FmSync.Domain;
 using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.Configuration;

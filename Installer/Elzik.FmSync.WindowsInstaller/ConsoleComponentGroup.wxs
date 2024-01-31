@@ -14,7 +14,7 @@
 						   System="yes" />
 				<RemoveFile Id="ALL_CONSOLE_EXECUTABLES" Name="*.exe" On="both" />
 		  </Component>
-		  <Component Id="ConsoleConfig" Permanent="true">
+		  <Component Id="ConsoleConfig" Permanent="true" NeverOverwrite="true">
 			  <File Id="console.appSettings.json"
 			        Source="$(var.Elzik.FmSync.Console.TargetDir)publish\appSettings.json"
 			        KeyPath="true" />

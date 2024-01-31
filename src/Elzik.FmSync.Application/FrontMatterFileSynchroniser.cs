@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Thinktecture.IO;
 
-namespace Elzik.FmSync;
+namespace Elzik.FmSync.Application;
 
 public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
 {
@@ -18,7 +18,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
         _file = file ?? throw new ArgumentNullException(nameof(file));
     }
 
-    public SyncResult SyncCreationDate(string markDownFilePath)
+    public virtual SyncResult SyncCreationDate(string markDownFilePath)
     {
         var fileCreatedDateUpdated = false;
         var frontMatterCreatedDate = _markdownFrontMatter.GetCreatedDateUtc(markDownFilePath);
@@ -39,7 +39,7 @@ public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
                 var relativeDescription = comparisonResult < 0 ? "earlier" : "later";
                 _logger.LogDebug("{FilePath} has a file created date ({FileCreatedDate}) {RelativeDescription} " +
                                        "than the created date specified in its Front Matter ({FrontMatterCreatedDate})",
-                    markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
+                markDownFilePath, fileCreatedDate, relativeDescription, frontMatterCreatedDate);
 
                 _file.SetCreationTimeUtc(markDownFilePath, frontMatterCreatedDate.Value);
                 fileCreatedDateUpdated = true;

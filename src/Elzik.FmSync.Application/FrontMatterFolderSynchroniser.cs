@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Thinktecture.IO;
 
-namespace Elzik.FmSync;
+namespace Elzik.FmSync.Application;
 
 public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
 {
@@ -13,28 +13,28 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
     private readonly IFrontMatterFileSynchroniser _frontMatterFileSynchroniser;
     private readonly FileSystemOptions _options;
 
-    public FrontMatterFolderSynchroniser(ILogger<FrontMatterFolderSynchroniser> logger, IDirectory directory, 
+    public FrontMatterFolderSynchroniser(ILogger<FrontMatterFolderSynchroniser> logger, IDirectory directory,
         IFrontMatterFileSynchroniser frontMatterFileSynchroniser, IOptions<FileSystemOptions> options)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         _directory = directory ?? throw new ArgumentNullException(nameof(directory));
-        _frontMatterFileSynchroniser = frontMatterFileSynchroniser 
+        _frontMatterFileSynchroniser = frontMatterFileSynchroniser
                                        ?? throw new ArgumentNullException(nameof(frontMatterFileSynchroniser));
         _options = options.Value;
     }
 
     public void SyncCreationDates(string directoryPath)
     {
-        var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, ErrorCount: 0,TotalCount: 0);
+        var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, ErrorCount: 0, TotalCount: 0);
 
         _logger.LogDebug("Synchronising {FilenamePattern} files in {DirectoryPath}", _options.FilenamePattern, directoryPath);
 
         var markdownFiles = _directory.EnumerateFiles(directoryPath, _options.FilenamePattern ?? string.Empty,
             new EnumerationOptions
-        {
-            MatchCasing = MatchCasing.CaseInsensitive,
-            RecurseSubdirectories = true
-        });
+            {
+                MatchCasing = MatchCasing.CaseInsensitive,
+                RecurseSubdirectories = true
+            });
 
         foreach (var markDownFilePath in markdownFiles)
         {
@@ -55,7 +55,7 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
                 {
                     additionalMessage = $" {e.InnerException.Message}";
                 }
-                _logger.LogError( "{MarkdownFilePath} - {ExceptionMessage}{AdditionalMessage}", 
+                _logger.LogError("{MarkdownFilePath} - {ExceptionMessage}{AdditionalMessage}",
                     markDownFilePath, e.Message, additionalMessage);
             }
         }
