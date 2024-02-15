@@ -7,7 +7,7 @@ on:
     inputs:
       force-release:
         type: boolean
-        description: Force tag & release even when the source branch is not main
+        description: Force tag & release even when the source branch is not main or no production source files have changed
 
 jobs:
   continuous-delivery:
@@ -45,16 +45,16 @@ jobs:
     - name: Check for Release Requirement
       id: release-check
       run: |
-        $needsRelease = ("${{ github.ref_name }}" -eq 'main') -or ("${{ github.event.inputs.force-release }}" -eq 'true')
+        $productionFilesChangedCount = (git diff --name-only HEAD^ HEAD | Select-String -pattern 'src/*|Installer/').Count
+        Write-Output "$productionFilesChangedCount production source code files have changed"
+        $productionFilesChanged = $productionFilesChangedCount -gt 0
+        Write-Output "Git ref:` ${{ github.ref_name }}"
+        $branchIsMain = "${{ github.ref_name }}" -eq 'main'
+        Write-Output "Forced release requested:` ${{ github.event.inputs.force-release }}"
+        $forceReleaseRequested = "${{ github.event.inputs.force-release }}" -eq 'true'
+        $needsRelease = $forceReleaseRequested -or ($productionFilesChanged -and $branchIsMain)
         Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
-      shell: pwsh
-    - name: Debug Output
-      run: |
-        Write-Output "github.ref_name:${{ github.ref_name }}"
-        Write-Output "github.event_name:${{ github.event_name }}"
-        Write-Output "github.ref:${{ github.ref }}"
-        Write-Output "env.GitVersion_SemVer:${{ env.GitVersion_SemVer }}"
-        Write-Output "steps.release-check.outputs.needs-release:${{ steps.release-check.outputs.needs-release }}"
+        Write-Output "Release will be generated:${{ steps.release-check.outputs.needs-release }}"
       shell: pwsh
     - name: Tag With SemVer
       if: steps.release-check.outputs.needs-release == 'True'
