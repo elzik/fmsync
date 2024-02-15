@@ -54,7 +54,7 @@ jobs:
         $forceReleaseRequested = "${{ github.event.inputs.force-release }}" -eq 'true'
         $needsRelease = $forceReleaseRequested -or ($productionFilesChanged -and $branchIsMain)
         Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
-        Write-Output "Release will be generated:${{ steps.release-check.outputs.needs-release }}"
+        Write-Output "Release will be generated:` $needsRelease"
       shell: pwsh
     - name: Tag With SemVer
       if: steps.release-check.outputs.needs-release == 'True'
