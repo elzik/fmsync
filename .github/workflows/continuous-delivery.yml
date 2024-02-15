@@ -30,7 +30,7 @@ jobs:
       run: ./Build/build-and-test.ps1
       shell: pwsh
     - name: Upload Coverage Badge
-      if: github.event_name != 'pull_request' && matrix.os == 'windows-latest'
+      if: github.event_name != 'pull_request' && matrix.os == 'windows-latest' && ${{ github.actor != 'dependabot[bot]' }}
       uses: exuanbo/actions-deploy-gist@v1
       with:
         token: ${{ secrets.CODE_COVERAGE_AUTH_TOKEN }}
