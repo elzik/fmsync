@@ -50,11 +50,11 @@ jobs:
         $productionFilesChanged = $productionFilesChangedCount -gt 0
         Write-Output "Git ref:` ${{ github.ref_name }}"
         $branchIsMain = "${{ github.ref_name }}" -eq 'main'
-        Write-Output "Forced release requested:` ${{ github.event.inputs.force-release }}"
+        Write-Output "Forced release requested:` ${${{ github.event.inputs.force-release }}}"
         $forceReleaseRequested = "${{ github.event.inputs.force-release }}" -eq 'true'
         $needsRelease = $forceReleaseRequested -or ($productionFilesChanged -and $branchIsMain)
         Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
-        Write-Output "Release will be generated:` $needsRelease"
+        Write-Output "Release will be generated:` ${}${{ steps.release-check.outputs.needs-release }}}"
       shell: pwsh
     - name: Tag With SemVer
       if: steps.release-check.outputs.needs-release == 'True'
