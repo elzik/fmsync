@@ -58,6 +58,7 @@ FmSync is configured through a separate appSettings.json file for both the comma
 ### WatcherOptions (Only applicable when running as a service)
 
 This contains a single setting `WatchedDirectoryPaths` which contains an array of paths, one for each directory to watch for new and changed files which need their created date synchronising. For example, to watch the `c:\my-markdownfiles` directory for changes:
+
 ```json
 "WatcherOptions": {
     "WatchedDirectoryPaths": ["c:\\my-markdownfiles"]
