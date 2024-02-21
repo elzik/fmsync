@@ -14,14 +14,17 @@ fmsync ensures that a Markdown file's created date is synchronised with the `cre
 ## Installation
 
 ### Windows
+
 The [latest Windows MSI release is always available here](https://github.com/elzik/fmsync/releases/latest). Alternatively, a [full set of Windows MSI releases including prereleases is available here](https://github.com/elzik/fmsync/releases). If a prerelease version is installed, you must uninstall it before installing the next bona fide release version.
 
 Download and run the MSI file. By default, it will install the command line tools as well as a Windows service.
 
 ### Linux
+
 No release available. Whilst this project will compile for Linux, it has been removed from the build workflow and no Linux release is available due to fragmentation across different filesystems and Linux distributions making it difficult or in some cases impossible to get and set a created-date for a file. I am happy to revist this if needs be.
 
 ### Mac
+
 No release available. The workflow for this repo does include a build for Mac but I do not have a Mac and I do not know if a created-date is something typically supported by Macs. If someone wanted to get involved in confirming that this will work on a Mac and to give me help packaging it up for release, I'd appreciate it.
 
 ## Command Line
@@ -62,6 +65,7 @@ This contains a single setting `WatchedDirectoryPaths` which contains an array o
 ```
 
 ### Serilog
+
 Logging is provided for by Serilog with the default behaviours as described in the [Logging](###Logging) section above. It is beyond the scope of this readme to document this configuration. See the [Serilog documentation](https://github.com/serilog/serilog-settings-configuration#readme) for general information about configuration. Currently, [Console](https://github.com/serilog/serilog-sinks-console#readme) and [File](https://github.com/serilog/serilog-sinks-file#readme) Sinks are implemented and more information can be found on their respective repos.
 
 When opening any GitHub Issues, change the `MinimumLevel` configuration to `Debug` to increase the amount of information being logged.
