@@ -4,19 +4,15 @@ using Thinktecture.IO;
 
 namespace Elzik.FmSync.Application;
 
-public class FrontMatterFileSynchroniser : IFrontMatterFileSynchroniser
+public class FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger,
+    IMarkdownFrontMatter markdownFrontMatter, IFile file) : IFrontMatterFileSynchroniser
 {
-    private readonly ILogger<FrontMatterFileSynchroniser> _logger;
-    private readonly IMarkdownFrontMatter _markdownFrontMatter;
-    private readonly IFile _file;
-
-    public FrontMatterFileSynchroniser(ILogger<FrontMatterFileSynchroniser> logger,
-        IMarkdownFrontMatter markdownFrontMatter, IFile file)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _markdownFrontMatter = markdownFrontMatter ?? throw new ArgumentNullException(nameof(markdownFrontMatter));
-        _file = file ?? throw new ArgumentNullException(nameof(file));
-    }
+    private readonly ILogger<FrontMatterFileSynchroniser> _logger = logger 
+        ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IMarkdownFrontMatter _markdownFrontMatter = markdownFrontMatter 
+        ?? throw new ArgumentNullException(nameof(markdownFrontMatter));
+    private readonly IFile _file = file 
+        ?? throw new ArgumentNullException(nameof(file));
 
     public virtual SyncResult SyncCreationDate(string markDownFilePath)
     {
