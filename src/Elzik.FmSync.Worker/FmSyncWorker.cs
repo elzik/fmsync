@@ -17,18 +17,12 @@ namespace Elzik.FmSync.Worker
             IResilientFrontMatterFileSynchroniser fileSynchroniser, IOptions<FileSystemOptions> fileSystemOptions)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            if (watcherOptions == null)
-            {
-                throw new ArgumentNullException(nameof(watcherOptions));
-            }
-            if (fileSystemOptions == null)
-            {
-                throw new ArgumentNullException(nameof(fileSystemOptions));
-            }
+            ArgumentNullException.ThrowIfNull(watcherOptions);
+            ArgumentNullException.ThrowIfNull(fileSystemOptions);
             _fileSystemOptions = fileSystemOptions.Value;
             _watcherOptions = watcherOptions.Value;
             _fileSynchroniser = fileSynchroniser ?? throw new ArgumentNullException(nameof(fileSynchroniser));
-            _folderWatchers = new List<FileSystemWatcher>();
+            _folderWatchers = [];
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

@@ -6,28 +6,26 @@ using Thinktecture.IO;
 
 namespace Elzik.FmSync.Application;
 
-public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
+public class FrontMatterFolderSynchroniser(
+    ILogger<FrontMatterFolderSynchroniser> logger, 
+    IDirectory directory, 
+    IFrontMatterFileSynchroniser frontMatterFileSynchroniser, 
+    IOptions<FileSystemOptions> options) : IFrontMatterFolderSynchroniser
 {
-    private readonly ILogger<FrontMatterFolderSynchroniser> _logger;
-    private readonly IDirectory _directory;
-    private readonly IFrontMatterFileSynchroniser _frontMatterFileSynchroniser;
-    private readonly FileSystemOptions _options;
-
-    public FrontMatterFolderSynchroniser(ILogger<FrontMatterFolderSynchroniser> logger, IDirectory directory,
-        IFrontMatterFileSynchroniser frontMatterFileSynchroniser, IOptions<FileSystemOptions> options)
-    {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        _directory = directory ?? throw new ArgumentNullException(nameof(directory));
-        _frontMatterFileSynchroniser = frontMatterFileSynchroniser
-                                       ?? throw new ArgumentNullException(nameof(frontMatterFileSynchroniser));
-        _options = options.Value;
-    }
+    private readonly ILogger<FrontMatterFolderSynchroniser> _logger = logger 
+        ?? throw new ArgumentNullException(nameof(logger));
+    private readonly IDirectory _directory = directory 
+        ?? throw new ArgumentNullException(nameof(directory));
+    private readonly IFrontMatterFileSynchroniser _frontMatterFileSynchroniser = frontMatterFileSynchroniser
+        ?? throw new ArgumentNullException(nameof(frontMatterFileSynchroniser));
+    private readonly FileSystemOptions _options = options.Value;
 
     public void SyncCreationDates(string directoryPath)
     {
         var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, ErrorCount: 0, TotalCount: 0);
 
-        _logger.LogDebug("Synchronising {FilenamePattern} files in {DirectoryPath}", _options.FilenamePattern, directoryPath);
+        _logger.LogDebug("Synchronising {FilenamePattern} files in {DirectoryPath}", 
+            _options.FilenamePattern, directoryPath);
 
         var markdownFiles = _directory.EnumerateFiles(directoryPath, _options.FilenamePattern ?? string.Empty,
             new EnumerationOptions
@@ -66,7 +64,11 @@ public class FrontMatterFolderSynchroniser : IFrontMatterFolderSynchroniser
             errorsMessage = $" and failed {loggingInfo.ErrorCount}";
         }
 
-        _logger.LogInformation("Synchronised {EditedFileCount}{ErrorsMessage} files out of a total {TotalFileCount} in {TimeTaken}.",
-            loggingInfo.EditedCount, errorsMessage, loggingInfo.TotalCount, Stopwatch.GetElapsedTime(loggingInfo.StartTime));
+        _logger.LogInformation("Synchronised {EditedFileCount}{ErrorsMessage} files out " +
+            "of a total {TotalFileCount} in {TimeTaken}.", 
+            loggingInfo.EditedCount, 
+            errorsMessage, 
+            loggingInfo.TotalCount, 
+            Stopwatch.GetElapsedTime(loggingInfo.StartTime));
     }
 }
