@@ -11,29 +11,29 @@ public sealed class MarkdownFrontMatterTests : IDisposable
 {
     [Theory]
     [InlineData("./TestFiles/YamlContainsOnlyCreatedDate.md", "GMT Standard Time", null, "2023-01-07 14:28:22", 
-        "because the current timezone is GMT")]
+        "because the current time zone is GMT")]
     [InlineData("./TestFiles/YamlContainsOnlyCreatedDateWithPrecedingNewLines.md", "GMT Standard Time", null, "2023-01-07 14:28:22", 
-        "because the current timezone is GMT")]
+        "because the current time zone is GMT")]
     [InlineData("./TestFiles/YamlContainsCreatedDateAndOtherValue.md", "GMT Standard Time", null, "2022-03-31 13:52:15", 
-        "because the current timezone is GMT at BST")]
+        "because the current time zone is GMT at BST")]
     [InlineData("./TestFiles/YamlContainsOnlyCreatedDate.md", "AUS Eastern Standard Time", null, "2023-01-07 03:28:22", 
-        "because the current timezone is AUS")]
+        "because the current time zone is AUS")]
     [InlineData("./TestFiles/YamlContainsCreatedDateAndOtherValue.md", "AUS Eastern Standard Time", null, "2022-03-31 03:52:15", 
-        "because the current timezone is AUS")]
+        "because the current time zone is AUS")]
     [InlineData("./TestFiles/YamlContainsOnlyCreatedDateWithPrecedingNewLines.md", "AUS Eastern Standard Time", null, "2023-01-07 03:28:22", 
-        "because the current timezone is AUS")]
+        "because the current time zone is AUS")]
     [InlineData("./TestFiles/YamlContainsOnlyCreatedDate.md", "GMT Standard Time", "AUS Eastern Standard Time", "2023-01-07 03:28:22", 
-        "because even though the current timezone is GMT the YAML is configured for AUS")]
+        "because even though the current time zone is GMT the YAML is configured for AUS")]
     [InlineData("./TestFiles/YamlContainsCreatedDateAndOtherValue.md", "GMT Standard Time", "AUS Eastern Standard Time", "2022-03-31 03:52:15", 
-        "because even though the current timezone is GMT the YAML is configured for AUS")]
+        "because even though the current time zone is GMT the YAML is configured for AUS")]
     [InlineData("./TestFiles/YamlContainsOnlyCreatedDateWithPrecedingNewLines.md", "GMT Standard Time", "AUS Eastern Standard Time", "2023-01-07 03:28:22", 
-        "because even though the current timezone is GMT the YAML is configured for AUS")]
+        "because even though the current time zone is GMT the YAML is configured for AUS")]
     [InlineData("./TestFiles/YamlContainsOnlyDateWithOffset.md", "GMT Standard Time", null, "2023-02-14 13:20:32", 
-        "because even though our current timezone is GMT it is ignored because a time offset was supplied in the Front Matter data")]
+        "because even though our current time zone is GMT it is ignored because a time offset was supplied in the Front Matter data")]
     [InlineData("./TestFiles/YamlContainsOnlyDateWithOffset.md", "GMT Standard Time", "AUS Eastern Standard Time", "2023-02-14 13:20:32", 
-        "because even though our current timezone is GMT and the Front Matter is configured for AUS they are both ignored because a time offset was supplied in the Front Matter data")]
+        "because even though our current time zone is GMT and the Front Matter is configured for AUS they are both ignored because a time offset was supplied in the Front Matter data")]
     public void GetCreatedDate_YamlContainsCreatedDate_ReturnsCreatedDate(string testFilePath, string localTimeZone, 
-        string configuredTimeZone, string expectedUtcDateString, string because)
+        string? configuredTimeZone, string expectedUtcDateString, string because)
     {
         // Arrange
         SetTimeZone(localTimeZone);
