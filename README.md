@@ -68,7 +68,7 @@ This contains a single setting `WatchedDirectoryPaths` which contains an array o
 
 ### Serilog
 
-Logging is provided for by Serilog with the default behaviours as described in the [Logging](###Logging) section above. It is beyond the scope of this readme to document this configuration. See the [Serilog documentation](https://github.com/serilog/serilog-settings-configuration#readme) for general information about configuration. Currently, [Console](https://github.com/serilog/serilog-sinks-console#readme) and [File](https://github.com/serilog/serilog-sinks-file#readme) Sinks are implemented and more information can be found on their respective repos.
+Logging is provided for by Serilog with the default behaviours as described in the logging sections above. It is beyond the scope of this readme to document this configuration. See the [Serilog documentation](https://github.com/serilog/serilog-settings-configuration#readme) for general information about configuration. Currently, [Console](https://github.com/serilog/serilog-sinks-console#readme) and [File](https://github.com/serilog/serilog-sinks-file#readme) Sinks are implemented and more information can be found on their respective repos.
 
 When opening any GitHub Issues, change the `MinimumLevel` configuration to `Debug` to increase the amount of information being logged.
 
