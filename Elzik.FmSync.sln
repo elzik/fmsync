@@ -35,6 +35,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{
 EndProject
 Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Elzik.FmSync.WindowsInstaller", "Installer\Elzik.FmSync.WindowsInstaller\Elzik.FmSync.WindowsInstaller.wixproj", "{534679A3-D29B-4D63-882B-C09F4D0EA8CB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Worker.Tests.Functional", "tests\Elzik.FmSync.Worker.Tests.Functional\Elzik.FmSync.Worker.Tests.Functional.csproj", "{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -173,6 +175,22 @@ Global
 		{534679A3-D29B-4D63-882B-C09F4D0EA8CB}.Release|x64.Build.0 = Release|x64
 		{534679A3-D29B-4D63-882B-C09F4D0EA8CB}.Release|x86.ActiveCfg = Release|x86
 		{534679A3-D29B-4D63-882B-C09F4D0EA8CB}.Release|x86.Build.0 = Release|x86
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Debug|x64.Build.0 = Debug|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Debug|x86.Build.0 = Debug|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Release|ARM64.Build.0 = Release|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Release|x64.ActiveCfg = Release|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Release|x64.Build.0 = Release|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Release|x86.ActiveCfg = Release|Any CPU
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -181,6 +199,7 @@ Global
 		{1367919E-184E-4550-B8BB-ECB37C056594} = {CF17A395-4536-42A5-B10B-D2D8EC602BC3}
 		{A3BB6C79-4D8F-4515-92B5-F169F929AF94} = {CF17A395-4536-42A5-B10B-D2D8EC602BC3}
 		{534679A3-D29B-4D63-882B-C09F4D0EA8CB} = {069FD2C8-3AFB-4D61-A19A-3257331FC223}
+		{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B} = {CF17A395-4536-42A5-B10B-D2D8EC602BC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87997352-098C-46F7-8BDC-29A370A780DB}
