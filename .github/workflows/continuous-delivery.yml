@@ -39,6 +39,7 @@ jobs:
         gist_file_name: fmsync-code-coverage-${{ github.ref_name }}.svg
         file_path: tests/TestResults/badge_shieldsio_linecoverage_green.svg
     - name: Run codacy-coverage-reporter
+      if: matrix.os == 'windows-latest' && github.actor != 'dependabot[bot]'
       uses: codacy/codacy-coverage-reporter-action@v1
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
