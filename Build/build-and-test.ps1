@@ -16,4 +16,4 @@ dotnet tool update `
 reportgenerator `
 	"-reports:$repoRootPath/tests/Elzik.FmSync.Application.Tests.Unit/TestResults/coverage.opencover.xml;$repoRootPath/tests/Elzik.FmSync.Infrastructure.Tests.Integration/TestResults/coverage.opencover.xml;" `
 	"-targetdir:$repoRootPath/tests/TestResults" `
-	"-reporttypes:Badges"
+	"-reporttypes:Badges;Cobertura"
