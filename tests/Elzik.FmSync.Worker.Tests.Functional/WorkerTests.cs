@@ -19,6 +19,8 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             var outputDirectory = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             var workerExecutablePath = Path.Join(outputDirectory, "Elzik.FmSync.Worker.exe");
 
+            _testOutputHelper.WriteLine("Worker under test: {0}", workerExecutablePath);
+
             _workerProcess = new Process
             {
                 StartInfo = new ProcessStartInfo(workerExecutablePath)
@@ -39,7 +41,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         [InlineData("Configuring watcher on ../../../../TestFiles for new and changed *.md files.")]
         [InlineData("Watcher on ../../../../TestFiles has started.")]
         [InlineData("A total of 1 directory watchers are running.")]
-        public async Task Test(string expectedLogOutput)
+        public async Task WorkerIsStarted_ExpectedLogMessagesAreReceived(string expectedLogOutput)
         {
             // Arrange
             _workerProcess!.OutputDataReceived += OnDataReceived;
