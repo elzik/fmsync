@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -17,7 +18,9 @@ namespace Elzik.FmSync.Worker.Tests.Functional
                 ?? throw new ArgumentNullException(nameof(testOutputHelper));
 
             var outputDirectory = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-            var workerExecutablePath = Path.Join(outputDirectory, "Elzik.FmSync.Worker.exe");
+            var workerFilename = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) 
+                ? "Elzik.FmSync.Worker.exe" : "Elzik.FmSync.Worker";
+            var workerExecutablePath = Path.Join(outputDirectory, workerFilename);
 
             _testOutputHelper.WriteLine("Worker under test: {0}", workerExecutablePath);
 
