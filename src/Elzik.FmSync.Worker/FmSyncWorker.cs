@@ -2,6 +2,7 @@ using Elzik.FmSync.Application;
 using Elzik.FmSync.Infrastructure;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Elzik.FmSync.Worker
 {
@@ -82,11 +83,16 @@ namespace Elzik.FmSync.Worker
 
         private static string GetProductVersion()
         {
-            var processPath = Environment.ProcessPath 
-                ?? throw new InvalidOperationException("Currently executing process path not found.");
+            var assemblyAttributes = Assembly.GetExecutingAssembly()
+                .GetCustomAttributes(typeof(AssemblyInformationalVersionAttribute), false);
 
-            return FileVersionInfo.GetVersionInfo(processPath).ProductVersion
-                ?? throw new InvalidOperationException("Currently executing process product version not found.");
+            if(assemblyAttributes.Length == 0)
+            {
+                throw new InvalidOperationException("No custom assemby attrubutes found; " +
+                    "#unable to get informationak version.");
+            }
+
+            return ((AssemblyInformationalVersionAttribute)assemblyAttributes[0]).InformationalVersion;
         }
 
         private void OnCreated(object sender, FileSystemEventArgs e)
