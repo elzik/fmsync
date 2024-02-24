@@ -33,7 +33,7 @@ namespace Elzik.FmSync.Worker
             }
             catch (Exception ex)
             {
-                _logger.LogCritical(ex, "A problem occured whilst starting the worker. " +
+                _logger.LogCritical(ex, "A problem occurred whilst starting the worker. " +
                     "{ExceptionMessage}", ex.Message);
 
                 throw;
