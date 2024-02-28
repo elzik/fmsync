@@ -5,22 +5,25 @@ using Xunit.Abstractions;
 
 namespace Elzik.FmSync.Worker.Tests.Functional
 {
-    public class WorkerTests
+    public sealed class WorkerTests : IDisposable
     {
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly Process? _workerProcess;
-        private Func<DataReceivedEventArgs, bool> _validateConsoleOutput;
+        private Func<DataReceivedEventArgs, bool>? _expectedConsoleOutputReceived;
+        private Func<FileSystemEventArgs, bool>? _expectedFileChangeMade;
+        private readonly FileSystemWatcher? _testFileWatcher;
+        private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional";
 
         public WorkerTests(ITestOutputHelper testOutputHelper)
         {
-            _testOutputHelper = testOutputHelper 
+            _testOutputHelper = testOutputHelper
                 ?? throw new ArgumentNullException(nameof(testOutputHelper));
 
-            var outputDirectory = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-            var workerExecutablePath = Path.Join(outputDirectory, "Elzik.FmSync.Worker.exe");
+            var buildOutputDirectory = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
+            KillExistingWorkerProcesses(buildOutputDirectory);
 
+            var workerExecutablePath = Path.Join(buildOutputDirectory, "Elzik.FmSync.Worker.exe");      
             _testOutputHelper.WriteLine("Worker under test: {0}", workerExecutablePath);
-
             _workerProcess = new Process
             {
                 StartInfo = new ProcessStartInfo(workerExecutablePath)
@@ -31,9 +34,19 @@ namespace Elzik.FmSync.Worker.Tests.Functional
                     UseShellExecute = false,
                 }
             };
+            _workerProcess.OutputDataReceived += OnConsoleDataReceivedLog;
+            _workerProcess.ErrorDataReceived += OnConsoleDataReceivedLog;
 
-            _validateConsoleOutput = (_) => throw new InvalidOperationException(
-                "No console output validation implementation has been supplied.");
+            Directory.CreateDirectory(FunctionalTestFilesPath);
+
+            _testFileWatcher = new FileSystemWatcher(FunctionalTestFilesPath, "*.md")
+            {
+                EnableRaisingEvents = false,
+                IncludeSubdirectories = true,
+                NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.CreationTime
+            };
+            _testFileWatcher.Changed += OnTestFileChanged;
+            _testFileWatcher.Created += OnTestFileChanged;
         }
 
         [Theory(Timeout = 5000)]
@@ -44,9 +57,8 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         public async Task WorkerIsStarted_ExpectedLogMessagesAreReceived(string expectedLogOutput)
         {
             // Arrange
-            _workerProcess!.OutputDataReceived += OnDataReceived;
-            _workerProcess.ErrorDataReceived += OnDataReceived;
-            _validateConsoleOutput = (DataReceivedEventArgs dataReceived) =>
+            _workerProcess!.OutputDataReceived += OnConsoleDataReceivedillProcess;
+            _expectedConsoleOutputReceived = (DataReceivedEventArgs dataReceived) =>
             {
                 return dataReceived.Data != null && 
                        dataReceived.Data.EndsWith(expectedLogOutput);
@@ -54,27 +66,109 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             using var monitoredWorkerProcess = _workerProcess.Monitor();
 
             // Act
-            _workerProcess!.Start();
+            ValidateWorkerStart(_workerProcess!.Start());
             _workerProcess.BeginOutputReadLine();
             await _workerProcess.WaitForExitAsync();
 
             // Assert
             monitoredWorkerProcess.Should().Raise("OutputDataReceived")
-                .WithArgs<DataReceivedEventArgs>(dataReceived =>_validateConsoleOutput(dataReceived));
+                .WithArgs<DataReceivedEventArgs>(dataReceived =>_expectedConsoleOutputReceived(dataReceived));
         }
 
-        
-        private void OnDataReceived(object sender, DataReceivedEventArgs e)
+        [Fact(Timeout = 15000)]
+        public async Task FrontMatterIsUpdated_WithNewCreatedDate_FileCreatedDateIsUpdated()
         {
-            if(e.Data != null)
-            {
-                _testOutputHelper.WriteLine(e.Data!);
-            }
+            // Arrange
+            const string fileToCopyPath = "../../../../TestFiles/YamlContainsOnlyCreatedDate.md";
+            var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
+            File.Copy(fileToCopyPath, testFilePath, true);
 
-            if(_validateConsoleOutput(e))
+            var expectedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
+            
+            _expectedFileChangeMade = (FileSystemEventArgs fileSystemEventArgs) =>
             {
+                var eventFilePath = Path.GetFullPath(fileSystemEventArgs.FullPath);
+                var eventFileInfo = new FileInfo(eventFilePath);
+                
+                var expectedChangeMade = eventFilePath == testFilePath &&
+                                       eventFileInfo.CreationTimeUtc == expectedDate;
+
+                return expectedChangeMade;
+            };
+
+            using var monitoredFileWatcher = _testFileWatcher.Monitor();
+
+            // Act
+            ValidateWorkerStart(_workerProcess!.Start());
+            _workerProcess.BeginOutputReadLine();
+            _testFileWatcher!.EnableRaisingEvents = true;
+
+            // Give the worker time to start up.
+            await Task.Delay(2000);
+
+            _testOutputHelper.WriteLine("Performing test edit...");
+            await File.AppendAllLinesAsync(testFilePath, ["Test edit..."]);
+
+            await _workerProcess.WaitForExitAsync();
+
+            // Assert
+            monitoredFileWatcher.Should().Raise("Changed").
+                WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade(fileSystemEvent));
+
+        }
+
+        private static void KillExistingWorkerProcesses(string? directoryPath)
+        {
+            var testWorkers = Process.GetProcessesByName("Elzik.FmSync.Worker")
+                            .Where(p => p.MainModule!.FileName.StartsWith(directoryPath!));
+
+            foreach (var testWorker in testWorkers)
+            {
+                testWorker.Kill();
+            }
+        }
+
+        private static void ValidateWorkerStart(bool workerStartResult)
+        {
+            if(!workerStartResult)
+            {
+                throw new InvalidOperationException("A new function al test process was not started.");
+            }
+        }
+
+        private void OnConsoleDataReceivedLog(object sender, DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                _testOutputHelper.WriteLine(e.Data);
+            }
+        }
+
+        private void OnTestFileChanged(object sender, FileSystemEventArgs e)
+        {
+            _testOutputHelper.WriteLine("Test log: File {0} for {1}",e.ChangeType, e.FullPath);
+
+            if (_expectedFileChangeMade != null && _expectedFileChangeMade(e))
+            {
+                _testOutputHelper.WriteLine("Test log: Expected files change made, killing process...");
                 _workerProcess!.Kill();
             }
+        }
+
+        private void OnConsoleDataReceivedillProcess(object sender, DataReceivedEventArgs e)
+        {
+            if(_expectedConsoleOutputReceived != null && _expectedConsoleOutputReceived(e))
+            {
+                _testOutputHelper.WriteLine("Test log: Expected console data received, killing process...");
+                _workerProcess!.Kill();
+            }
+        }
+
+        public void Dispose()
+        {
+            _workerProcess!.Dispose();
+            _testFileWatcher!.Dispose();
+            Directory.Delete(FunctionalTestFilesPath, true);
         }
     }
 }
