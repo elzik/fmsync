@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Xunit;
 using Xunit.Abstractions;
 

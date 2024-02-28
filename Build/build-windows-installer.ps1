@@ -1,3 +1,4 @@
+Import-Module $(Resolve-Path ./Build/Test-ExitCode.psm1)
 $ErrorActionPreference = "Stop"
 
 $repoRootPath = (Resolve-Path "$PSScriptRoot/../").Path
@@ -8,6 +9,7 @@ dotnet publish $repoRootPath\src\Elzik.FmSync.Worker\Elzik.FmSync.Worker.csproj 
 	--configuration Release `
 	-p:Platform=x64 `
 	-p:PublishSingleFile=true
+Test-ExitCode
 
 dotnet publish $repoRootPath\src\Elzik.FmSync.Console\Elzik.FmSync.Console.csproj `
 	--runtime win-x64 `
@@ -15,6 +17,7 @@ dotnet publish $repoRootPath\src\Elzik.FmSync.Console\Elzik.FmSync.Console.cspro
 	--configuration Release `
 	-p:Platform=x64 `
 	-p:PublishSingleFile=true
+Test-ExitCode
 
 dotnet build $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\Elzik.FmSync.WindowsInstaller.wixproj `
 	--runtime win-x64 `
@@ -22,7 +25,11 @@ dotnet build $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\Elzik.FmSync.
 	--configuration Release `
 	-p:Platform=x64 `
 	-p:PublishSingleFile=true
+Test-ExitCode
 
 dotnet tool update --global GitVersion.Tool
+Test-ExitCode
+
 $SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
 cp $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\bin\x64\Release\en-US\Elzik.FmSync.WindowsInstaller.msi "$repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\bin\x64\Release\en-US\fmsync v$SemVer.msi"
+Test-ExitCode

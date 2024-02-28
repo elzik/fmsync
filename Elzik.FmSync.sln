@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{0FE56BA0
 		Build\build-and-test.ps1 = Build\build-and-test.ps1
 		Build\build-windows-installer.ps1 = Build\build-windows-installer.ps1
 		Build\local-pipeline.ps1 = Build\local-pipeline.ps1
+		Test-ExitCode.psm1 = Test-ExitCode.psm1
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Installer", "Installer", "{069FD2C8-3AFB-4D61-A19A-3257331FC223}"
