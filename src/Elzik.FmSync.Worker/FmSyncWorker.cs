@@ -88,8 +88,8 @@ namespace Elzik.FmSync.Worker
 
             if(assemblyAttributes.Length == 0)
             {
-                throw new InvalidOperationException("No custom assemby attrubutes found; " +
-                    "#unable to get informationak version.");
+                throw new InvalidOperationException("No custom assembly attributes found; " +
+                    "unable to get informational version.");
             }
 
             return ((AssemblyInformationalVersionAttribute)assemblyAttributes[0]).InformationalVersion;
