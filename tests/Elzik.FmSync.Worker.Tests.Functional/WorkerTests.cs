@@ -23,7 +23,9 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             var buildOutputDirectory = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
             KillExistingWorkerProcesses(buildOutputDirectory);
 
-            var workerExecutablePath = Path.Join(buildOutputDirectory, "Elzik.FmSync.Worker.exe");      
+            var workerFilename = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+                       ? "Elzik.FmSync.Worker.exe" : "Elzik.FmSync.Worker";
+            var workerExecutablePath = Path.Join(buildOutputDirectory, workerFilename);
             _testOutputHelper.WriteLine("Worker under test: {0}", workerExecutablePath);
             _workerProcess = new Process
             {
