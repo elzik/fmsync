@@ -84,15 +84,14 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
             File.Copy(fileToCopyPath, testFilePath, true);
 
-            var expectedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
-            
+            var expectedCreatedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
             _expectedFileChangeMade = (FileSystemEventArgs fileSystemEventArgs) =>
             {
                 var eventFilePath = Path.GetFullPath(fileSystemEventArgs.FullPath);
                 var eventFileInfo = new FileInfo(eventFilePath);
                 
                 var expectedChangeMade = eventFilePath == testFilePath &&
-                                       eventFileInfo.CreationTimeUtc == expectedDate;
+                                       eventFileInfo.CreationTimeUtc == expectedCreatedDate;
 
                 return expectedChangeMade;
             };
@@ -115,6 +114,11 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             // Assert
             monitoredFileWatcher.Should().Raise("Changed").
                 WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade(fileSystemEvent));
+            var testFileInfo = new FileInfo(testFilePath);
+            testFileInfo.CreationTimeUtc.Should().Be(expectedCreatedDate, "the Worker should have updated the created date " +
+                "in response to a file edit");
+            testFileInfo.LastWriteTimeUtc.Should().NotBe(expectedCreatedDate, "the Worker should not have updated the " +
+                "modified date to be the same as the created date in response to a file edit");
 
         }
 
@@ -133,7 +137,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         {
             if(!workerStartResult)
             {
-                throw new InvalidOperationException("A new function al test process was not started.");
+                throw new InvalidOperationException("A new functional test Worker process was not started.");
             }
         }
 
@@ -151,7 +155,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
 
             if (_expectedFileChangeMade != null && _expectedFileChangeMade(e))
             {
-                _testOutputHelper.WriteLine("Test log: Expected files change made, killing process...");
+                _testOutputHelper.WriteLine("Test log: Expected files change made, killing Worker process...");
                 _workerProcess!.Kill();
             }
         }
@@ -160,7 +164,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         {
             if(_expectedConsoleOutputReceived != null && _expectedConsoleOutputReceived(e))
             {
-                _testOutputHelper.WriteLine("Test log: Expected console data received, killing process...");
+                _testOutputHelper.WriteLine("Test log: Expected console data received, killing Worker process...");
                 _workerProcess!.Kill();
             }
         }
