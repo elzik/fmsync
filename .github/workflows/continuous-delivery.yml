@@ -37,13 +37,13 @@ jobs:
         gist_id: 527882e89a938dc78f61a08c300edec4
         gist_description: "code-coverage-${{ github.ref_name }}"
         gist_file_name: fmsync-code-coverage-${{ github.ref_name }}.svg
-        file_path: tests/TestResults/badge_shieldsio_linecoverage_green.svg
+        file_path: tests/TestResults/Win32NT/badge_shieldsio_linecoverage_green.svg
     - name: Run codacy-coverage-reporter
       if: matrix.os == 'windows-latest' && github.actor != 'dependabot[bot]'
       uses: codacy/codacy-coverage-reporter-action@v1
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-        coverage-reports: tests/TestResults/Cobertura.xml
+        coverage-reports: tests/TestResults/Win32NT/Cobertura.xml
     - name: Build Windows Installer
       if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
