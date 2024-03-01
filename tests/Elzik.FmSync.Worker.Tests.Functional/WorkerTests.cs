@@ -180,7 +180,6 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             _testOutputHelper.WriteLine("Locking file...");
             using var testFileStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
             await Task.Delay(lockForMilliseconds);
-            testFileStream.Close();
         }
 
         private static void KillExistingWorkerProcesses(string? directoryPath)
