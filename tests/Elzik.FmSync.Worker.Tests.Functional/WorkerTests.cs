@@ -179,7 +179,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         {
             _testOutputHelper.WriteLine("Locking file...");
 
-            using var testFileStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            await using var testFileStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
             await Task.Delay(lockForMilliseconds);
 
             _testOutputHelper.WriteLine("Filestream about to go out of scope...");
