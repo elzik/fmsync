@@ -178,9 +178,9 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         private async Task LockFileTemporarily(string path, int lockForMilliseconds)
         {
             _testOutputHelper.WriteLine("Locking file...");
-            using var testFileStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            var testFileStream = File.Open(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
             await Task.Delay(lockForMilliseconds);
-            testFileStream.Close();
+            testFileStream.Dispose();
         }
 
         private static void KillExistingWorkerProcesses(string? directoryPath)
