@@ -155,7 +155,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             _testOutputHelper.WriteLine("Performing test edit...");
             await File.AppendAllLinesAsync(testFilePath, ["Test edit..."]);
 
-            await LockFileTemporarily(testFilePath, 2000);
+            LockFileTemporarily(testFilePath, 2000);
 
             await _workerProcess.WaitForExitAsync();
 
@@ -175,12 +175,12 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await Task.Delay(2000);
         }
 
-        private async Task LockFileTemporarily(string path, int lockForMilliseconds)
+        private void LockFileTemporarily(string path, int lockForMilliseconds)
         {
             _testOutputHelper.WriteLine("Locking file...");
 
-            await using var testFileStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None, 4096, true);
-            await Task.Delay(lockForMilliseconds);
+            using var testFileStream = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+            Thread.Sleep(lockForMilliseconds);
 
             _testOutputHelper.WriteLine("File stream about to go out of scope...");
         }
