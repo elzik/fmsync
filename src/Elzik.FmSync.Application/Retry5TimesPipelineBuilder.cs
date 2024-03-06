@@ -15,17 +15,11 @@ namespace Elzik.FmSync.Application
                 MaxRetryAttempts = 5,
                 BackoffType = DelayBackoffType.Exponential,
                 ShouldHandle = new PredicateBuilder()
-                    .Handle<IOException>(WhenFileIsInUse)
+                    .Handle<IOException>()
                     .Handle<YamlException>(WithInnerFormatException)
             });
 
             return builder;
-        }
-
-        private static bool WhenFileIsInUse(IOException ex)
-        {
-            // https://stackoverflow.com/a/67144250/1025593
-            return (ex.HResult & 0x0000FFFF) == 32;
         }
 
         private static bool WithInnerFormatException(YamlException arg)

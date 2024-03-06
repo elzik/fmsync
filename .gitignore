@@ -348,3 +348,4 @@ MigrationBackup/
 
 # Solution specific items
 /Publish/output
+/tests/TestFiles/Functional
