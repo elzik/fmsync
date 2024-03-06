@@ -123,7 +123,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
 
         }
 
-        [Fact(Timeout = 360000)]
+        [Fact(Timeout = 20000)]
         public async Task FrontMatterIsUpdated_WithNewCreatedDateAndLockedFile_FileCreatedDateIsEventuallyUpdated()
         {
             // Arrange
