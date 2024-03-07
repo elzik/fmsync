@@ -57,7 +57,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         [InlineData("Configuring watcher on ../../../../TestFiles for new and changed *.md files.")]
         [InlineData("Watcher on ../../../../TestFiles has started.")]
         [InlineData("A total of 1 directory watchers are running.")]
-        public async Task WorkerIsStarted_ExpectedLogMessagesAreReceived(string expectedLogOutput)
+        public async Task WorkerIsStarted_ExpectedConsoleLogMessagesAreReceived(string expectedLogOutput)
         {
             // Arrange
             _workerProcess!.OutputDataReceived += OnConsoleDataReceivedillProcess;
@@ -76,6 +76,32 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             // Assert
             monitoredWorkerProcess.Should().Raise("OutputDataReceived")
                 .WithArgs<DataReceivedEventArgs>(dataReceived =>_expectedConsoleOutputReceived(dataReceived));
+        }
+
+        [Fact]
+        public async Task WorkerIsStarted_ExpectedFileLogMessagesAreReceived()
+        {
+            // Arrange
+            _workerProcess!.OutputDataReceived += OnConsoleDataReceivedillProcess;
+            _expectedConsoleOutputReceived = (DataReceivedEventArgs dataReceived) =>
+            {
+                return dataReceived.Data != null &&
+                       dataReceived.Data.EndsWith("Hosting started");
+            };
+            using var monitoredWorkerProcess = _workerProcess.Monitor();
+
+            // Act
+            ValidateWorkerStart(_workerProcess!.Start());
+            _workerProcess.BeginOutputReadLine();
+            await _workerProcess.WaitForExitAsync();
+
+            // Assert
+            var logFileEntries = await File.ReadAllLinesAsync(
+                "C:\\ProgramData\\Elzik\\fmsync\\Elzik.FmSync.Worker.Tests.Functional\\Elzik.FmSync.Worker.log");
+            logFileEntries.Should().Contain(entry => entry.EndsWith("has started."));
+            logFileEntries.Should().Contain(entry => entry.EndsWith("Configuring watcher on ../../../../TestFiles for new and changed *.md files."));
+            logFileEntries.Should().Contain(entry => entry.EndsWith("Watcher on ../../../../TestFiles has started."));
+            logFileEntries.Should().Contain(entry => entry.EndsWith("A total of 1 directory watchers are running."));
         }
 
         [Fact(Timeout = 15000)]
