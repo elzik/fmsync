@@ -63,10 +63,10 @@ namespace Elzik.FmSync.Console.Tests.Functional
             await _consoleProcess.WaitForExitAsync();
 
             // Assert
-            consoleOutputLines.Should().Contain(line => 
-                line.EndsWith($"Synchronising *.md files in {_buildOutputDirectory}".TrimEnd('\\')));
-            consoleOutputLines.Should().Contain(line => 
-                line.Contains("Synchronised 0 files out of a total 0 in "));
+            var expectedWorkingDirectoryLogText = $"Synchronising *.md files in {_buildOutputDirectory}".TrimEnd('\\');
+            _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
+            consoleOutputLines.Should().Contain(line => line.EndsWith(expectedWorkingDirectoryLogText));
+            consoleOutputLines.Should().Contain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
         }
 
         private static void KillExistingWorkerProcesses(string? directoryPath)
