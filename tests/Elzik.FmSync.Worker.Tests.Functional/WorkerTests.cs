@@ -9,11 +9,11 @@ namespace Elzik.FmSync.Worker.Tests.Functional
     public sealed class WorkerTests : IDisposable
     {
         private readonly ITestOutputHelper _testOutputHelper;
-        private readonly Process? _workerProcess;
+        private readonly Process _workerProcess;
         private Func<DataReceivedEventArgs, bool>? _expectedConsoleOutputReceived;
         private Func<FileSystemEventArgs, bool>? _expectedFileChangeMade;
-        private readonly FileSystemWatcher? _testFileWatcher;
-        private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional";
+        private readonly FileSystemWatcher _testFileWatcher;
+        private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Worker";
 
         public WorkerTests(ITestOutputHelper testOutputHelper)
         {
@@ -33,8 +33,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
                 {
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                    UseShellExecute = false,
+                    RedirectStandardError = true
                 }
             };
             _workerProcess.OutputDataReceived += OnConsoleDataReceivedLog;
@@ -60,7 +59,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         public async Task WorkerIsStarted_ExpectedConsoleLogMessagesAreReceived(string expectedLogOutput)
         {
             // Arrange
-            _workerProcess!.OutputDataReceived += OnConsoleDataReceivedillProcess;
+            _workerProcess.OutputDataReceived += OnConsoleDataReceivedKillProcess;
             _expectedConsoleOutputReceived = (DataReceivedEventArgs dataReceived) =>
             {
                 return dataReceived.Data != null && 
@@ -69,7 +68,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             using var monitoredWorkerProcess = _workerProcess.Monitor();
 
             // Act
-            ValidateWorkerStart(_workerProcess!.Start());
+            ValidateWorkerStart(_workerProcess.Start());
             _workerProcess.BeginOutputReadLine();
             await _workerProcess.WaitForExitAsync();
 
@@ -82,7 +81,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         public async Task WorkerIsStarted_ExpectedFileLogMessagesAreReceived()
         {
             // Arrange
-            _workerProcess!.OutputDataReceived += OnConsoleDataReceivedillProcess;
+            _workerProcess.OutputDataReceived += OnConsoleDataReceivedKillProcess;
             _expectedConsoleOutputReceived = (DataReceivedEventArgs dataReceived) =>
             {
                 return dataReceived.Data != null &&
@@ -91,7 +90,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             using var monitoredWorkerProcess = _workerProcess.Monitor();
 
             // Act
-            ValidateWorkerStart(_workerProcess!.Start());
+            ValidateWorkerStart(_workerProcess.Start());
             _workerProcess.BeginOutputReadLine();
             await _workerProcess.WaitForExitAsync();
 
@@ -127,9 +126,9 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             using var monitoredFileWatcher = _testFileWatcher.Monitor();
 
             // Act
-            ValidateWorkerStart(_workerProcess!.Start());
+            ValidateWorkerStart(_workerProcess.Start());
             _workerProcess.BeginOutputReadLine();
-            _testFileWatcher!.EnableRaisingEvents = true;
+            _testFileWatcher.EnableRaisingEvents = true;
 
             await WaitForWorketToStart();
 
@@ -172,9 +171,9 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             using var monitoredFileWatcher = _testFileWatcher.Monitor();
 
             // Act
-            ValidateWorkerStart(_workerProcess!.Start());
+            ValidateWorkerStart(_workerProcess.Start());
             _workerProcess.BeginOutputReadLine();
-            _testFileWatcher!.EnableRaisingEvents = true;
+            _testFileWatcher.EnableRaisingEvents = true;
 
             await WaitForWorketToStart();
 
@@ -214,7 +213,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         private static void KillExistingWorkerProcesses(string? directoryPath)
         {
             var testWorkers = Process.GetProcessesByName("Elzik.FmSync.Worker")
-                            .Where(p => p.MainModule!.FileName.StartsWith(directoryPath!));
+                            .Where(p => p.MainModule != null && p.MainModule.FileName.StartsWith(directoryPath!));
 
             foreach (var testWorker in testWorkers)
             {
@@ -245,23 +244,23 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             if (_expectedFileChangeMade != null && _expectedFileChangeMade(e))
             {
                 _testOutputHelper.WriteLine("Test log: Expected files change made, killing Worker process...");
-                _workerProcess!.Kill();
+                _workerProcess.Kill();
             }
         }
 
-        private void OnConsoleDataReceivedillProcess(object sender, DataReceivedEventArgs e)
+        private void OnConsoleDataReceivedKillProcess(object sender, DataReceivedEventArgs e)
         {
             if(_expectedConsoleOutputReceived != null && _expectedConsoleOutputReceived(e))
             {
                 _testOutputHelper.WriteLine("Test log: Expected console data received, killing Worker process...");
-                _workerProcess!.Kill();
+                _workerProcess.Kill();
             }
         }
 
         public void Dispose()
         {
-            _workerProcess!.Dispose();
-            _testFileWatcher!.Dispose();
+            _workerProcess.Dispose();
+            _testFileWatcher.Dispose();
             Directory.Delete(FunctionalTestFilesPath, true);
         }
     }
