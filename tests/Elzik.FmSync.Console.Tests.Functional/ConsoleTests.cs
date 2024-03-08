@@ -49,7 +49,7 @@ namespace Elzik.FmSync.Console.Tests.Functional
         {
             // Arrange
             var consoleOutputLines = new List<string>();
-            _consoleProcess.OutputDataReceived += (sender, e) =>
+            _consoleProcess.OutputDataReceived += (_, e) =>
             {
                 if (e.Data != null)
                 {
