@@ -2,6 +2,6 @@
 {
     public class WatcherOptions
     {
-        public IEnumerable<string> WatchedDirectoryPaths { get; set; } = new List<string>();
+        public IEnumerable<string> WatchedDirectoryPaths { get; set; } = [];
     }
 }

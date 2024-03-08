@@ -251,7 +251,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
 
         private static async Task WaitForWorketToStart()
         {
-            await Task.Delay(2000);
+            await Task.Delay(3000);
         }
 
         private async Task LockFileTemporarily(string path, int lockForMilliseconds)
