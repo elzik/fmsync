@@ -14,7 +14,7 @@ namespace Elzik.FmSync.Console.Tests.Functional
         private readonly Process _consoleProcess;
         private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Console";
         private const string LogPath = "C:/ProgramData/Elzik/fmsync/" +
-            "Elzik.FmSync.Worker.Tests.Functional/Elzik.FmSync.Console.log";
+            "Elzik.FmSync.Console.Tests.Functional/Elzik.FmSync.Console.log";
         private readonly string _buildOutputDirectory;
 
         public ConsoleTests(ITestOutputHelper testOutputHelper)
@@ -46,7 +46,11 @@ namespace Elzik.FmSync.Console.Tests.Functional
             _consoleProcess.ErrorDataReceived += OnConsoleDataReceivedLog;
 
             Directory.CreateDirectory(FunctionalTestFilesPath);
-            File.Delete(LogPath);
+
+            if (File.Exists(LogPath))
+            {
+                File.Delete(LogPath);
+            }
         }
 
         [Fact]

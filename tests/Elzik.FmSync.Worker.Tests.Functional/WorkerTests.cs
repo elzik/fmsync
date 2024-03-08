@@ -14,6 +14,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         private Func<FileSystemEventArgs, bool>? _expectedFileChangeMade;
         private readonly FileSystemWatcher _testFileWatcher;
         private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Worker";
+        private const string LogPath = "C:/ProgramData/Elzik/fmsync/Elzik.FmSync.Worker.Tests.Functional/Elzik.FmSync.Worker.log";
 
         public WorkerTests(ITestOutputHelper testOutputHelper)
         {
@@ -40,6 +41,11 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             _workerProcess.ErrorDataReceived += OnConsoleDataReceivedLog;
 
             Directory.CreateDirectory(FunctionalTestFilesPath);
+
+            if (File.Exists(LogPath))
+            {
+                File.Delete(LogPath);
+            }
 
             _testFileWatcher = new FileSystemWatcher(FunctionalTestFilesPath, "*.md")
             {
