@@ -1,5 +1,6 @@
 using FluentAssertions;
 using System.Diagnostics;
+using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using Xunit;
 using Xunit.Abstractions;
@@ -12,6 +13,8 @@ namespace Elzik.FmSync.Console.Tests.Functional
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly Process _consoleProcess;
         private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Console";
+        private const string LogPath = "C:/ProgramData/Elzik/fmsync/" +
+            "Elzik.FmSync.Worker.Tests.Functional/Elzik.FmSync.Console.log";
         private readonly string _buildOutputDirectory;
 
         public ConsoleTests(ITestOutputHelper testOutputHelper)
@@ -43,7 +46,9 @@ namespace Elzik.FmSync.Console.Tests.Functional
             _consoleProcess.ErrorDataReceived += OnConsoleDataReceivedLog;
 
             Directory.CreateDirectory(FunctionalTestFilesPath);
+            File.Delete(LogPath);
         }
+
         [Fact]
         public async Task Synchronise_EmptyFolder_LogsToConsole()
         {
@@ -67,6 +72,23 @@ namespace Elzik.FmSync.Console.Tests.Functional
             _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
             consoleOutputLines.Should().Contain(line => line.EndsWith(expectedWorkingDirectoryLogText));
             consoleOutputLines.Should().Contain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
+        }
+
+        [Fact]
+        public async Task Synchronise_EmptyFolder_LogsToFile()
+        {
+            // Act
+            ValidateWorkerStart(_consoleProcess!.Start());
+            _consoleProcess.BeginOutputReadLine();
+            await _consoleProcess.WaitForExitAsync();
+
+            // Assert
+            var fileLog = await File.ReadAllTextAsync(LogPath);
+            var fileLogLines = fileLog.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var expectedWorkingDirectoryLogText = $"Synchronising *.md files in {_buildOutputDirectory}".TrimEnd('\\', '/');
+            _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
+            fileLogLines.Should().Contain(line => line.EndsWith(expectedWorkingDirectoryLogText));
+            fileLogLines.Should().Contain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
         }
 
         private static void KillExistingWorkerProcesses(string? directoryPath)
