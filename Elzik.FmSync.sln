@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{0FE56BA0
 		Build\build-windows-installer.ps1 = Build\build-windows-installer.ps1
 		.github\workflows\continuous-delivery.yml = .github\workflows\continuous-delivery.yml
 		Build\local-pipeline.ps1 = Build\local-pipeline.ps1
+		Build\set-platform-specific-config.ps1 = Build\set-platform-specific-config.ps1
 		Test-ExitCode.psm1 = Test-ExitCode.psm1
 	EndProjectSection
 EndProject
@@ -39,7 +40,7 @@ Project("{B7DD6F7E-DEF8-4E67-B5B7-07EF123DB6F0}") = "Elzik.FmSync.WindowsInstall
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Worker.Tests.Functional", "tests\Elzik.FmSync.Worker.Tests.Functional\Elzik.FmSync.Worker.Tests.Functional.csproj", "{B38B9BF5-29FF-44C2-B243-CC5D548B1C6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elzik.FmSync.Console.Tests.Functional", "tests\Elzik.FmSync.Console.Tests.Functional\Elzik.FmSync.Console.Tests.Functional.csproj", "{EF3D7FC2-FE10-4D23-8751-5E60ED9DCEC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Elzik.FmSync.Console.Tests.Functional", "tests\Elzik.FmSync.Console.Tests.Functional\Elzik.FmSync.Console.Tests.Functional.csproj", "{EF3D7FC2-FE10-4D23-8751-5E60ED9DCEC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
