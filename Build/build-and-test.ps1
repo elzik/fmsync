@@ -1,4 +1,4 @@
-Import-Module $(Resolve-Path ./Build/Test-ExitCode.psm1)
+Import-Module $(Resolve-Path ./Test-ExitCode.psm1)
 $ErrorActionPreference = "Stop"
 
 $repoRootPath = (Resolve-Path "$PSScriptRoot/../").Path
@@ -17,7 +17,7 @@ dotnet tool update `
 Test-ExitCode
 
 reportgenerator `
-	"-reports:$repoRootPath/tests/Elzik.FmSync.Application.Tests.Unit/TestResults/coverage.opencover.xml;$repoRootPath/tests/Elzik.FmSync.Infrastructure.Tests.Integration/TestResults/coverage.opencover.xml;" `
-	"-targetdir:$repoRootPath/tests/TestResults" `
+	"-reports:${repoRootPath}tests/Elzik.FmSync.Application.Tests.Unit/TestResults/coverage.opencover.xml;$repoRootPath/tests/Elzik.FmSync.Infrastructure.Tests.Integration/TestResults/coverage.opencover.xml;" `
+	"-targetdir:${repoRootPath}tests/TestResults" `
 	"-reporttypes:Badges;Cobertura"
 Test-ExitCode
