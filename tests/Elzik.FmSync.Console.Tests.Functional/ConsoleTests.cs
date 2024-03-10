@@ -13,7 +13,7 @@ namespace Elzik.FmSync.Console.Tests.Functional
         private readonly Process _consoleProcess;
         private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Console";
         private const string SerlogPathKey = "Serilog:WriteTo:1:Args:path";
-        private readonly string LogPath;
+        private readonly string _logPath;
         private readonly string _buildOutputDirectory;
 
         public ConsoleTests(ITestOutputHelper testOutputHelper)
@@ -26,15 +26,15 @@ namespace Elzik.FmSync.Console.Tests.Functional
                 throw new InvalidOperationException("Unable to find build output directory.");
             }
             _buildOutputDirectory = AppDomain.CurrentDomain.SetupInformation.ApplicationBase;
-            KillExistingWorkerProcesses(_buildOutputDirectory);
+            KillExistingConsoleProcesses(_buildOutputDirectory);
 
-            var workerFilename = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+            var consoleExecutableFilename = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
                        ? "fmsync.exe" : "fmsync";
-            var workerExecutablePath = Path.Join(_buildOutputDirectory, workerFilename);
-            _testOutputHelper.WriteLine("Worker under test: {0}", workerExecutablePath);
+            var consoleExecutablePath = Path.Join(_buildOutputDirectory, consoleExecutableFilename);
+            _testOutputHelper.WriteLine("Console process under test: {0}", consoleExecutablePath);
             _consoleProcess = new Process
             {
-                StartInfo = new ProcessStartInfo(workerExecutablePath)
+                StartInfo = new ProcessStartInfo(consoleExecutablePath)
                 {
                     CreateNoWindow = true,
                     RedirectStandardOutput = true,
@@ -52,10 +52,10 @@ namespace Elzik.FmSync.Console.Tests.Functional
             {
                 throw new InvalidOperationException($"No log file path set in appSettings at {SerlogPathKey}");
             }
-            LogPath = configurationSection.Value;
-            if (File.Exists(LogPath))
+            _logPath = configurationSection.Value;
+            if (File.Exists(_logPath))
             {
-                File.Delete(LogPath);
+                File.Delete(_logPath);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Elzik.FmSync.Console.Tests.Functional
             };
 
             // Act
-            ValidateWorkerStart(_consoleProcess!.Start());
+            ValidateConsoleProcessStart(_consoleProcess!.Start());
             _consoleProcess.BeginOutputReadLine();
             await _consoleProcess.WaitForExitAsync();
 
@@ -88,12 +88,12 @@ namespace Elzik.FmSync.Console.Tests.Functional
         public async Task Synchronise_EmptyFolder_LogsToFile()
         {
             // Act
-            ValidateWorkerStart(_consoleProcess!.Start());
+            ValidateConsoleProcessStart(_consoleProcess!.Start());
             _consoleProcess.BeginOutputReadLine();
             await _consoleProcess.WaitForExitAsync();
 
             // Assert
-            var fileLog = await File.ReadAllTextAsync(LogPath);
+            var fileLog = await File.ReadAllTextAsync(_logPath);
             var fileLogLines = fileLog.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
             var expectedWorkingDirectoryLogText = $"Synchronising *.md files in {_buildOutputDirectory}".TrimEnd('\\', '/');
             _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
@@ -101,14 +101,40 @@ namespace Elzik.FmSync.Console.Tests.Functional
             fileLogLines.Should().Contain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
         }
 
-        private static void KillExistingWorkerProcesses(string? directoryPath)
+        [Fact(Timeout = 2000)]
+        public async Task ConsoleAppIsExecuted_WithMismatchingFrontMatterAndFileCreatedDates_FileCreatedDateIsUpdated()
         {
-            var testWorkers = Process.GetProcessesByName("Elzik.FmSync.Worker")
+            // Arrange
+            const string fileToCopyPath = "../../../../TestFiles/YamlContainsOnlyCreatedDate.md";
+            var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
+            File.Copy(fileToCopyPath, testFilePath, true);
+
+            var expectedCreatedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
+
+            _consoleProcess.StartInfo.Arguments = FunctionalTestFilesPath;
+
+            // Act
+            ValidateConsoleProcessStart(_consoleProcess!.Start());
+            _consoleProcess.BeginOutputReadLine();
+            await _consoleProcess.WaitForExitAsync();
+
+            // Assert
+            var testFileInfo = new FileInfo(testFilePath);
+            testFileInfo.CreationTimeUtc.Should().Be(expectedCreatedDate, "the Console app should have updated the " +
+                "created date in response to a file edit");
+            testFileInfo.LastWriteTimeUtc.Should().NotBe(expectedCreatedDate, "the Console app should not have " +
+                "updated the modified date to be the same as the created date in response to a file edit");
+
+        }
+
+        private static void KillExistingConsoleProcesses(string? directoryPath)
+        {
+            var testConsoleProcesses = Process.GetProcessesByName("Elzik.FmSync.Console")
                             .Where(p => p.MainModule!.FileName.StartsWith(directoryPath!));
 
-            foreach (var testWorker in testWorkers)
+            foreach (var testConsoleProcess in testConsoleProcesses)
             {
-                testWorker.Kill();
+                testConsoleProcess.Kill();
             }
         }
 
@@ -127,9 +153,9 @@ namespace Elzik.FmSync.Console.Tests.Functional
             }
         }
 
-        private static void ValidateWorkerStart(bool workerStartResult)
+        private static void ValidateConsoleProcessStart(bool consoleProcessStartResult)
         {
-            if (!workerStartResult)
+            if (!consoleProcessStartResult)
             {
                 throw new InvalidOperationException("A new functional test Console process was not started.");
             }
