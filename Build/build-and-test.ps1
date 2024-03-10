@@ -1,7 +1,8 @@
-Import-Module $(Resolve-Path ./Test-ExitCode.psm1)
 $ErrorActionPreference = "Stop"
 
 $repoRootPath = (Resolve-Path "$PSScriptRoot/../").Path
+
+Import-Module $(Resolve-Path "$repoRootPath/Build/Test-ExitCode.psm1")
 
 dotnet test $repoRootPath/Elzik.FmSync.sln `
 	-c Release `
