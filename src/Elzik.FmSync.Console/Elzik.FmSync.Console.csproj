@@ -42,7 +42,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(SolutionDir)Build/set-platform-specific-config.ps1 $(OutDir) $(OS)" />
+    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)/../../Build/set-platform-specific-config.ps1 $(OutDir) $(OS)" />
   </Target>
 
 </Project>
