@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Xunit;
@@ -14,7 +15,8 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         private Func<FileSystemEventArgs, bool>? _expectedFileChangeMade;
         private readonly FileSystemWatcher _testFileWatcher;
         private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Worker";
-        private const string LogPath = "C:/ProgramData/Elzik/fmsync/Elzik.FmSync.Worker.Tests.Functional/Elzik.FmSync.Worker.log";
+        private const string SerlogPathKey = "Serilog:WriteTo:1:Args:path";
+        private readonly string LogPath;
 
         public WorkerTests(ITestOutputHelper testOutputHelper)
         {
@@ -42,6 +44,13 @@ namespace Elzik.FmSync.Worker.Tests.Functional
 
             Directory.CreateDirectory(FunctionalTestFilesPath);
 
+            var config = GetIConfigurationRoot();
+            var configurationSection = config.GetSection(SerlogPathKey);
+            if (configurationSection == null || configurationSection.Value == null)
+            {
+                throw new InvalidOperationException($"No log file path set in appSettings at {SerlogPathKey}");
+            }
+            LogPath = configurationSection.Value;
             if (File.Exists(LogPath))
             {
                 File.Delete(LogPath);
@@ -83,7 +92,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
                 .WithArgs<DataReceivedEventArgs>(dataReceived =>_expectedConsoleOutputReceived(dataReceived));
         }
 
-        [Fact]
+        [Fact(Timeout = 10000)]
         public async Task WorkerIsStarted_ExpectedFileLogMessagesAreReceived()
         {
             // Arrange
@@ -101,8 +110,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            var logFileEntries = await File.ReadAllLinesAsync(
-                "C:\\ProgramData\\Elzik\\fmsync\\Elzik.FmSync.Worker.Tests.Functional\\Elzik.FmSync.Worker.log");
+            var logFileEntries = await File.ReadAllLinesAsync(LogPath);
             logFileEntries.Should().Contain(entry => entry.EndsWith("has started."));
             logFileEntries.Should().Contain(entry => entry.EndsWith("Configuring watcher on ../../../../TestFiles for new and changed *.md files."));
             logFileEntries.Should().Contain(entry => entry.EndsWith("Watcher on ../../../../TestFiles has started."));
@@ -253,6 +261,12 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             testFileInfo.LastWriteTimeUtc.Should().NotBe(expectedCreatedDate, "the Worker should not have updated the " +
                 "modified date to be the same as the created date in response to a file edit");
 
+        }
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            return new ConfigurationBuilder()
+                .AddJsonFile("appSettings.json", optional: true, reloadOnChange: true)
+                .Build();
         }
 
         private static async Task WaitForWorketToStart()

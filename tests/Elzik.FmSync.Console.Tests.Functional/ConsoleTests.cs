@@ -1,10 +1,9 @@
 using FluentAssertions;
+using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
-using System.Reflection.PortableExecutable;
 using System.Runtime.InteropServices;
 using Xunit;
 using Xunit.Abstractions;
-using Xunit.Sdk;
 
 namespace Elzik.FmSync.Console.Tests.Functional
 {
@@ -13,8 +12,8 @@ namespace Elzik.FmSync.Console.Tests.Functional
         private readonly ITestOutputHelper _testOutputHelper;
         private readonly Process _consoleProcess;
         private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Console";
-        private const string LogPath = "C:/ProgramData/Elzik/fmsync/" +
-            "Elzik.FmSync.Console.Tests.Functional/Elzik.FmSync.Console.log";
+        private const string SerlogPathKey = "Serilog:WriteTo:1:Args:path";
+        private readonly string LogPath;
         private readonly string _buildOutputDirectory;
 
         public ConsoleTests(ITestOutputHelper testOutputHelper)
@@ -47,6 +46,13 @@ namespace Elzik.FmSync.Console.Tests.Functional
 
             Directory.CreateDirectory(FunctionalTestFilesPath);
 
+            var config = GetIConfigurationRoot();
+            var configurationSection = config.GetSection(SerlogPathKey);
+            if (configurationSection == null || configurationSection.Value == null)
+            {
+                throw new InvalidOperationException($"No log file path set in appSettings at {SerlogPathKey}");
+            }
+            LogPath = configurationSection.Value;
             if (File.Exists(LogPath))
             {
                 File.Delete(LogPath);
@@ -104,6 +110,13 @@ namespace Elzik.FmSync.Console.Tests.Functional
             {
                 testWorker.Kill();
             }
+        }
+
+        private static IConfigurationRoot GetIConfigurationRoot()
+        {
+            return new ConfigurationBuilder()
+                .AddJsonFile("appSettings.json", optional: true, reloadOnChange: true)
+                .Build();
         }
 
         private void OnConsoleDataReceivedLog(object sender, DataReceivedEventArgs e)
