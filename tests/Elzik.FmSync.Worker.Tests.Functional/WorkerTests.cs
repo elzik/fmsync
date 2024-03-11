@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Events;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -75,11 +76,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         {
             // Arrange
             _workerProcess.OutputDataReceived += OnConsoleDataReceivedKillProcess;
-            _expectedConsoleOutputReceived = (DataReceivedEventArgs dataReceived) =>
-            {
-                return dataReceived.Data != null && 
-                       dataReceived.Data.EndsWith(expectedLogOutput);
-            };
+            MonitorConsoleForOutput(expectedLogOutput);
             using var monitoredWorkerProcess = _workerProcess.Monitor();
 
             // Act
@@ -89,7 +86,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
 
             // Assert
             monitoredWorkerProcess.Should().Raise("OutputDataReceived")
-                .WithArgs<DataReceivedEventArgs>(dataReceived =>_expectedConsoleOutputReceived(dataReceived));
+                .WithArgs<DataReceivedEventArgs>(dataReceived => _expectedConsoleOutputReceived(dataReceived));
         }
 
         [Fact(Timeout = 10000)]
@@ -97,11 +94,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         {
             // Arrange
             _workerProcess.OutputDataReceived += OnConsoleDataReceivedKillProcess;
-            _expectedConsoleOutputReceived = (DataReceivedEventArgs dataReceived) =>
-            {
-                return dataReceived.Data != null &&
-                       dataReceived.Data.EndsWith("Hosting started");
-            };
+            MonitorConsoleForOutput("Hosting started");
             using var monitoredWorkerProcess = _workerProcess.Monitor();
 
             // Act
@@ -121,22 +114,8 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         public async Task FrontMatterIsUpdated_WithNewCreatedDate_FileCreatedDateIsUpdated()
         {
             // Arrange
-            const string fileToCopyPath = "../../../../TestFiles/YamlContainsOnlyCreatedDate.md";
-            var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
-            File.Copy(fileToCopyPath, testFilePath, true);
-
-            var expectedCreatedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
-            _expectedFileChangeMade = (FileSystemEventArgs fileSystemEventArgs) =>
-            {
-                var eventFilePath = Path.GetFullPath(fileSystemEventArgs.FullPath);
-                var eventFileInfo = new FileInfo(eventFilePath);
-                
-                var expectedChangeMade = eventFilePath == testFilePath &&
-                                       eventFileInfo.CreationTimeUtc == expectedCreatedDate;
-
-                return expectedChangeMade;
-            };
-
+            var testFile = GetHappyPathTestFile();
+            MonitorFilesForChange(testFile);
             using var monitoredFileWatcher = _testFileWatcher.Monitor();
 
             // Act
@@ -147,18 +126,12 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await WaitForWorketToStart();
 
             _testOutputHelper.WriteLine("Performing test edit...");
-            await File.AppendAllLinesAsync(testFilePath, ["Test edit..."]);
+            await File.AppendAllLinesAsync(testFile.Path, ["Test edit..."]);
 
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            monitoredFileWatcher.Should().Raise("Changed").
-                WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade(fileSystemEvent));
-            var testFileInfo = new FileInfo(testFilePath);
-            testFileInfo.CreationTimeUtc.Should().Be(expectedCreatedDate, "the Worker should have updated the created date " +
-                "in response to a file edit");
-            testFileInfo.LastWriteTimeUtc.Should().NotBe(expectedCreatedDate, "the Worker should not have updated the " +
-                "modified date to be the same as the created date in response to a file edit");
+            AssertFileWasChanged(testFile, monitoredFileWatcher);
 
         }
 
@@ -166,22 +139,8 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         public async Task FrontMatterIsUpdated_WithNewCreatedDateAndLockedFile_FileCreatedDateIsEventuallyUpdated()
         {
             // Arrange
-            const string fileToCopyPath = "../../../../TestFiles/YamlContainsOnlyCreatedDate.md";
-            var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
-            File.Copy(fileToCopyPath, testFilePath, true);
-
-            var expectedCreatedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
-            _expectedFileChangeMade = (FileSystemEventArgs fileSystemEventArgs) =>
-            {
-                var eventFilePath = Path.GetFullPath(fileSystemEventArgs.FullPath);
-                var eventFileInfo = new FileInfo(eventFilePath);
-
-                var expectedChangeMade = eventFilePath == testFilePath &&
-                                       eventFileInfo.CreationTimeUtc == expectedCreatedDate;
-
-                return expectedChangeMade;
-            };
-
+            var testFile = GetHappyPathTestFile();
+            MonitorFilesForChange(testFile);
             using var monitoredFileWatcher = _testFileWatcher.Monitor();
 
             // Act
@@ -192,20 +151,14 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await WaitForWorketToStart();
 
             _testOutputHelper.WriteLine("Performing test edit...");
-            await File.AppendAllLinesAsync(testFilePath, ["Test edit..."]);
+            await File.AppendAllLinesAsync(testFile.Path, ["Test edit..."]);
 
-            await LockFileTemporarily(testFilePath, 2000);
+            await LockFileTemporarily(testFile.Path, 2000);
 
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            monitoredFileWatcher.Should().Raise("Changed").
-                WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade(fileSystemEvent));
-            var testFileInfo = new FileInfo(testFilePath);
-            testFileInfo.CreationTimeUtc.Should().Be(expectedCreatedDate, "the Worker should have updated the created date " +
-                "in response to a file edit");
-            testFileInfo.LastWriteTimeUtc.Should().NotBe(expectedCreatedDate, "the Worker should not have updated the " +
-                "modified date to be the same as the created date in response to a file edit");
+            AssertFileWasChanged(testFile, monitoredFileWatcher);
 
         }
 
@@ -213,25 +166,11 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         public async Task FrontMatterIsUpdated_WithNewCreatedDateAfterInvalidCreatedDate_FileCreatedDateIsEventuallyUpdated()
         {
             // Arrange
-            const string fileToCopyPath = "../../../../TestFiles/YamlContainsOnlyCreatedDate.md";
-            var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
-            File.Copy(fileToCopyPath, testFilePath, true);
-
-            var expectedCreatedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
-            _expectedFileChangeMade = (FileSystemEventArgs fileSystemEventArgs) =>
-            {
-                var eventFilePath = Path.GetFullPath(fileSystemEventArgs.FullPath);
-                var eventFileInfo = new FileInfo(eventFilePath);
-
-                var expectedChangeMade = eventFilePath == testFilePath &&
-                                       eventFileInfo.CreationTimeUtc == expectedCreatedDate;
-
-                return expectedChangeMade;
-            };
-
+            var testFile = GetHappyPathTestFile();
+            MonitorFilesForChange(testFile);
             using var monitoredFileWatcher = _testFileWatcher.Monitor();
 
-            var testOriginalFileContents = await File.ReadAllTextAsync(testFilePath);
+            var testOriginalFileContents = await File.ReadAllTextAsync(testFile.Path);
             var testInvalidatedDateContents = testOriginalFileContents.Replace(
                 "created: 2023-01-07 14:28:22", "created: InvalidDate!-01-07 14:28:22");
 
@@ -243,25 +182,63 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await WaitForWorketToStart();
 
             _testOutputHelper.WriteLine("Performing test edit of invalid date...");
-            await File.WriteAllTextAsync(testFilePath, testInvalidatedDateContents);
+            await File.WriteAllTextAsync(testFile.Path, testInvalidatedDateContents);
 
             await Task.Delay(2000);
 
             _testOutputHelper.WriteLine("Performing test edit of valid date...");
-            await File.WriteAllTextAsync(testFilePath, testOriginalFileContents);
+            await File.WriteAllTextAsync(testFile.Path, testOriginalFileContents);
 
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            monitoredFileWatcher.Should().Raise("Changed").
-                WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade(fileSystemEvent));
-            var testFileInfo = new FileInfo(testFilePath);
-            testFileInfo.CreationTimeUtc.Should().Be(expectedCreatedDate, "the Worker should have updated the created date " +
-                "in response to a file edit");
-            testFileInfo.LastWriteTimeUtc.Should().NotBe(expectedCreatedDate, "the Worker should not have updated the " +
-                "modified date to be the same as the created date in response to a file edit");
+            AssertFileWasChanged(testFile, monitoredFileWatcher);
 
         }
+
+        private void AssertFileWasChanged((string Path, DateTime ExpectedCreatedDate) testFile, IMonitor<FileSystemWatcher> monitoredFileWatcher)
+        {
+            monitoredFileWatcher.Should().Raise("Changed").
+                WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade(fileSystemEvent));
+            var testFileInfo = new FileInfo(testFile.Path);
+            testFileInfo.CreationTimeUtc.Should().Be(testFile.ExpectedCreatedDate, "the Worker should have updated the created date " +
+                "in response to a file edit");
+            testFileInfo.LastWriteTimeUtc.Should().NotBe(testFile.ExpectedCreatedDate, "the Worker should not have updated the " +
+                "modified date to be the same as the created date in response to a file edit");
+        }
+
+        private void MonitorConsoleForOutput(string expectedLogOutput)
+        {
+            _expectedConsoleOutputReceived = (DataReceivedEventArgs dataReceived) =>
+            {
+                return dataReceived.Data != null &&
+                       dataReceived.Data.EndsWith(expectedLogOutput);
+            };
+        }
+
+        private void MonitorFilesForChange((string Path, DateTime ExpectedCreatedDate) testFile)
+        {
+            _expectedFileChangeMade = (FileSystemEventArgs fileSystemEventArgs) =>
+            {
+                var eventFilePath = Path.GetFullPath(fileSystemEventArgs.FullPath);
+                var eventFileInfo = new FileInfo(eventFilePath);
+
+                var expectedChangeMade = eventFilePath == testFile.Path &&
+                                       eventFileInfo.CreationTimeUtc == testFile.ExpectedCreatedDate;
+
+                return expectedChangeMade;
+            };
+        }
+
+        private static (string Path, DateTime ExpectedCreatedDate) GetHappyPathTestFile()
+        {
+            const string fileToCopyPath = "../../../../TestFiles/YamlContainsOnlyCreatedDate.md";
+            var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
+            File.Copy(fileToCopyPath, testFilePath, true);
+            var expectedCreatedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
+            return (testFilePath, expectedCreatedDate);
+        }
+
         private static IConfigurationRoot GetIConfigurationRoot()
         {
             return new ConfigurationBuilder()
