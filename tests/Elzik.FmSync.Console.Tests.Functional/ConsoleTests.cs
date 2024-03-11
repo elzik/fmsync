@@ -101,15 +101,11 @@ namespace Elzik.FmSync.Console.Tests.Functional
             fileLogLines.Should().Contain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
         }
 
-        [Fact(Timeout = 2000)]
+        [Fact(Timeout = 5000)]
         public async Task ConsoleAppIsExecuted_WithMismatchingFrontMatterAndFileCreatedDates_FileCreatedDateIsUpdated()
         {
             // Arrange
-            const string fileToCopyPath = "../../../../TestFiles/YamlContainsOnlyCreatedDate.md";
-            var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
-            File.Copy(fileToCopyPath, testFilePath, true);
-
-            var expectedCreatedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
+            var testFiles = GetHappyPathTestFiles();
 
             _consoleProcess.StartInfo.Arguments = FunctionalTestFilesPath;
 
@@ -119,13 +115,37 @@ namespace Elzik.FmSync.Console.Tests.Functional
             await _consoleProcess.WaitForExitAsync();
 
             // Assert
-            var testFileInfo = new FileInfo(testFilePath);
-            testFileInfo.CreationTimeUtc.Should().Be(expectedCreatedDate, "the Console app should have updated the " +
-                "created date in response to a file edit");
-            testFileInfo.LastWriteTimeUtc.Should().NotBe(expectedCreatedDate, "the Console app should not have " +
-                "updated the modified date to be the same as the created date in response to a file edit");
-
+            foreach(var testFile in testFiles)
+            {
+                var testFileInfo = new FileInfo(testFile.Path);
+                testFileInfo.CreationTimeUtc.Should().Be(testFile.ExpectedCreatedDate, "the Console app should have updated the " +
+                    "created date in response to a file edit");
+                testFileInfo.LastWriteTimeUtc.Should().NotBe(testFile.ExpectedCreatedDate, "the Console app should not have " +
+                    "updated the modified date to be the same as the created date in response to a file edit");
+            }
         }
+
+        private static (string Path, DateTime ExpectedCreatedDate) GetHappyPathTestFile()
+        {
+            const string fileToCopyPath = "../../../../TestFiles/YamlContainsOnlyCreatedDate.md";
+            var testFilePath = Path.GetFullPath(Path.Join(FunctionalTestFilesPath, $"{Guid.NewGuid()}.md"));
+            File.Copy(fileToCopyPath, testFilePath, true);
+            var expectedCreatedDate = new DateTime(2023, 01, 07, 14, 28, 22, DateTimeKind.Utc);
+            return (testFilePath, expectedCreatedDate);
+        }
+
+        private static (string Path, DateTime ExpectedCreatedDate)[] GetHappyPathTestFiles()
+        {
+            var testFiles = new (string Path, DateTime ExpectedCreatedDate)[3];
+
+            for(int i = 0; i < 3; i++)
+            {
+                testFiles[i] = GetHappyPathTestFile();
+            }
+
+            return testFiles;
+        }
+
 
         private static void KillExistingConsoleProcesses(string? directoryPath)
         {
