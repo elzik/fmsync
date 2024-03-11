@@ -86,7 +86,8 @@ namespace Elzik.FmSync.Worker.Tests.Functional
 
             // Assert
             monitoredWorkerProcess.Should().Raise("OutputDataReceived")
-                .WithArgs<DataReceivedEventArgs>(dataReceived => _expectedConsoleOutputReceived(dataReceived));
+                .WithArgs<DataReceivedEventArgs>(dataReceived => _expectedConsoleOutputReceived != null 
+                                                              && _expectedConsoleOutputReceived(dataReceived));
         }
 
         [Fact(Timeout = 10000)]
@@ -199,7 +200,8 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         private void AssertFileWasChanged((string Path, DateTime ExpectedCreatedDate) testFile, IMonitor<FileSystemWatcher> monitoredFileWatcher)
         {
             monitoredFileWatcher.Should().Raise("Changed").
-                WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade(fileSystemEvent));
+                WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade != null 
+                                                              && _expectedFileChangeMade(fileSystemEvent));
             var testFileInfo = new FileInfo(testFile.Path);
             testFileInfo.CreationTimeUtc.Should().Be(testFile.ExpectedCreatedDate, "the Worker should have updated the created date " +
                 "in response to a file edit");
