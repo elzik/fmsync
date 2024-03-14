@@ -5,6 +5,7 @@ $repoRootPath = (Resolve-Path "$PSScriptRoot/../").Path
 Import-Module $(Resolve-Path "$repoRootPath/Build/Test-ExitCode.psm1")
 
 dotnet publish $repoRootPath\src\Elzik.FmSync.Worker\Elzik.FmSync.Worker.csproj `
+	--verbosity normal `
 	--runtime win-x64 `
 	--self-contained true `
 	--configuration Release `
@@ -13,6 +14,7 @@ dotnet publish $repoRootPath\src\Elzik.FmSync.Worker\Elzik.FmSync.Worker.csproj 
 Test-ExitCode
 
 dotnet publish $repoRootPath\src\Elzik.FmSync.Console\Elzik.FmSync.Console.csproj `
+	--verbosity normal `
 	--runtime win-x64 `
 	--self-contained true `
 	--configuration Release `
@@ -21,6 +23,7 @@ dotnet publish $repoRootPath\src\Elzik.FmSync.Console\Elzik.FmSync.Console.cspro
 Test-ExitCode
 
 dotnet build $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\Elzik.FmSync.WindowsInstaller.wixproj `
+	--verbosity normal `
 	--runtime win-x64 `
 	--self-contained true `
 	--configuration Release `
