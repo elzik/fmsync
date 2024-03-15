@@ -80,11 +80,11 @@ jobs:
         generate_release_notes: true
         prerelease: ${{ github.ref_name != 'main' }}
         files: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/fmsync*.msi
-    - name: Mac OS X Release
+    - name: macOS Release
       uses: softprops/action-gh-release@v1
       if: steps.release-check.outputs.needs-release == 'True' && matrix.os == 'macos-latest'
       with:
         tag_name: v${{ env.GitVersion_SemVer }}
         generate_release_notes: true
         prerelease: ${{ github.ref_name != 'main' }}
-        files: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync osx-x64*.zip
+        files: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
