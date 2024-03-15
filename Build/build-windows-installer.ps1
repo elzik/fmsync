@@ -35,5 +35,5 @@ dotnet tool update --global GitVersion.Tool
 Test-ExitCode
 
 $SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
-Copy-Item $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\bin\x64\Release\en-US\Elzik.FmSync.WindowsInstaller.msi "$repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\bin\x64\Release\en-US\fmsync v$SemVer.msi"
+Copy-Item $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\bin\x64\Release\en-US\Elzik.FmSync.WindowsInstaller.msi "$repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\bin\x64\Release\en-US\fmsync-win-x64-v$SemVer.msi"
 Test-ExitCode

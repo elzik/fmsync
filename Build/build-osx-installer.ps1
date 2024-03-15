@@ -76,5 +76,5 @@ dotnet tool update --global GitVersion.Tool
 Test-ExitCode
 
 $SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
-Copy-Item "$releasePath/fmsync.zip" "$releasePath/fmsync osx-x64 v$SemVer.zip"
+Copy-Item "$releasePath/fmsync.zip" "$releasePath/fmsync-osx-x64-v$SemVer.zip"
 Test-ExitCode
