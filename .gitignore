@@ -347,4 +347,6 @@ MigrationBackup/
 .ionide/
 
 # Solution specific items
-/Publish/output
+/tests/TestFiles/Functional
+/Build/Publish 
+/Installer/Elzik.FmSync.OsxInstaller/x64

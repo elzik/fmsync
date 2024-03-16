@@ -5,8 +5,6 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <DockerfileContext>..\..</DockerfileContext>
     <RootNamespace>Elzik.FmSync</RootNamespace>
     <AssemblyName>fmsync</AssemblyName>
   </PropertyGroup>
@@ -42,5 +40,13 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)../../Build/set-platform-specific-config.ps1 $(OutDir) $(OS)" />
+  </Target>
+
+  <Target Name="PostPublish" AfterTargets="Publish">
+	<Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)../../Build/set-platform-specific-config.ps1 $(PublishDir) $(OS)" />
+  </Target>
 
 </Project>

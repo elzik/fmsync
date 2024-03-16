@@ -20,13 +20,13 @@ The [latest Windows MSI release is always available here](https://github.com/elz
 
 Download and run the MSI file. By default, it will install the command line tools as well as a Windows service.
 
+### Mac
+
+This repo includes a build for macOS and all tests pass including functional tests running on a macOS VM. So, I am confident that this _can_ work on a Mac. However, I do not have a Mac and I have never tried fmsync on macOS nor have I packaged it up into any form of installer. It is available as a zipped set of binaries on the [releases page](https://github.com/elzik/fmsync/releases). If someone can validate the binaries released or is able to help with packaging up into some sort of installer, I'd be grateful.
+
 ### Linux
 
 No release available. Whilst this project will compile for Linux, it has been removed from the build workflow and no Linux release is available due to fragmentation across different filesystems and Linux distributions making it difficult or in some cases impossible to get and set a created-date for a file. I am happy to revist this if needs be.
-
-### Mac
-
-No release available. The workflow for this repo does include a build for Mac but I do not have a Mac and I do not know if a created-date is something typically supported by Macs. If someone wanted to get involved in confirming that this will work on a Mac and to give me help packaging it up for release, I'd appreciate it.
 
 ## Command Line
 
@@ -40,7 +40,7 @@ fmsync c:\my-markdownfiles
 
 ### Logging
 
-By default, only Information, Warnings and Errors are logged to both the console and to a file located in `C:\ProgramData\fmsync\Elzik.FmSync.ConsoleYYYYMMDD.log`. A new file will be created for each day that the tool is used and files older than 7 days are removed.
+By default, only Information, Warnings and Errors are logged to both the console and to a file located in `C:\ProgramData\Elzik\fmsync\Elzik.FmSync.ConsoleYYYYMMDD.log` on Windows and `~/Library/Logs/Elzik/fmsync/Elzik.FmSync.ConsoleYYYYMMDD.log` on macOS. A new file will be created for each day that the tool is used and files older than 7 days are removed.
 
 ## Worker Service
 
@@ -50,11 +50,11 @@ After installation, FmSync will be running as a Windows service, watching all of
 
 ### Logging
 
-By default, only Information, Warnings and Errors are logged to both the console (when started on the command line) and to a file located in `C:\ProgramData\fmsync\Elzik.FmSync.WorkerYYYYMMDD.log` (in all circumstances). A new file will be created for each day that the tool is used and files older than 7 days are removed.
+By default, only Information, Warnings and Errors are logged to both the console (only when started on the command line) and to a file located in `C:\ProgramData\Elzik\fmsync\Elzik.FmSync.WorkerYYYYMMDD.log` on Windows and `~/Library/Logs/Elzik/fmsync/Elzik.FmSync.ConsoleYYYYMMDD.log` on macOS. A new file will be created for each day that the tool is used and files older than 7 days are removed.
 
 ## Configuration
 
-FmSync is configured through a separate appSettings.json file for both the command line tool (`C:\Program Files\Elzik\fmsync\CommandLine\appSettings.json` by default) and the service (`C:\Program Files\Elzik\fmsync\Service\appSettings.json` by default) which contains the following sections:
+FmSync is configured through a separate appSettings.json file for both the command line tool (`C:\Program Files\Elzik\fmsync\CommandLine\appSettings.json` by default on Windows) and the service (`C:\Program Files\Elzik\fmsync\Service\appSettings.json` by default on Windows) which contains the following sections:
 
 ### WatcherOptions (Only applicable when running as a service)
 

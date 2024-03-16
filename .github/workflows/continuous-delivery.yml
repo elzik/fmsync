@@ -23,7 +23,7 @@ jobs:
       with:
         fetch-depth: 0
     - name: Setup .NET
-      uses: actions/setup-dotnet@v2
+      uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
     - name: Build & Test
@@ -38,9 +38,19 @@ jobs:
         gist_description: "code-coverage-${{ github.ref_name }}"
         gist_file_name: fmsync-code-coverage-${{ github.ref_name }}.svg
         file_path: tests/TestResults/badge_shieldsio_linecoverage_green.svg
+    - name: Run codacy-coverage-reporter
+      if: matrix.os == 'windows-latest' && github.actor != 'dependabot[bot]'
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: tests/TestResults/Cobertura.xml
     - name: Build Windows Installer
       if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
+      shell: pwsh
+    - name: Build OSX Installer
+      if: matrix.os == 'macos-latest'
+      run: ./Build/build-osx-installer.ps1
       shell: pwsh
     - name: Check for Release Requirement
       id: release-check
@@ -70,3 +80,11 @@ jobs:
         generate_release_notes: true
         prerelease: ${{ github.ref_name != 'main' }}
         files: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/fmsync*.msi
+    - name: macOS Release
+      uses: softprops/action-gh-release@v1
+      if: steps.release-check.outputs.needs-release == 'True' && matrix.os == 'macos-latest'
+      with:
+        tag_name: v${{ env.GitVersion_SemVer }}
+        generate_release_notes: true
+        prerelease: ${{ github.ref_name != 'main' }}
+        files: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
