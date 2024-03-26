@@ -38,7 +38,7 @@
 			</PackageReference>
 			<PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
 			<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-			<PackageReference Include="SonarAnalyzer.CSharp" Version="9.20.0.85982">
+			<PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.0.88079">
 				<PrivateAssets>all</PrivateAssets>
 				<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			</PackageReference>
