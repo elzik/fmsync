@@ -44,7 +44,7 @@ public class FrontMatterFolderSynchroniserTests
     {
         // Arrange
         var testDirectoryPath = _fixture.Create<string>();
-            
+
         // Act
         _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
@@ -105,7 +105,7 @@ public class FrontMatterFolderSynchroniserTests
     }
 
     [Fact]
-    public void SyncCreationDates_SyncFailsWithInnerException_LogsError()
+    public void SyncCreationDates_SyncFails_LogsException()
     {
         // Arrange
         var testDirectoryPath = _fixture.Create<string>();
@@ -119,27 +119,8 @@ public class FrontMatterFolderSynchroniserTests
         _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
 
         // Assert
-        _mockLogger.Received(1).Log( LogLevel.Error, 
-            testFile.Key + " - " + testException.Message + " " + testException.InnerException?.Message);
-    }
-
-    [Fact]
-    public void SyncCreationDates_SyncFailsWithoutInnerException_LogsError()
-    {
-        // Arrange
-        var testDirectoryPath = _fixture.Create<string>();
-        var testFile = _fixture.Create<KeyValuePair<string, bool>>();
-        var testFiles = new List<KeyValuePair<string, bool>> { testFile };
-        SetMockDirectoryFilePaths(testDirectoryPath, testFiles);
-        var testException = new Exception(_fixture.Create<string>());
-        _mockFileSynchroniser.SyncCreationDate(testFile.Key).Throws(testException);
-
-        // Act
-        _frontMatterFolderSynchroniser.SyncCreationDates(testDirectoryPath);
-
-        // Assert
-        _mockLogger.Received(1).Log(LogLevel.Error,
-            testFile.Key + " - " + testException.Message);
+        _mockLogger.Received(1).Log(LogLevel.Error, "An error occurred whilst synchronising the creation date for "
+            + testFile.Key);
     }
 
     [Fact]
@@ -148,7 +129,7 @@ public class FrontMatterFolderSynchroniserTests
         // Arrange
         var testDirectoryPath = _fixture.Create<string>();
         var testFailingFile = new KeyValuePair<string, bool>(_fixture.Create<string>(), false);
-        var testFiles = new []
+        var testFiles = new[]
         {
             testFailingFile,
             new (_fixture.Create<string>(), false),
