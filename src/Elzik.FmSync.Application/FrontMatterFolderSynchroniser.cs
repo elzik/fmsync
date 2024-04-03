@@ -7,14 +7,14 @@ using Thinktecture.IO;
 namespace Elzik.FmSync.Application;
 
 public class FrontMatterFolderSynchroniser(
-    ILogger<FrontMatterFolderSynchroniser> logger, 
-    IDirectory directory, 
-    IFrontMatterFileSynchroniser frontMatterFileSynchroniser, 
+    ILogger<FrontMatterFolderSynchroniser> logger,
+    IDirectory directory,
+    IFrontMatterFileSynchroniser frontMatterFileSynchroniser,
     IOptions<FileSystemOptions> options) : IFrontMatterFolderSynchroniser
 {
-    private readonly ILogger<FrontMatterFolderSynchroniser> _logger = logger 
+    private readonly ILogger<FrontMatterFolderSynchroniser> _logger = logger
         ?? throw new ArgumentNullException(nameof(logger));
-    private readonly IDirectory _directory = directory 
+    private readonly IDirectory _directory = directory
         ?? throw new ArgumentNullException(nameof(directory));
     private readonly IFrontMatterFileSynchroniser _frontMatterFileSynchroniser = frontMatterFileSynchroniser
         ?? throw new ArgumentNullException(nameof(frontMatterFileSynchroniser));
@@ -24,7 +24,7 @@ public class FrontMatterFolderSynchroniser(
     {
         var loggingInfo = (StartTime: Stopwatch.GetTimestamp(), EditedCount: 0, ErrorCount: 0, TotalCount: 0);
 
-        _logger.LogDebug("Synchronising {FilenamePattern} files in {DirectoryPath}", 
+        _logger.LogDebug("Synchronising {FilenamePattern} files in {DirectoryPath}",
             _options.FilenamePattern, directoryPath);
 
         var markdownFiles = _directory.EnumerateFiles(directoryPath, _options.FilenamePattern ?? string.Empty,
@@ -48,13 +48,8 @@ public class FrontMatterFolderSynchroniser(
             catch (Exception e)
             {
                 loggingInfo.ErrorCount++;
-                var additionalMessage = string.Empty;
-                if (e.InnerException != null)
-                {
-                    additionalMessage = $" {e.InnerException.Message}";
-                }
-                _logger.LogError("{MarkdownFilePath} - {ExceptionMessage}{AdditionalMessage}",
-                    markDownFilePath, e.Message, additionalMessage);
+                _logger.LogError(e, "An error occurred whilst synchronising the creation date for {MarkdownFilePath}",
+                    markDownFilePath);
             }
         }
 
@@ -65,10 +60,10 @@ public class FrontMatterFolderSynchroniser(
         }
 
         _logger.LogInformation("Synchronised {EditedFileCount}{ErrorsMessage} files out " +
-            "of a total {TotalFileCount} in {TimeTaken}.", 
-            loggingInfo.EditedCount, 
-            errorsMessage, 
-            loggingInfo.TotalCount, 
+            "of a total {TotalFileCount} in {TimeTaken}.",
+            loggingInfo.EditedCount,
+            errorsMessage,
+            loggingInfo.TotalCount,
             Stopwatch.GetElapsedTime(loggingInfo.StartTime));
     }
 }
