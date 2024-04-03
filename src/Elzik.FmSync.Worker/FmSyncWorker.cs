@@ -28,23 +28,6 @@ namespace Elzik.FmSync.Worker
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            try
-            {
-                StartWorker();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogCritical(ex, "A problem occurred whilst starting the worker. " +
-                    "{ExceptionMessage}", ex.Message);
-
-                throw;
-            }
-
-            await Task.Yield();
-        }
-
-        private void StartWorker()
-        {
             _logger.LogInformation("fmsync {Version} has started.", GetProductVersion());
             _logger.LogDebug("File synchroniation is implemented by {SyncName}", _fileSynchroniser.GetType().Name);
 
@@ -79,6 +62,8 @@ namespace Elzik.FmSync.Worker
                     "the {ConfigSection}:{ConfigItem} configuration.",
                     nameof(WatcherOptions), nameof(WatcherOptions.WatchedDirectoryPaths));
             }
+
+            await Task.Yield();
         }
 
         private static string GetProductVersion()
