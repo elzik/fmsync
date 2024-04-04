@@ -42,11 +42,11 @@
 		<ProjectReference Include="..\Elzik.FmSync.Infrastructure\Elzik.FmSync.Infrastructure.csproj" />
 	</ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<Target Name="WorkerPostBuildConfigUpdate" AfterTargets="PostBuildEvent">
 	  <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)../../Build/set-platform-specific-config.ps1 $(OutDir) $(OS)" />
 	</Target>
 
-	<Target Name="PostPublish" AfterTargets="Publish">
+	<Target Name="WorkerPostPublishConfigUpdate" AfterTargets="Publish">
 		<Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)../../Build/set-platform-specific-config.ps1 $(PublishDir) $(OS)	" />
 	</Target>
 

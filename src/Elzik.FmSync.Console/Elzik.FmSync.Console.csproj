@@ -41,11 +41,11 @@
     </None>
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="ConsolePostBuildConfigUpdate" AfterTargets="PostBuildEvent">
     <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)../../Build/set-platform-specific-config.ps1 $(OutDir) $(OS)" />
   </Target>
 
-  <Target Name="PostPublish" AfterTargets="Publish">
+  <Target Name="ConsolePostPublishConfigUpdate" AfterTargets="Publish">
 	<Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)../../Build/set-platform-specific-config.ps1 $(PublishDir) $(OS)" />
   </Target>
 

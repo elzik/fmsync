@@ -56,7 +56,7 @@
 	</ItemGroup>
 
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<Target Name="ConsoleFunctionalTestsPostBuildConfigUpdate" AfterTargets="PostBuildEvent">
 	  <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)/../../Build/set-platform-specific-config.ps1 $(OutDir) $(OS)" />
 	</Target>
 
