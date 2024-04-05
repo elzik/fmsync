@@ -17,13 +17,13 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
-		<PackageReference Include="Polly.Extensions" Version="8.3.0" />
+		<PackageReference Include="Polly.Extensions" Version="8.3.1" />
 		<PackageReference Include="Serilog" Version="3.1.1" />
 		<PackageReference Include="Serilog.Extensions.Hosting" Version="8.0.0" />
 		<PackageReference Include="Serilog.Settings.Configuration" Version="8.0.0" />
 		<PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
 		<PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-		<PackageReference Include="SonarAnalyzer.CSharp" Version="9.20.0.85982">
+		<PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.1.88495">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
@@ -42,11 +42,11 @@
 		<ProjectReference Include="..\Elzik.FmSync.Infrastructure\Elzik.FmSync.Infrastructure.csproj" />
 	</ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	<Target Name="WorkerPostBuildConfigUpdate" AfterTargets="PostBuildEvent">
 	  <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)../../Build/set-platform-specific-config.ps1 $(OutDir) $(OS)" />
 	</Target>
 
-	<Target Name="PostPublish" AfterTargets="Publish">
+	<Target Name="WorkerPostPublishConfigUpdate" AfterTargets="Publish">
 		<Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)../../Build/set-platform-specific-config.ps1 $(PublishDir) $(OS)	" />
 	</Target>
 

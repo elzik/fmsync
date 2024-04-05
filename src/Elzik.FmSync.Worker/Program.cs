@@ -7,10 +7,12 @@ using Thinktecture.IO;
 using Polly;
 using Elzik.FmSync.Application;
 
+var appSettingsPath = Path.Join(AppContext.BaseDirectory, "appSettings.json");
+
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureAppConfiguration((_, config) =>
     {
-        config.AddJsonFile("appSettings.json", false);
+        config.AddJsonFile(appSettingsPath, false);
     })
     .UseSerilog((context, config) => config.ReadFrom.Configuration(context.Configuration))
     .ConfigureServices((hostContext, services) =>

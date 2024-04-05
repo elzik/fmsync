@@ -28,7 +28,7 @@
 	</ItemGroup>
 
 		<ItemGroup>
-			<PackageReference Include="coverlet.collector" Version="6.0.1">
+			<PackageReference Include="coverlet.collector" Version="6.0.2">
 				<PrivateAssets>all</PrivateAssets>
 				<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			</PackageReference>
@@ -38,7 +38,7 @@
 			</PackageReference>
 			<PackageReference Include="FluentAssertions.Json" Version="6.1.0" />
 			<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-			<PackageReference Include="SonarAnalyzer.CSharp" Version="9.20.0.85982">
+			<PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.1.88495">
 				<PrivateAssets>all</PrivateAssets>
 				<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			</PackageReference>
@@ -56,7 +56,7 @@
 		</ItemGroup>
 
 
-		<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+		<Target Name="WorkerFunctionalTestsPostBuildConfigUpdate" AfterTargets="PostBuildEvent">
 		  <Exec Command="PowerShell -NoProfile -ExecutionPolicy unrestricted -file $(ProjectDir)/../../Build/set-platform-specific-config.ps1 $(OutDir) $(OS)" />
 		</Target>
 
