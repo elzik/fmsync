@@ -6,3 +6,24 @@ updates:
       interval: "daily"
     pull-request-branch-name:
       separator: "-"
+    groups:
+      production-dependencies:
+        patterns:
+        - "*"
+        exclude-patterns:
+        - "AutoFixture*"
+        - "coverlet*"
+        - "FluentAssertions*"
+        - "Microsoft.NET.Test*"
+        - "NSubstitute*"
+        - "Polly.Testing*"
+        - "xunit*"
+      test-dependencies:
+        patterns:
+        - "AutoFixture*"
+        - "coverlet*"
+        - "FluentAssertions*"
+        - "Microsoft.NET.Test*"
+        - "NSubstitute*"
+        - "Polly.Testing*"
+        - "xunit*"
