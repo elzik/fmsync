@@ -18,6 +18,7 @@ updates:
         - "NSubstitute*"
         - "Polly.Testing*"
         - "xunit*"
+        - "xunit.analyzers"
       test-dependencies:
         patterns:
         - "AutoFixture*"
@@ -27,3 +28,5 @@ updates:
         - "NSubstitute*"
         - "Polly.Testing*"
         - "xunit*"
+        - "xunit.analyzers"
+
