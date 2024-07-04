@@ -33,7 +33,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Polly.Testing" Version="8.4.0" />
+    <PackageReference Include="Polly.Testing" Version="8.4.1" />
     <PackageReference Include="SonarAnalyzer.CSharp" Version="9.23.1.88495">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
