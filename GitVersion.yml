@@ -1,2 +1,2 @@
-mode: ContinuousDeployment
-continuous-delivery-fallback-tag: ''
+mode: ContinuousDelivery
+continuous-delivery-fallback-label: ''
