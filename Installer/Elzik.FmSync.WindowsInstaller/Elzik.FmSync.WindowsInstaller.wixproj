@@ -7,10 +7,6 @@
     <None Include="LICENSE.rtf" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="6.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="WixToolset.UI.wixext" Version="4.0.5" />
   </ItemGroup>
   <ItemGroup>
