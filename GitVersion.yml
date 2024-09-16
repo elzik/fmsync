@@ -1,1 +1,2 @@
 mode: ContinuousDelivery
+continuous-delivery-fallback-label: ''
