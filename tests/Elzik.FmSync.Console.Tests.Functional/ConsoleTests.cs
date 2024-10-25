@@ -154,7 +154,10 @@ namespace Elzik.FmSync.Console.Tests.Functional
 
             foreach (var testConsoleProcess in testConsoleProcesses)
             {
-                testConsoleProcess.Kill();
+                if (!testConsoleProcess.HasExited)
+                {
+                    testConsoleProcess.Kill();
+                }
             }
         }
 

@@ -270,7 +270,10 @@ namespace Elzik.FmSync.Worker.Tests.Functional
 
             foreach (var testWorker in testWorkers)
             {
-                testWorker.Kill();
+                if (!testWorker.HasExited)
+                {
+                    testWorker.Kill();
+                }
             }
         }
 
@@ -297,7 +300,10 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             if (_expectedFileChangeMade != null && _expectedFileChangeMade(e))
             {
                 _testOutputHelper.WriteLine("Test log: Expected files change made, killing Worker process...");
-                _workerProcess.Kill();
+                if (!_workerProcess.HasExited)
+                {
+                    _workerProcess.Kill();
+                }
             }
         }
 
@@ -306,7 +312,10 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             if(_expectedConsoleOutputReceived != null && _expectedConsoleOutputReceived(e))
             {
                 _testOutputHelper.WriteLine("Test log: Expected console data received, killing Worker process...");
-                _workerProcess.Kill();
+                if (!_workerProcess.HasExited)
+                {
+                    _workerProcess.Kill();
+                }
             }
         }
 
