@@ -1,2 +1,4 @@
 mode: ContinuousDeployment
-continuous-delivery-fallback-label: ''
+branches:
+  main:
+    is-release-branch: true
