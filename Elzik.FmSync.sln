@@ -30,6 +30,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{0FE56BA0
 		Build\build-osx-installer.ps1 = Build\build-osx-installer.ps1
 		Build\build-windows-installer.ps1 = Build\build-windows-installer.ps1
 		.github\workflows\continuous-delivery.yml = .github\workflows\continuous-delivery.yml
+		GitVersion.yml = GitVersion.yml
 		Build\local-pipeline.ps1 = Build\local-pipeline.ps1
 		Build\set-platform-specific-config.ps1 = Build\set-platform-specific-config.ps1
 		Build\Test-ExitCode.psm1 = Build\Test-ExitCode.psm1
