@@ -1,1 +1,4 @@
 mode: ContinuousDeployment
+branches:
+  main:
+    is-main-branch: true
