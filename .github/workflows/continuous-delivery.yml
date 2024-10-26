@@ -80,7 +80,7 @@ jobs:
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
     - name: Upload Windows Artifact
-      if: steps.release-check.outputs.needs-release == 'True'
+      if: needs.check-release-requirement.outputs.needs-release == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: windows-installer
@@ -104,7 +104,7 @@ jobs:
       run: ./Build/build-osx-installer.ps1
       shell: pwsh
     - name: Upload macOS Artifact
-      if: steps.release-check.outputs.needs-release == 'True'
+      if: needs.check-release-requirement.outputs.needs-release == 'true'
       uses: actions/upload-artifact@v3
       with:
         name: macos-installer
