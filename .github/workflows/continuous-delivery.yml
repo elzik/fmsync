@@ -47,92 +47,92 @@ jobs:
       - name: Output needs-release value
         run: echo "needs-release = ${{ needs.check-release-requirement.outputs.needs-release }}"
 
-  # build-windows:
-  #   runs-on: windows-latest
-  #   needs: check-release-requirement
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #     with:
-  #       fetch-depth: 0
-  #   - name: Setup .NET
-  #     uses: actions/setup-dotnet@v4
-  #     with:
-  #       dotnet-version: 8.0.x
-  #   - name: Build & Test
-  #     run: ./Build/build-and-test.ps1
-  #     shell: pwsh
-  #   - name: Upload Coverage Badge
-  #     if: github.event_name != 'pull_request' && github.actor != 'dependabot[bot]'
-  #     uses: exuanbo/actions-deploy-gist@v1
-  #     with:
-  #       token: ${{ secrets.CODE_COVERAGE_AUTH_TOKEN }}
-  #       gist_id: 527882e89a938dc78f61a08c300edec4
-  #       gist_description: "code-coverage-${{ github.ref_name }}"
-  #       gist_file_name: fmsync-code-coverage-${{ github.ref_name }}.svg
-  #       file_path: tests/TestResults/badge_shieldsio_linecoverage_green.svg
-  #   - name: Run codacy-coverage-reporter
-  #     if: github.actor != 'dependabot[bot]'
-  #     uses: codacy/codacy-coverage-reporter-action@v1
-  #     with:
-  #       project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
-  #       coverage-reports: tests/TestResults/Cobertura.xml
-  #   - name: Build Windows Installer
-  #     run: ./Build/build-windows-installer.ps1
-  #     shell: pwsh
-  #   - name: Upload Windows Artifact
-  #     if: steps.release-check.outputs.needs-release == 'True'
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: windows-installer
-  #       path: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/fmsync*.msi
+  build-windows:
+    runs-on: windows-latest
+    needs: check-release-requirement
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Build & Test
+      run: ./Build/build-and-test.ps1
+      shell: pwsh
+    - name: Upload Coverage Badge
+      if: github.event_name != 'pull_request' && github.actor != 'dependabot[bot]'
+      uses: exuanbo/actions-deploy-gist@v1
+      with:
+        token: ${{ secrets.CODE_COVERAGE_AUTH_TOKEN }}
+        gist_id: 527882e89a938dc78f61a08c300edec4
+        gist_description: "code-coverage-${{ github.ref_name }}"
+        gist_file_name: fmsync-code-coverage-${{ github.ref_name }}.svg
+        file_path: tests/TestResults/badge_shieldsio_linecoverage_green.svg
+    - name: Run codacy-coverage-reporter
+      if: github.actor != 'dependabot[bot]'
+      uses: codacy/codacy-coverage-reporter-action@v1
+      with:
+        project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
+        coverage-reports: tests/TestResults/Cobertura.xml
+    - name: Build Windows Installer
+      run: ./Build/build-windows-installer.ps1
+      shell: pwsh
+    - name: Upload Windows Artifact
+      if: steps.release-check.outputs.needs-release == 'True'
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-installer
+        path: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/fmsync*.msi
 
-  # build-macos:
-  #   runs-on: macos-latest
-  #   needs: check-release-requirement
-  #   steps:
-  #   - uses: actions/checkout@v4
-  #     with:
-  #       fetch-depth: 0
-  #   - name: Setup .NET
-  #     uses: actions/setup-dotnet@v4
-  #     with:
-  #       dotnet-version: 8.0.x
-  #   - name: Build & Test
-  #     run: ./Build/build-and-test.ps1
-  #     shell: pwsh
-  #   - name: Build OSX Installer
-  #     run: ./Build/build-osx-installer.ps1
-  #     shell: pwsh
-  #   - name: Upload macOS Artifact
-  #     if: steps.release-check.outputs.needs-release == 'True'
-  #     uses: actions/upload-artifact@v3
-  #     with:
-  #       name: macos-installer
-  #       path: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
+  build-macos:
+    runs-on: macos-latest
+    needs: check-release-requirement
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Build & Test
+      run: ./Build/build-and-test.ps1
+      shell: pwsh
+    - name: Build OSX Installer
+      run: ./Build/build-osx-installer.ps1
+      shell: pwsh
+    - name: Upload macOS Artifact
+      if: steps.release-check.outputs.needs-release == 'True'
+      uses: actions/upload-artifact@v3
+      with:
+        name: macos-installer
+        path: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
 
-  # release:
-  #   runs-on: windows-latest
-  #   needs: [build-windows, build-macos]
-  #   if: needs.check-release-requirement.outputs.needs-release == 'true'
-  #   steps:
-  #   - name: Tag With SemVer
-  #     run: |
-  #       git tag "v${{ env.GitVersion_SemVer }}"
-  #       git push --tags
-  #   - uses: actions/download-artifact@v3
-  #     with:
-  #       name: windows-installer
-  #       path: ./windows-installer
-  #   - uses: actions/download-artifact@v3
-  #     with:
-  #       name: macos-installer
-  #       path: ./macos-installer
-  #   - name: Create Release
-  #     uses: softprops/action-gh-release@v1
-  #     with:
-  #       tag_name: v${{ env.GitVersion_SemVer }}
-  #       generate_release_notes: true
-  #       prerelease: ${{ github.ref_name != 'main' }}
-  #       files: |
-  #         ./windows-installer/fmsync*.msi
-  #         ./macos-installer/fmsync-osx*.zip
+  release:
+    runs-on: windows-latest
+    needs: [build-windows, build-macos]
+    if: needs.check-release-requirement.outputs.needs-release == 'true'
+    steps:
+    - name: Tag With SemVer
+      run: |
+        git tag "v${{ env.GitVersion_SemVer }}"
+        git push --tags
+    - uses: actions/download-artifact@v3
+      with:
+        name: windows-installer
+        path: ./windows-installer
+    - uses: actions/download-artifact@v3
+      with:
+        name: macos-installer
+        path: ./macos-installer
+    - name: Create Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v${{ env.GitVersion_SemVer }}
+        generate_release_notes: true
+        prerelease: ${{ github.ref_name != 'main' }}
+        files: |
+          ./windows-installer/fmsync*.msi
+          ./macos-installer/fmsync-osx*.zip
