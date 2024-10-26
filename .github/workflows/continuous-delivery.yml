@@ -101,6 +101,13 @@ jobs:
         name: macos-installer
         path: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
 
+  output-needs-release:
+    needs: check-release-requirement
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output needs-release value
+        run: echo "needs-release = ${{ needs.check-release-requirement.outputs.needs-release }}"
+
   release:
     runs-on: windows-latest
     needs: [build-windows, build-macos]
