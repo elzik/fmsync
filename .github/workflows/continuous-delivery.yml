@@ -115,7 +115,7 @@ jobs:
         path: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
 
   release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: [build-windows, build-macos, check-release-requirement]
     if: needs.check-release-requirement.outputs.needs-release == 'true'
     steps:
