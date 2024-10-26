@@ -31,7 +31,7 @@ dotnet build $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\Elzik.FmSync.
 	-p:PublishSingleFile=true
 Test-ExitCode
 
-dotnet tool update --global GitVersion.Tool
+dotnet tool update --global GitVersion.Tool --version 6.*
 Test-ExitCode
 
 $SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer

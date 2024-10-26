@@ -1,4 +1,4 @@
-dotnet tool update --global GitVersion.Tool
+dotnet tool update --global GitVersion.Tool  --version 6.*
 
 $semVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
 $tag = "v$semVer"
