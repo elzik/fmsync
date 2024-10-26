@@ -2,3 +2,4 @@ mode: ContinuousDeployment
 branches:
   main:
     is-release-branch: true
+    mode: ContinuousDelivery
