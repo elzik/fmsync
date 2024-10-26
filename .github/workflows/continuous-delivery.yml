@@ -48,7 +48,7 @@ jobs:
       - name: Display Job Outputs
         run: |
             echo "needs-release = ${{ needs.check-release-requirement.outputs.needs-release }}"
-            echo "semantic-version = ${{ needs.get-semver-requirement.outputs.semantic-version }}"
+            echo "semantic-version = ${{ needs.check-release-requirement.outputs.semantic-version }}"
 
   build-windows:
     runs-on: windows-latest
@@ -121,7 +121,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Tag With SemVer
       run: |
-        git tag "v${{ needs.get-semver-requirement.outputs.semantic-version }}"
+        git tag "v${{ needs.check-release-requirement.outputs.semantic-version }}"
         git push --tags
     - uses: actions/download-artifact@v3
       with:
@@ -134,7 +134,7 @@ jobs:
     - name: Create Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: v${{ needs.get-semver-requirement.outputs.semantic-version }}
+        tag_name: v${{ needs.check-release-requirement.outputs.semantic-version }}
         generate_release_notes: true
         prerelease: ${{ github.ref_name != 'main' }}
         files: |
