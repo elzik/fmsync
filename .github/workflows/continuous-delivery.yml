@@ -10,14 +10,34 @@ on:
         description: Force tag & release even when the source branch is not main or no production source files have changed
 
 jobs:
-  continuous-delivery:
+  check-release-requirement:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Check for Release Requirement
+      id: release-check
+      run: |
+        productionFilesChangedCount=$(git diff --name-only HEAD^ HEAD | grep -E 'src/|Installer/' | wc -l)
+        echo "$productionFilesChangedCount production source code files have changed"
+        productionFilesChanged=$((productionFilesChangedCount > 0))
+        echo "Git ref: ${{ github.ref_name }}"
+        branchIsMain=$([[ "${{ github.ref_name }}" == "main" ]] && echo true || echo false)
+        forceReleaseRequested=$([[ "${{ github.event.inputs.force-release }}" == "true" ]] && echo true || echo false)
+        echo "Forced release requested: $forceReleaseRequested"
+        needsRelease=$([[ "$forceReleaseRequested" == "true" || ( "$productionFilesChanged" == "1" && "$branchIsMain" == "true" ) ]] && echo true || echo false)
+        echo "Release will be generated: $needsRelease"
+        echo "needs-release=$needsRelease" >> $GITHUB_OUTPUT
+    - name: Tag With SemVer
+      if: steps.release-check.outputs.needs-release == 'True'
+      run: |
+        git tag "v${{ env.GitVersion_SemVer }}"
+        git push --tags
 
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-            matrix:
-                os: [windows-latest, macos-latest]
-
+  build-windows:
+    runs-on: windows-latest
+    needs: check-release-requirement
     steps:
     - uses: actions/checkout@v4
       with:
@@ -30,7 +50,7 @@ jobs:
       run: ./Build/build-and-test.ps1
       shell: pwsh
     - name: Upload Coverage Badge
-      if: github.event_name != 'pull_request' && matrix.os == 'windows-latest' && github.actor != 'dependabot[bot]'
+      if: github.event_name != 'pull_request' && github.actor != 'dependabot[bot]'
       uses: exuanbo/actions-deploy-gist@v1
       with:
         token: ${{ secrets.CODE_COVERAGE_AUTH_TOKEN }}
@@ -39,52 +59,64 @@ jobs:
         gist_file_name: fmsync-code-coverage-${{ github.ref_name }}.svg
         file_path: tests/TestResults/badge_shieldsio_linecoverage_green.svg
     - name: Run codacy-coverage-reporter
-      if: matrix.os == 'windows-latest' && github.actor != 'dependabot[bot]'
+      if: github.actor != 'dependabot[bot]'
       uses: codacy/codacy-coverage-reporter-action@v1
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
         coverage-reports: tests/TestResults/Cobertura.xml
     - name: Build Windows Installer
-      if: matrix.os == 'windows-latest'
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
+    - name: Upload Windows Artifact
+      if: steps.release-check.outputs.needs-release == 'True'
+      uses: actions/upload-artifact@v3
+      with:
+        name: windows-installer
+        path: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/fmsync*.msi
+
+  build-macos:
+    runs-on: macos-latest
+    needs: check-release-requirement
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+    - name: Build & Test
+      run: ./Build/build-and-test.ps1
+      shell: pwsh
     - name: Build OSX Installer
-      if: matrix.os == 'macos-latest'
       run: ./Build/build-osx-installer.ps1
       shell: pwsh
-    - name: Check for Release Requirement
-      id: release-check
-      run: |
-        $productionFilesChangedCount = (git diff --name-only HEAD^ HEAD | Select-String -pattern 'src/*|Installer/').Count
-        Write-Output "$productionFilesChangedCount production source code files have changed"
-        $productionFilesChanged = $productionFilesChangedCount -gt 0
-        Write-Output "Git ref:` ${{ github.ref_name }}"
-        $branchIsMain = "${{ github.ref_name }}" -eq 'main'
-        $forceReleaseRequested = "${{ github.event.inputs.force-release }}" -eq 'true'
-        Write-Output "Forced release requested:` $forceReleaseRequested"
-        $needsRelease = $forceReleaseRequested -or ($productionFilesChanged -and $branchIsMain)
-        Write-Output "Release will be generated:` $needsRelease"
-        Add-Content -Path $env:GITHUB_OUTPUT -Value "needs-release=$needsRelease"
-      shell: pwsh
-    - name: Tag With SemVer
+    - name: Upload macOS Artifact
       if: steps.release-check.outputs.needs-release == 'True'
-      run: |
-        git tag "v${{ env.GitVersion_SemVer }}"
-        git push --tags
-      shell: pwsh
-    - name: Windows Release
+      uses: actions/upload-artifact@v3
+      with:
+        name: macos-installer
+        path: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
+
+  release:
+    runs-on: windows-latest
+    needs: [build-windows, build-macos]
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: windows-installer
+        path: ./windows-installer
+    - uses: actions/download-artifact@v3
+      with:
+        name: macos-installer
+        path: ./macos-installer
+    - name: Create Release
       uses: softprops/action-gh-release@v1
-      if: steps.release-check.outputs.needs-release == 'True' && matrix.os == 'windows-latest'
+      if: needs.check-release-requirement.outputs['release-check.needs-release'] == 'True'
       with:
         tag_name: v${{ env.GitVersion_SemVer }}
         generate_release_notes: true
         prerelease: ${{ github.ref_name != 'main' }}
-        files: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/fmsync*.msi
-    - name: macOS Release
-      uses: softprops/action-gh-release@v1
-      if: steps.release-check.outputs.needs-release == 'True' && matrix.os == 'macos-latest'
-      with:
-        tag_name: v${{ env.GitVersion_SemVer }}
-        generate_release_notes: true
-        prerelease: ${{ github.ref_name != 'main' }}
-        files: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
+        files: |
+          ./windows-installer/fmsync*.msi
+          ./macos-installer/fmsync-osx*.zip
