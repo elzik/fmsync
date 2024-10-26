@@ -72,7 +72,7 @@ Compress-Archive `
 	-Force
 Test-ExitCode
 
-dotnet tool update --global GitVersion.Tool
+dotnet tool update --global GitVersion.Tool --version 6.*
 Test-ExitCode
 
 $SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
