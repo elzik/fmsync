@@ -25,6 +25,7 @@ jobs:
         dotnet tool install --global GitVersion.Tool --version 6.*
         output=$(dotnet-gitversion)
         semver=$(echo $output | grep -oP '"SemVer"\s*:\s*"\K[^"]+')
+        echo "Semantic version: $semver"
         echo "semantic-version=$semver" >> $GITHUB_OUTPUT
     - name: Check for Release Requirement
       id: release-check
@@ -40,11 +41,11 @@ jobs:
         echo "Release will be generated: $needsRelease"
         echo "needs-release=$needsRelease" >> $GITHUB_OUTPUT
 
-  output-needs-release:
+  display-job-outputs:
     needs: check-release-requirement
     runs-on: ubuntu-latest
     steps:
-      - name: Output needs-release value
+      - name: Display Job Outputs
         run: |
             echo "needs-release = ${{ needs.check-release-requirement.outputs.needs-release }}"
             echo "semantic-version = ${{ needs.get-semver-requirement.outputs.semantic-version }}"
