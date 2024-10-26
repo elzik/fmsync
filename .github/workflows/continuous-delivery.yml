@@ -25,6 +25,7 @@ jobs:
         dotnet tool install --global GitVersion.Tool --version 6.*
         output=$(dotnet-gitversion)
         semver=$(echo $output | grep -oP '"SemVer"\s*:\s*"\K[^"]+')
+        echo $output
         echo "Semantic version: $semver"
         echo "semantic-version=$semver" >> $GITHUB_OUTPUT
     - name: Check for Release Requirement
