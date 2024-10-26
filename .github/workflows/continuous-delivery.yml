@@ -104,10 +104,9 @@ jobs:
   release:
     runs-on: windows-latest
     needs: [build-windows, build-macos]
-    if: needs.check-release-requirement.outputs['release-check.needs-release'] == 'True'
+    if: needs.check-release-requirement.outputs.needs-release == 'True'
     steps:
     - name: Tag With SemVer
-      if: steps.release-check.outputs.needs-release == 'True'
       run: |
         git tag "v${{ env.GitVersion_SemVer }}"
         git push --tags
