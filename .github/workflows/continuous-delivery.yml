@@ -19,7 +19,7 @@ jobs:
     - name: GetSemVer
       id: get-semver
       run: |
-        dotnet tool install --global GitVersion.Tool --version 5.*
+        dotnet tool install --global GitVersion.Tool --version 6.*
         output=$(dotnet-gitversion)
         semver=$(echo $output | grep -oP '"SemVer"\s*:\s*"\K[^"]+')
         export GitVersion_SemVer=$semver
