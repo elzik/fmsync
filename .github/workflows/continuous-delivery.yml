@@ -115,6 +115,7 @@ jobs:
     needs: [build-windows, build-macos]
     if: needs.check-release-requirement.outputs.needs-release == 'true'
     steps:
+    - uses: actions/checkout@v4
     - name: Tag With SemVer
       run: |
         git tag "v${{ env.GitVersion_SemVer }}"
