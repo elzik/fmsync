@@ -16,14 +16,6 @@ jobs:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    - name: GetSemVer
-      id: get-semver
-      run: |
-        dotnet tool install --global GitVersion.Tool --version 6.*
-        output=$(dotnet-gitversion)
-        semver=$(echo $output | grep -oP '"SemVer"\s*:\s*"\K[^"]+')
-        export GitVersion_SemVer=$semver
-        echo "GitVersion_SemVer: $GitVersion_SemVer"
     - name: Check for Release Requirement
       id: release-check
       run: |
@@ -37,11 +29,6 @@ jobs:
         needsRelease=$([[ "$forceReleaseRequested" == "true" || ( "$productionFilesChanged" == "1" && "$branchIsMain" == "true" ) ]] && echo true || echo false)
         echo "Release will be generated: $needsRelease"
         echo "needs-release=$needsRelease" >> $GITHUB_OUTPUT
-    - name: Tag With SemVer
-      if: steps.release-check.outputs.needs-release == 'True'
-      run: |
-        git tag "v${{ env.GitVersion_SemVer }}"
-        git push --tags
 
   build-windows:
     runs-on: windows-latest
@@ -107,9 +94,22 @@ jobs:
         path: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
 
   release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: [build-windows, build-macos]
     steps:
+    - name: GetSemVer
+      id: get-semver
+      run: |
+        dotnet tool install --global GitVersion.Tool --version 6.*
+        output=$(dotnet-gitversion)
+        semver=$(echo $output | grep -oP '"SemVer"\s*:\s*"\K[^"]+')
+        export GitVersion_SemVer=$semver
+        echo "GitVersion_SemVer: $GitVersion_SemVer"
+    - name: Tag With SemVer
+      if: steps.release-check.outputs.needs-release == 'True'
+      run: |
+        git tag "v${{ env.GitVersion_SemVer }}"
+        git push --tags
     - uses: actions/download-artifact@v3
       with:
         name: windows-installer
