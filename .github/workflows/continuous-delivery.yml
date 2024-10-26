@@ -19,6 +19,11 @@ jobs:
     - name: Check for Release Requirement
       id: release-check
       run: |
+        dotnet tool install --global GitVersion.Tool --version 5.*
+        output=$(dotnet-gitversion)
+        semver=$(echo $output | grep -oP '"SemVer"\s*:\s*"\K[^"]+')
+        export GitVersion_SemVer=$semver
+        echo "GitVersion_SemVer: $GitVersion_SemVer"
         productionFilesChangedCount=$(git diff --name-only HEAD^ HEAD | grep -E 'src/|Installer/' | wc -l)
         echo "$productionFilesChangedCount production source code files have changed"
         productionFilesChanged=$((productionFilesChangedCount > 0))
