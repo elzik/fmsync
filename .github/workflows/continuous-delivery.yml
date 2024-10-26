@@ -12,6 +12,8 @@ on:
 jobs:
   check-release-requirement:
     runs-on: ubuntu-latest
+    outputs:
+      needs-release: ${{ steps.release-check.outputs.needs-release }}
     steps:
     - uses: actions/checkout@v4
       with:
