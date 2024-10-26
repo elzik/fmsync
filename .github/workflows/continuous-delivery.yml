@@ -122,6 +122,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Tag With SemVer
       run: |
+        export GitVersion_SemVer=${{ needs.check-release-requirement.outputs.semantic-version }}
         git tag "v${{ needs.check-release-requirement.outputs.semantic-version }}"
         git push --tags
     - uses: actions/download-artifact@v3
