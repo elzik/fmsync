@@ -116,7 +116,7 @@ jobs:
 
   release:
     runs-on: windows-latest
-    needs: [build-windows, build-macos]
+    needs: [build-windows, build-macos, check-release-requirement]
     if: needs.check-release-requirement.outputs.needs-release == 'true'
     steps:
     - uses: actions/checkout@v4
