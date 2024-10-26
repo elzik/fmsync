@@ -104,7 +104,7 @@ jobs:
   release:
     runs-on: windows-latest
     needs: [build-windows, build-macos]
-    if: needs.check-release-requirement.outputs.needs-release == 'True'
+    if: needs.check-release-requirement.outputs.needs-release == 'true'
     steps:
     - name: Tag With SemVer
       run: |
