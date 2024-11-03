@@ -27,3 +27,6 @@ updates:
         - "NSubstitute*"
         - "Polly.Testing*"
         - "xunit*"
+      build-dependencies:
+        patterns:
+        - "GitVersion*"
