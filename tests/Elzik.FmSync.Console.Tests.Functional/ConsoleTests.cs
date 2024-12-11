@@ -94,7 +94,7 @@ namespace Elzik.FmSync.Console.Tests.Functional
 
             // Assert
             var fileLog = await File.ReadAllTextAsync(_logPath);
-            var fileLogLines = fileLog.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+            var fileLogLines = fileLog.Split([Environment.NewLine], StringSplitOptions.None);
             var expectedWorkingDirectoryLogText = $"Synchronising *.md files in {_buildOutputDirectory}".TrimEnd('\\', '/');
             _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
             fileLogLines.Should().Contain(line => line.EndsWith(expectedWorkingDirectoryLogText));

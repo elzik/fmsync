@@ -14,6 +14,7 @@ updates:
         - "AutoFixture*"
         - "coverlet*"
         - "FluentAssertions*"
+        - "GitVersion*"
         - "Microsoft.NET.Test*"
         - "NSubstitute*"
         - "Polly.Testing*"
@@ -30,3 +31,6 @@ updates:
       build-dependencies:
         patterns:
         - "GitVersion*"
+    allow:
+    - dependency-type: "all"
+  

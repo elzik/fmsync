@@ -7,6 +7,7 @@
     <Nullable>enable</Nullable>
     <RootNamespace>Elzik.FmSync</RootNamespace>
     <AssemblyName>fmsync</AssemblyName>
+	<NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'!='Debug'">

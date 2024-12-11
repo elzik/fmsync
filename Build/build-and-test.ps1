@@ -4,6 +4,9 @@ $repoRootPath = (Resolve-Path "$PSScriptRoot/../").Path
 
 Import-Module $(Resolve-Path "$repoRootPath/Build/Test-ExitCode.psm1")
 
+$sdkVersionUsed = (dotnet --version)
+Write-Output "SDK Version Used: $sdkVersionUsed"
+
 dotnet test $repoRootPath/Elzik.FmSync.sln `
 	-c Release `
 	--verbosity normal `
@@ -14,7 +17,7 @@ Test-ExitCode
 
 dotnet tool update `
 	--global dotnet-reportgenerator-globaltool `
-	--version 5.1.8
+	--version 5.*
 Test-ExitCode
 
 reportgenerator `
