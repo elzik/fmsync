@@ -5,6 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<UserSecretsId>dotnet-Elzik.FmSync.Worker-4d67e15b-f529-48cc-919a-3c678579aeb2</UserSecretsId>
+		<NuGetAuditMode>all</NuGetAuditMode>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'!='Debug'">

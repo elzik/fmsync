@@ -3,6 +3,7 @@
     <UpdateAssemblyInfo>false</UpdateAssemblyInfo>
     <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
     <GitVersionTargetFramework>net8.0</GitVersionTargetFramework>
+	<NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
   <ItemGroup>
     <None Include="LICENSE.rtf" />
