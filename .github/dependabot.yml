@@ -31,3 +31,6 @@ updates:
       build-dependencies:
         patterns:
         - "GitVersion*"
+    allow:
+    - dependency-type: "all"
+  
