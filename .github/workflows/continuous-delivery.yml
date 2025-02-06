@@ -124,11 +124,11 @@ jobs:
       run: |
         git tag "v${{ needs.check-release-requirement.outputs.semantic-version }}"
         git push --tags
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: windows-installer
         path: ./windows-installer
-    - uses: actions/download-artifact@v3
+    - uses: actions/download-artifact@v4
       with:
         name: macos-installer
         path: ./macos-installer
