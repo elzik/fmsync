@@ -65,7 +65,7 @@ jobs:
     - name: Build & Test
       run: ./Build/build-and-test.ps1
       shell: pwsh
-    - name: Upload Coverage Badge
+    - name:  Coverage Badge
       if: github.event_name != 'pull_request' && github.actor != 'dependabot[bot]'
       uses: exuanbo/actions-deploy-gist@v1
       with:
@@ -83,9 +83,9 @@ jobs:
     - name: Build Windows Installer
       run: ./Build/build-windows-installer.ps1
       shell: pwsh
-    - name: Upload Windows Artifact
+    - name:  Windows Artifact
       if: needs.check-release-requirement.outputs.needs-release == 'true'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: windows-installer
         path: ./Installer/Elzik.FmSync.WindowsInstaller/bin/x64/Release/en-US/fmsync*.msi
@@ -109,7 +109,7 @@ jobs:
       shell: pwsh
     - name: Upload macOS Artifact
       if: needs.check-release-requirement.outputs.needs-release == 'true'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: macos-installer
         path: ./Installer/Elzik.FmSync.OsxInstaller/x64/Release/fmsync-osx*.zip
