@@ -16,7 +16,6 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         private readonly FileSystemWatcher _testFileWatcher;
         private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Worker";
         private const string SerlogPathKey = "Serilog:WriteTo:1:Args:path";
-        private readonly string LogPath;
 
         public WorkerTests(ITestOutputHelper testOutputHelper)
         {
@@ -45,15 +44,15 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             Directory.CreateDirectory(FunctionalTestFilesPath);
 
             var config = GetIConfigurationRoot();
-            var configurationSection = config.GetSection(SerlogPathKey);
-            if (configurationSection == null || configurationSection.Value == null)
+            var serlogPathKeyConfigSection = config.GetSection(SerlogPathKey);
+            if (serlogPathKeyConfigSection == null || serlogPathKeyConfigSection.Value == null)
             {
                 throw new InvalidOperationException($"No log file path set in appSettings at {SerlogPathKey}");
             }
-            LogPath = configurationSection.Value;
-            if (File.Exists(LogPath))
+            var logPath = serlogPathKeyConfigSection.Value;
+            if (File.Exists(logPath))
             {
-                File.Delete(LogPath);
+                File.Delete(logPath);
             }
 
             _testFileWatcher = new FileSystemWatcher(FunctionalTestFilesPath, "*.md")
@@ -162,7 +161,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await WaitForWorketToStart();
 
             _testOutputHelper.WriteLine("Performing test edit...");
-            await File.AppendAllLinesAsync(testFile.Path, new[] { "Test edit..." });
+            await File.AppendAllLinesAsync(testFile.Path, ["Test edit..."]);
 
             await _workerProcess.WaitForExitAsync();
 
@@ -207,7 +206,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await WaitForWorketToStart();
 
             _testOutputHelper.WriteLine("Performing test edit...");
-            await File.AppendAllLinesAsync(testFile.Path, new[] { "Test edit..." });
+            await File.AppendAllLinesAsync(testFile.Path, ["Test edit..."]);
 
             await LockFileTemporarily(testFile.Path, 2000);
 
