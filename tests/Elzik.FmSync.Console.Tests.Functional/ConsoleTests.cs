@@ -1,4 +1,4 @@
-using FluentAssertions;
+using Shouldly;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -80,8 +80,8 @@ namespace Elzik.FmSync.Console.Tests.Functional
             // Assert
             var expectedWorkingDirectoryLogText = $"Synchronising *.md files in {_buildOutputDirectory}".TrimEnd('\\','/');
             _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
-            consoleOutputLines.Should().Contain(line => line.EndsWith(expectedWorkingDirectoryLogText));
-            consoleOutputLines.Should().Contain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
+            consoleOutputLines.ShouldContain(line => line.EndsWith(expectedWorkingDirectoryLogText));
+            consoleOutputLines.ShouldContain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
         }
 
         [Fact]
@@ -97,8 +97,8 @@ namespace Elzik.FmSync.Console.Tests.Functional
             var fileLogLines = fileLog.Split([Environment.NewLine], StringSplitOptions.None);
             var expectedWorkingDirectoryLogText = $"Synchronising *.md files in {_buildOutputDirectory}".TrimEnd('\\', '/');
             _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
-            fileLogLines.Should().Contain(line => line.EndsWith(expectedWorkingDirectoryLogText));
-            fileLogLines.Should().Contain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
+            fileLogLines.ShouldContain(line => line.EndsWith(expectedWorkingDirectoryLogText));
+            fileLogLines.ShouldContain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
         }
 
         [Fact(Timeout = 5000)]
@@ -118,9 +118,9 @@ namespace Elzik.FmSync.Console.Tests.Functional
             foreach(var testFile in testFiles)
             {
                 var testFileInfo = new FileInfo(testFile.Path);
-                testFileInfo.CreationTimeUtc.Should().Be(testFile.ExpectedCreatedDate, "the Console app should have updated the " +
+                testFileInfo.CreationTimeUtc.ShouldBe(testFile.ExpectedCreatedDate, "the Console app should have updated the " +
                     "created date in response to a file edit");
-                testFileInfo.LastWriteTimeUtc.Should().NotBe(testFile.ExpectedCreatedDate, "the Console app should not have " +
+                testFileInfo.LastWriteTimeUtc.ShouldNotBe(testFile.ExpectedCreatedDate, "the Console app should not have " +
                     "updated the modified date to be the same as the created date in response to a file edit");
             }
         }
