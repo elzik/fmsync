@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+﻿using Shouldly;
 using Polly;
 using Polly.Retry;
 using Polly.Testing;
@@ -17,15 +17,15 @@ namespace Elzik.FmSync.Application.Tests.Unit
 
             var descriptor = testPipeline.GetPipelineDescriptor();
 
-            descriptor.Strategies.Count.Should().Be(1);
+            descriptor.Strategies.Count.ShouldBe(1);
 
             var options = descriptor.Strategies[0].Options;
-            options.Should().NotBeNull();
-            options.Should().BeOfType<RetryStrategyOptions>();
+            options.ShouldNotBeNull();
+            options.ShouldBeOfType<RetryStrategyOptions>();
             var retryOptions = (RetryStrategyOptions)options!;
-            retryOptions.Delay.Should().Be(TimeSpan.FromSeconds(2));
-            retryOptions.BackoffType.Should().Be(DelayBackoffType.Exponential);
-            retryOptions.MaxRetryAttempts.Should().Be(5);
+            retryOptions.Delay.ShouldBe(TimeSpan.FromSeconds(2));
+            retryOptions.BackoffType.ShouldBe(DelayBackoffType.Exponential);
+            retryOptions.MaxRetryAttempts.ShouldBe(5);
         }
     }
 }

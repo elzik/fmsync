@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Reflection;
-using FluentAssertions;
+using Shouldly;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -49,8 +49,8 @@ public sealed class MarkdownFrontMatterTests : IDisposable
         var createdDate = markdownFrontMatter.GetCreatedDateUtc(testFilePath);
 
         // Assert
-        createdDate.Should().Be(expectedDateUtc, because);
-        createdDate!.Value.Kind.Should().Be(DateTimeKind.Utc);
+        createdDate.ShouldBe(expectedDateUtc, because);
+        createdDate!.Value.Kind.ShouldBe(DateTimeKind.Utc);
     }
 
     [Theory]
@@ -74,7 +74,7 @@ public sealed class MarkdownFrontMatterTests : IDisposable
         var createdDate = markdownFrontMatter.GetCreatedDateUtc(testFilePath);
 
         // Assert
-        createdDate.Should().BeNull();
+        createdDate.ShouldBeNull();
     }
 
     [Theory]
@@ -90,7 +90,7 @@ public sealed class MarkdownFrontMatterTests : IDisposable
         var createdDate = markdownFrontMatter.GetCreatedDateUtc(testFilePath);
 
         // Assert
-        createdDate.Should().Be(expectedDateUtc);
+        createdDate.ShouldBe(expectedDateUtc);
     }
 
     [Theory]
@@ -106,7 +106,7 @@ public sealed class MarkdownFrontMatterTests : IDisposable
         var createdDate = markdownFrontMatter.GetCreatedDateUtc(testFilePath);
 
         // Assert
-        createdDate.Should().Be(expectedDateUtc);
+        createdDate.ShouldBe(expectedDateUtc);
     }
 
     private static void SetTimeZone(string mockTimeZoneId)

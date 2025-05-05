@@ -1,5 +1,4 @@
-﻿using FluentAssertions;
-using FluentAssertions.Events;
+﻿using Shouldly;
 using Microsoft.Extensions.Configuration;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
@@ -77,7 +76,20 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             // Arrange
             _workerProcess.OutputDataReceived += OnConsoleDataReceivedKillProcess;
             MonitorConsoleForOutput(expectedLogOutput);
-            using var monitoredWorkerProcess = _workerProcess.Monitor();
+
+            var eventRaised = false;
+            DataReceivedEventArgs? capturedArgs = null;
+
+            void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
+            {
+                if (_expectedConsoleOutputReceived != null && _expectedConsoleOutputReceived(e))
+                {
+                    eventRaised = true;
+                    capturedArgs = e;
+                }
+            }
+
+            _workerProcess.OutputDataReceived += OnOutputDataReceived;
 
             // Act
             ValidateWorkerStart(_workerProcess.Start());
@@ -85,9 +97,9 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            monitoredWorkerProcess.Should().Raise("OutputDataReceived")
-                .WithArgs<DataReceivedEventArgs>(dataReceived => _expectedConsoleOutputReceived != null 
-                                                              && _expectedConsoleOutputReceived(dataReceived));
+            eventRaised.ShouldBeTrue("the OutputDataReceived event should have been raised with the expected arguments.");
+            capturedArgs.ShouldNotBeNull();
+            _expectedConsoleOutputReceived!(capturedArgs).ShouldBeTrue("the event arguments should match the expected condition.");
         }
 
         [Fact(Timeout = 10000)]
@@ -96,7 +108,18 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             // Arrange
             _workerProcess.OutputDataReceived += OnConsoleDataReceivedKillProcess;
             MonitorConsoleForOutput("Hosting started");
-            using var monitoredWorkerProcess = _workerProcess.Monitor();
+
+            var logFileEntries = new List<string>();
+
+            void OnOutputDataReceived(object sender, DataReceivedEventArgs e)
+            {
+                if (e.Data != null)
+                {
+                    logFileEntries.Add(e.Data);
+                }
+            }
+
+            _workerProcess.OutputDataReceived += OnOutputDataReceived;
 
             // Act
             ValidateWorkerStart(_workerProcess.Start());
@@ -104,11 +127,10 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            var logFileEntries = await File.ReadAllLinesAsync(LogPath);
-            logFileEntries.Should().Contain(entry => entry.EndsWith("has started."));
-            logFileEntries.Should().Contain(entry => entry.EndsWith("Configuring watcher on ../../../../TestFiles for new and changed *.md files."));
-            logFileEntries.Should().Contain(entry => entry.EndsWith("Watcher on ../../../../TestFiles has started."));
-            logFileEntries.Should().Contain(entry => entry.EndsWith("A total of 1 directory watchers are running."));
+            logFileEntries.ShouldContain(entry => entry.EndsWith("has started."));
+            logFileEntries.ShouldContain(entry => entry.EndsWith("Configuring watcher on ../../../../TestFiles for new and changed *.md files."));
+            logFileEntries.ShouldContain(entry => entry.EndsWith("Watcher on ../../../../TestFiles has started."));
+            logFileEntries.ShouldContain(entry => entry.EndsWith("A total of 1 directory watchers are running."));
         }
 
         [Fact(Timeout = 15000)]
@@ -117,7 +139,20 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             // Arrange
             var testFile = GetHappyPathTestFile();
             MonitorFilesForChange(testFile);
-            using var monitoredFileWatcher = _testFileWatcher.Monitor();
+
+            var eventRaised = false;
+            FileSystemEventArgs? capturedArgs = null;
+
+            void OnFileChanged(object sender, FileSystemEventArgs e)
+            {
+                if (_expectedFileChangeMade != null && _expectedFileChangeMade(e))
+                {
+                    eventRaised = true;
+                    capturedArgs = e;
+                }
+            }
+
+            _testFileWatcher.Changed += OnFileChanged;
 
             // Act
             ValidateWorkerStart(_workerProcess.Start());
@@ -127,13 +162,20 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await WaitForWorketToStart();
 
             _testOutputHelper.WriteLine("Performing test edit...");
-            await File.AppendAllLinesAsync(testFile.Path, ["Test edit..."]);
+            await File.AppendAllLinesAsync(testFile.Path, new[] { "Test edit..." });
 
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            AssertFileWasChanged(testFile, monitoredFileWatcher);
+            eventRaised.ShouldBeTrue("the Changed event should have been raised with the expected arguments.");
+            capturedArgs.ShouldNotBeNull();
+            _expectedFileChangeMade!(capturedArgs).ShouldBeTrue("the event arguments should match the expected condition.");
 
+            var testFileInfo = new FileInfo(testFile.Path);
+            testFileInfo.CreationTimeUtc.ShouldBe(testFile.ExpectedCreatedDate, 
+                "the Worker should have updated the created date in response to a file edit");
+            testFileInfo.LastWriteTimeUtc.ShouldNotBe(testFile.ExpectedCreatedDate, 
+                "the Worker should not have updated the modified date to be the same as the created date in response to a file edit");
         }
 
         [Fact(Timeout = 20000)]
@@ -142,7 +184,20 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             // Arrange
             var testFile = GetHappyPathTestFile();
             MonitorFilesForChange(testFile);
-            using var monitoredFileWatcher = _testFileWatcher.Monitor();
+
+            var eventRaised = false;
+            FileSystemEventArgs? capturedArgs = null;
+
+            void OnFileChanged(object sender, FileSystemEventArgs e)
+            {
+                if (_expectedFileChangeMade != null && _expectedFileChangeMade(e))
+                {
+                    eventRaised = true;
+                    capturedArgs = e;
+                }
+            }
+
+            _testFileWatcher.Changed += OnFileChanged;
 
             // Act
             ValidateWorkerStart(_workerProcess.Start());
@@ -152,15 +207,22 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await WaitForWorketToStart();
 
             _testOutputHelper.WriteLine("Performing test edit...");
-            await File.AppendAllLinesAsync(testFile.Path, ["Test edit..."]);
+            await File.AppendAllLinesAsync(testFile.Path, new[] { "Test edit..." });
 
             await LockFileTemporarily(testFile.Path, 2000);
 
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            AssertFileWasChanged(testFile, monitoredFileWatcher);
+            eventRaised.ShouldBeTrue("the Changed event should have been raised with the expected arguments.");
+            capturedArgs.ShouldNotBeNull();
+            _expectedFileChangeMade!(capturedArgs).ShouldBeTrue("the event arguments should match the expected condition.");
 
+            var testFileInfo = new FileInfo(testFile.Path);
+            testFileInfo.CreationTimeUtc.ShouldBe(testFile.ExpectedCreatedDate, 
+                "the Worker should have updated the created date in response to a file edit");
+            testFileInfo.LastWriteTimeUtc.ShouldNotBe(testFile.ExpectedCreatedDate, 
+                "the Worker should not have updated the modified date to be the same as the created date in response to a file edit");
         }
 
         [Fact(Timeout = 20000)]
@@ -169,16 +231,29 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             // Arrange
             var testFile = GetHappyPathTestFile();
             MonitorFilesForChange(testFile);
-            using var monitoredFileWatcher = _testFileWatcher.Monitor();
+
+            var eventRaised = false;
+            FileSystemEventArgs? capturedArgs = null;
+
+            void OnFileChanged(object sender, FileSystemEventArgs e)
+            {
+                if (_expectedFileChangeMade != null && _expectedFileChangeMade(e))
+                {
+                    eventRaised = true;
+                    capturedArgs = e;
+                }
+            }
+
+            _testFileWatcher.Changed += OnFileChanged;
 
             var testOriginalFileContents = await File.ReadAllTextAsync(testFile.Path);
             var testInvalidatedDateContents = testOriginalFileContents.Replace(
                 "created: 2023-01-07 14:28:22", "created: InvalidDate!-01-07 14:28:22");
 
             // Act
-            ValidateWorkerStart(_workerProcess!.Start());
+            ValidateWorkerStart(_workerProcess.Start());
             _workerProcess.BeginOutputReadLine();
-            _testFileWatcher!.EnableRaisingEvents = true;
+            _testFileWatcher.EnableRaisingEvents = true;
 
             await WaitForWorketToStart();
 
@@ -193,20 +268,15 @@ namespace Elzik.FmSync.Worker.Tests.Functional
             await _workerProcess.WaitForExitAsync();
 
             // Assert
-            AssertFileWasChanged(testFile, monitoredFileWatcher);
+            eventRaised.ShouldBeTrue("the Changed event should have been raised with the expected arguments.");
+            capturedArgs.ShouldNotBeNull();
+            _expectedFileChangeMade!(capturedArgs).ShouldBeTrue("the event arguments should match the expected condition.");
 
-        }
-
-        private void AssertFileWasChanged((string Path, DateTime ExpectedCreatedDate) testFile, IMonitor<FileSystemWatcher> monitoredFileWatcher)
-        {
-            monitoredFileWatcher.Should().Raise("Changed").
-                WithArgs<FileSystemEventArgs>(fileSystemEvent => _expectedFileChangeMade != null 
-                                                              && _expectedFileChangeMade(fileSystemEvent));
             var testFileInfo = new FileInfo(testFile.Path);
-            testFileInfo.CreationTimeUtc.Should().Be(testFile.ExpectedCreatedDate, "the Worker should have updated the created date " +
-                "in response to a file edit");
-            testFileInfo.LastWriteTimeUtc.Should().NotBe(testFile.ExpectedCreatedDate, "the Worker should not have updated the " +
-                "modified date to be the same as the created date in response to a file edit");
+            testFileInfo.CreationTimeUtc.ShouldBe(testFile.ExpectedCreatedDate, 
+                "the Worker should have updated the created date in response to a file edit");
+            testFileInfo.LastWriteTimeUtc.ShouldNotBe(testFile.ExpectedCreatedDate, 
+                "the Worker should not have updated the modified date to be the same as the created date in response to a file edit");
         }
 
         private void MonitorConsoleForOutput(string expectedLogOutput)
