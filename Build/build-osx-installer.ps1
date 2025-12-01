@@ -2,8 +2,8 @@ $ErrorActionPreference = "Stop"
 
 $repoRootPath = (Resolve-Path "$PSScriptRoot/../").Path
 $releasePath = "$repoRootPath/Installer/Elzik.FmSync.OsxInstaller/x64/Release/"
-$consolePublishSourcePath = "$repoRootPath/src/Elzik.FmSync.Console/bin/x64/Release/net8.0/osx-x64/publish"
-$workerPublishSourcePath = "$repoRootPath/src/Elzik.FmSync.Worker/bin/x64/Release/net8.0/osx-x64/publish"
+$consolePublishSourcePath = "$repoRootPath/src/Elzik.FmSync.Console/bin/x64/Release/net10.0/osx-x64/publish"
+$workerPublishSourcePath = "$repoRootPath/src/Elzik.FmSync.Worker/bin/x64/Release/net10.0/osx-x64/publish"
 
 If((Test-Path -PathType container "$releasePath"))
 {
@@ -72,7 +72,7 @@ Compress-Archive `
 	-Force
 Test-ExitCode
 
-dotnet tool update --global GitVersion.Tool --version 6.1.0
+dotnet tool update --global GitVersion.Tool --version 6.5.1
 Test-ExitCode
 
 $SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer
