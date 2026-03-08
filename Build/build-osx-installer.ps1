@@ -72,7 +72,9 @@ Compress-Archive `
 	-Force
 Test-ExitCode
 
-dotnet tool install --global GitVersion.Tool --version 6.6.0
+Import-Module "$PSScriptRoot/Get-GitVersionToolVersion.psm1"
+$gitVersionToolVersion = Get-GitVersionToolVersion -RepoRoot $repoRootPath
+dotnet tool install --global GitVersion.Tool --version $gitVersionToolVersion
 Test-ExitCode
 
 $SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer

@@ -25,13 +25,17 @@ jobs:
         dotnet-version: 10.x
     - name: GetSemVer
       id: get-semver
+      shell: pwsh
       run: |
-        dotnet tool install --global GitVersion.Tool --version 6.6.0
-        output=$(dotnet-gitversion)
-        semver=$(echo $output | grep -oP '"SemVer"\s*:\s*"\K[^"]+')
-        echo $output
-        echo "Semantic version: $semver"
-        echo "semantic-version=$semver" >> $GITHUB_OUTPUT
+        $RepoRoot = (Get-Location).Path
+        Import-Module "$RepoRoot/Build/Get-GitVersionToolVersion.psm1"
+        $version = Get-GitVersionToolVersion -RepoRoot $RepoRoot
+        dotnet tool install --global GitVersion.Tool --version $version
+        $output = dotnet-gitversion
+        $semver = ($output | ConvertFrom-Json).SemVer
+        Write-Output $output
+        Write-Output "Semantic version: $semver"
+        Add-Content -Path $env:GITHUB_OUTPUT -Value "semantic-version=$semver"
     - name: Check for Release Requirement
       id: release-check
       run: |
