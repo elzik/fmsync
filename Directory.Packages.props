@@ -25,9 +25,10 @@
     <PackageVersion Include="Shouldly" Version="4.3.0" />
     <PackageVersion Include="SonarAnalyzer.CSharp" Version="10.20.0.135146" />
     <PackageVersion Include="Thinktecture.IO.FileSystem.Abstractions" Version="2.5.0" />
-    <PackageVersion Include="YamlDotNet" Version="16.3.0" />
+    <PackageVersion Include="WixToolset.UI.wixext" Version="5.0.2" />
     <PackageVersion Include="xunit" Version="2.9.3" />
     <PackageVersion Include="xunit.analyzers" Version="1.27.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
+    <PackageVersion Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 </Project>
