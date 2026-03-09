@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Xunit;
 using Xunit.Abstractions;
+using System.ComponentModel;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 
 namespace Elzik.FmSync.Worker.Tests.Functional
 {
@@ -106,7 +108,7 @@ namespace Elzik.FmSync.Worker.Tests.Functional
         {
             // Arrange
             _workerProcess.OutputDataReceived += OnConsoleDataReceivedKillProcess;
-            MonitorConsoleForOutput("Hosting started");
+            MonitorConsoleForOutput("A total of 1 directory watchers are running.");
 
             var logFileEntries = new List<string>();
 
@@ -334,15 +336,27 @@ namespace Elzik.FmSync.Worker.Tests.Functional
 
         private static void KillExistingWorkerProcesses(string? directoryPath)
         {
-            var testWorkers = Process.GetProcessesByName("Elzik.FmSync.Worker")
+            try
+            {
+                var testWorkers = Process.GetProcessesByName("Elzik.FmSync.Worker")
                             .Where(p => p.MainModule != null && p.MainModule.FileName.StartsWith(directoryPath!));
 
-            foreach (var testWorker in testWorkers)
-            {
-                if (!testWorker.HasExited)
+                foreach (var testWorker in testWorkers)
                 {
-                    testWorker.Kill();
+                    if (!testWorker.HasExited)
+                    {
+                        testWorker.Kill();
+                    }
                 }
+            }
+            catch(Win32Exception ex)
+            {
+                if(ex.Message == "Access is denied.")
+                {
+                    Assert.Fail("The account running the Worker tests must have permission to kill previous Worker processes.");
+                }
+
+                throw;
             }
         }
 

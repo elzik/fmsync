@@ -31,7 +31,9 @@ dotnet build $repoRootPath\Installer\Elzik.FmSync.WindowsInstaller\Elzik.FmSync.
 	-p:PublishSingleFile=true
 Test-ExitCode
 
-dotnet tool update --global GitVersion.Tool --version 6.1.0
+Import-Module "$PSScriptRoot/Get-GitVersionToolVersion.psm1"
+$gitVersionToolVersion = Get-GitVersionToolVersion -RepoRoot $repoRootPath
+dotnet tool install --global GitVersion.Tool --version $gitVersionToolVersion
 Test-ExitCode
 
 $SemVer = (dotnet-gitversion | ConvertFrom-Json).SemVer

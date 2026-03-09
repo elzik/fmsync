@@ -2,18 +2,18 @@
   <PropertyGroup>
     <UpdateAssemblyInfo>false</UpdateAssemblyInfo>
     <GenerateGitVersionInformation>false</GenerateGitVersionInformation>
-    <GitVersionTargetFramework>net8.0</GitVersionTargetFramework>
+    <GitVersionTargetFramework>net10.0</GitVersionTargetFramework>
 	<NuGetAuditMode>all</NuGetAuditMode>
   </PropertyGroup>
   <ItemGroup>
     <None Include="LICENSE.rtf" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="GitVersion.MsBuild" Version="6.1.0">
+    <PackageReference Include="GitVersion.MsBuild" >
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.2" />
+    <PackageReference Include="WixToolset.UI.wixext" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Elzik.FmSync.Console\Elzik.FmSync.Console.csproj" />

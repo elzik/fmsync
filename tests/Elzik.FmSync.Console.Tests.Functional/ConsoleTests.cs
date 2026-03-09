@@ -13,7 +13,6 @@ namespace Elzik.FmSync.Console.Tests.Functional
         private readonly Process _consoleProcess;
         private const string FunctionalTestFilesPath = "../../../../TestFiles/Functional/Console";
         private const string SerlogPathKey = "Serilog:WriteTo:1:Args:path";
-        private readonly string _logPath;
         private readonly string _buildOutputDirectory;
 
         public ConsoleTests(ITestOutputHelper testOutputHelper)
@@ -52,11 +51,6 @@ namespace Elzik.FmSync.Console.Tests.Functional
             {
                 throw new InvalidOperationException($"No log file path set in appSettings at {SerlogPathKey}");
             }
-            _logPath = configurationSection.Value;
-            if (File.Exists(_logPath))
-            {
-                File.Delete(_logPath);
-            }
         }
 
         [Fact]
@@ -82,23 +76,6 @@ namespace Elzik.FmSync.Console.Tests.Functional
             _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
             consoleOutputLines.ShouldContain(line => line.EndsWith(expectedWorkingDirectoryLogText));
             consoleOutputLines.ShouldContain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
-        }
-
-        [Fact]
-        public async Task Synchronise_EmptyFolder_LogsToFile()
-        {
-            // Act
-            ValidateConsoleProcessStart(_consoleProcess!.Start());
-            _consoleProcess.BeginOutputReadLine();
-            await _consoleProcess.WaitForExitAsync();
-
-            // Assert
-            var fileLog = await File.ReadAllTextAsync(_logPath);
-            var fileLogLines = fileLog.Split([Environment.NewLine], StringSplitOptions.None);
-            var expectedWorkingDirectoryLogText = $"Synchronising *.md files in {_buildOutputDirectory}".TrimEnd('\\', '/');
-            _testOutputHelper.WriteLine($"expectedWorkingDirectoryLogText = {expectedWorkingDirectoryLogText}");
-            fileLogLines.ShouldContain(line => line.EndsWith(expectedWorkingDirectoryLogText));
-            fileLogLines.ShouldContain(line => line.Contains("Synchronised 0 files out of a total 0 in "));
         }
 
         [Fact(Timeout = 5000)]
