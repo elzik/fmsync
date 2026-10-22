@@ -67,7 +67,7 @@ namespace Elzik.FmSync.Console.Tests.Functional
             };
 
             // Act
-            ValidateConsoleProcessStart(_consoleProcess!.Start());
+            ValidateConsoleProcessStart(_consoleProcess.Start());
             _consoleProcess.BeginOutputReadLine();
             await _consoleProcess.WaitForExitAsync();
 
@@ -87,7 +87,7 @@ namespace Elzik.FmSync.Console.Tests.Functional
             _consoleProcess.StartInfo.Arguments = FunctionalTestFilesPath;
 
             // Act
-            ValidateConsoleProcessStart(_consoleProcess!.Start());
+            ValidateConsoleProcessStart(_consoleProcess.Start());
             _consoleProcess.BeginOutputReadLine();
             await _consoleProcess.WaitForExitAsync();
 

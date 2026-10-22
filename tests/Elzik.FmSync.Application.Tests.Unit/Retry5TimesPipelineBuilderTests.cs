@@ -22,7 +22,7 @@ namespace Elzik.FmSync.Application.Tests.Unit
             var options = descriptor.Strategies[0].Options;
             options.ShouldNotBeNull();
             options.ShouldBeOfType<RetryStrategyOptions>();
-            var retryOptions = (RetryStrategyOptions)options!;
+            var retryOptions = (RetryStrategyOptions)options;
             retryOptions.Delay.ShouldBe(TimeSpan.FromSeconds(2));
             retryOptions.BackoffType.ShouldBe(DelayBackoffType.Exponential);
             retryOptions.MaxRetryAttempts.ShouldBe(5);
