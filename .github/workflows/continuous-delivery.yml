@@ -39,14 +39,28 @@ jobs:
     - name: Check for Release Requirement
       id: release-check
       run: |
-        productionFilesChangedCount=$(git diff --name-only HEAD^ HEAD | grep -E 'src/|Installer/' | wc -l)
-        echo "$productionFilesChangedCount production source code files have changed"
-        productionFilesChanged=$((productionFilesChangedCount > 0))
+        if releaseBaseline=$(git describe --tags --match 'v[0-9]*.[0-9]*.[0-9]*' --exclude '*-*' --exclude '*+*' --abbrev=0 HEAD); then
+          echo "Comparing against stable release: $releaseBaseline"
+        else
+          # Without a release tag, compare against an empty tree for the initial release.
+          releaseBaseline=$(git hash-object -t tree --stdin </dev/null)
+          echo "No reachable stable release tag; checking all production files"
+        fi
+        if git diff --quiet "$releaseBaseline" HEAD -- src/ Installer/ Directory.Packages.props; then
+          productionFilesChanged=false
+        else
+          diffExitCode=$?
+          if [[ "$diffExitCode" != "1" ]]; then
+            exit "$diffExitCode"
+          fi
+          productionFilesChanged=true
+        fi
+        echo "Production files changed: $productionFilesChanged"
         echo "Git ref: ${{ github.ref_name }}"
         branchIsMain=$([[ "${{ github.ref_name }}" == "main" ]] && echo true || echo false)
         forceReleaseRequested=$([[ "${{ github.event.inputs.force-release }}" == "true" ]] && echo true || echo false)
         echo "Forced release requested: $forceReleaseRequested"
-        needsRelease=$([[ "$forceReleaseRequested" == "true" || ( "$productionFilesChanged" == "1" && "$branchIsMain" == "true" ) ]] && echo true || echo false)
+        needsRelease=$([[ "$forceReleaseRequested" == "true" || ( "$productionFilesChanged" == "true" && "$branchIsMain" == "true" ) ]] && echo true || echo false)
         echo "Release will be generated: $needsRelease"
         echo "needs-release=$needsRelease" >> $GITHUB_OUTPUT
 
